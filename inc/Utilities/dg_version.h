@@ -24,7 +24,7 @@
 	#define DG_VERSION_REVISION 2
 #endif
 #ifndef DG_GIT_REV
-	#define DG_GIT_REV 	"37870e9"
+	#define DG_GIT_REV 	"571f0ac"
 #endif
 #ifndef DG_GIT_TAG
 	#define DG_GIT_TAG 	""
