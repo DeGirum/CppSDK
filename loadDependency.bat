@@ -1,3 +1,4 @@
+if exist inc\asio.hpp exit
 git clone -b asio-1-18-2 --single-branch https://github.com/chriskohlhoff/asio.git
 move asio\asio\include\*.* inc\
 move asio\asio\include\asio inc\

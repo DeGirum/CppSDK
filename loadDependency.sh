@@ -1,4 +1,7 @@
 #!/bin/bash
+if [ -f "inc/asio.hpp" ]; then
+  exit
+fi
 git clone -b asio-1-18-2 --single-branch https://github.com/chriskohlhoff/asio.git
 mv asio/asio/include/* inc/
 mv asio/asio/COPYING inc/asio

@@ -159,7 +159,7 @@
 #include <string.h>
 #include "dg_time_utilities.h"
 #ifndef _WIN32
-	#define stricmp strcasecmp
+	#define _stricmp strcasecmp
 #endif
 
 /// trace file name
@@ -329,7 +329,12 @@ namespace DGTrace
 				if( traceParamsParse( group_str, level_str ) )
 					continue;
 
+			#ifdef _MSC_VER
+				strncpy_s( m_groupsConfig[ m_configsCount ].m_groupName, MAX_GR_NAME, group_str.c_str(), MAX_GR_NAME );
+			#else
 				strncpy( m_groupsConfig[ m_configsCount ].m_groupName, group_str.c_str(), MAX_GR_NAME );
+			#endif
+
 				m_groupsConfig[ m_configsCount ].m_groupName[ MAX_GR_NAME - 1 ] = '\0';
 
 				m_groupsConfig[ m_configsCount ].m_groupLevel =
@@ -355,7 +360,7 @@ namespace DGTrace
 
 			for( size_t ci = 0; ci < m_configsCount; ci++ )
 			{
-				if( stricmp( m_groupsRegistry[ idx ].m_groupName, m_groupsConfig[ ci ].m_groupName ) == 0 )
+				if( _stricmp( m_groupsRegistry[ idx ].m_groupName, m_groupsConfig[ ci ].m_groupName ) == 0 )
 				{
 					// assign tracing level to group variable from configuration
 					*(m_groupsRegistry[ idx ].m_groupAddress) = m_groupsConfig[ ci ].m_groupLevel;

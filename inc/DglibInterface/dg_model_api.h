@@ -118,11 +118,12 @@ namespace DG
 	/// \param[in] prefix is a string prefix, formatted as "nnnn[:port]". This will be used to generate two sets of hostnames, one with the pattern
 	/// "nnnn#", and one "nnnn###". For example, the prefix "farm", range_start 1, range_end 2 and numeral_width 3 will scan the hosts "farm1",
 	/// "farm001", "farm2", "farm002". Setting numeral_width to 0 disables pattern generation, and will just scan the prefix. The port part is
-	/// optional. If included, all servers will be scanned on the port. If omitted, the default port 8778 will be used. \param[in] range_start is the
-	/// lowest numeral to be applied to the pattern \param[in] range_end is the highest numeral to be applied to the pattern, inclusive \param[in]
-	/// numeral_width is the width of the numeral in the padded set. This is optional, set to 3 by default. Set to 0 to disable pattern generation.
+	/// optional. If included, all servers will be scanned on the port. If omitted, the default port 8778 will be used.
+	/// \param[in] range_start is the lowest numeral to be applied to the pattern
+	/// \param[in] range_end is the highest numeral to be applied to the pattern, inclusive
+	/// \param[in] numeral_width is the width of the numeral in the padded set. This is optional, set to 3 by default. Set to 0 to disable pattern generation.
 	/// \return Vector of strings containing hostnames of ORCA servers on the network.
-	std::vector< std::tuple< std::string, DG::DetectionStatus > > detectHostnameServers( const std::string& pattern, const int range_start, const int range_end, const int numeral_width = 3 );
+	std::vector< std::tuple< std::string, DG::DetectionStatus > > detectHostnameServers( const std::string& prefix, const int range_start, const int range_end, const int numeral_width = 3 );
 
 
 	class Client;	// forward declaration

@@ -239,9 +239,9 @@ namespace DG
 			if( paramExist( section, key, idx, &ModelParamsReadAccess::None_exist ) || fallback == &ModelParamsReadAccess::None_get< T > )
 			{
 				if( is_mandatory )
-					return jsonGetMandatoryValue< T >( m_cfg_ro, section, idx, key );
+					return jsonGetMandatoryValue< T >( m_cfg_ro, section, (int )idx, key );
 				else
-					return jsonGetOptionalValue< T >( m_cfg_ro, section, idx, key, default_value );
+					return jsonGetOptionalValue< T >( m_cfg_ro, section, (int )idx, key, default_value );
 			}
 			else
 				return ( ( *this ).*fallback )( idx );
@@ -256,7 +256,7 @@ namespace DG
 		/// \return parameter value
 		bool paramExist( const char *section, const char *key, size_t idx, bool ( ModelParamsReadAccess::*fallback )( size_t ) const ) const
 		{
-			const bool exists = jsonKeyExist( m_cfg_ro, section, idx, key );
+			const bool exists = jsonKeyExist( m_cfg_ro, section, (int )idx, key );
 			if( !exists && fallback != &ModelParamsReadAccess::None_exist )
 				return ((*this).*fallback)( idx );
 			return exists;

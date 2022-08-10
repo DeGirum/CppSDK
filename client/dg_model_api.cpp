@@ -15,7 +15,7 @@
 
 #ifndef _MSC_VER
 	#include <strings.h>
-	#define stricmp strcasecmp	//!< case-insensitive string comparison
+	#define _stricmp strcasecmp	//!< case-insensitive string comparison
 #endif
 
 
@@ -77,9 +77,9 @@ DG::ModelInfo DG::modelFind( const std::string &server, const ModelQuery &query 
 		{
 			if( !stristr( m.name, query.model_name ) )
 				continue;
-			if( !query.device_type.empty() && stricmp( m.device_type.c_str(), query.device_type.c_str() ) != 0 )
+			if( !query.device_type.empty() && _stricmp( m.device_type.c_str(), query.device_type.c_str() ) != 0 )
 				continue;
-			if( !query.runtime_agent.empty() && stricmp( m.runtime_agent.c_str(), query.runtime_agent.c_str() ) != 0 )
+			if( !query.runtime_agent.empty() && _stricmp( m.runtime_agent.c_str(), query.runtime_agent.c_str() ) != 0 )
 				continue;
 			if( query.model_quantized != ModelQuery::Dont_care &&
 				((query.model_quantized == ModelQuery::Yes) ^ m.model_quantized) )
