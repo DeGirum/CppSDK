@@ -358,18 +358,27 @@ namespace DG
 			m_async_thread = std::thread(
 				[ this ]()
 				{
-					// Loop until stop is requested AND then all outstanding results are received
-					while( !m_async_stop || m_async_outstanding_results > 0 )
+					try
 					{
-						// Run ASIO executor
-						main_protocol::run_async( m_io_context );
-
-						// Wait until a restart is signaled
+						// Loop until stop is requested AND then all outstanding results are received
+						while( !m_async_stop || m_async_outstanding_results > 0 )
 						{
-							std::unique_lock< std::mutex > lock( m_communication_mutex );
-							m_waiter.wait( lock, [ & ] { return m_async_outstanding_results > 0 || m_async_stop; } );
+							// Run ASIO executor
+							main_protocol::run_async( m_io_context );
+
+							// Wait until a restart is signaled
+							{
+								std::unique_lock< std::mutex > lock( m_communication_mutex );
+								m_waiter.wait( lock, [ & ] { return m_async_outstanding_results > 0 || m_async_stop; } );
+							}
 						}
 					}
+					catch( ... )	// this thread does not have any parent code to report exceptions,
+									// so we just catch all of them and ignore;
+									// in normal cases there should be no exceptions in this thread,
+									// but in abnormal cases (internal bugs) we don't want to crash
+									// client application by not catching exceptions in this thread (see SD-613)
+					{}
 				} );
 		}
 		else
