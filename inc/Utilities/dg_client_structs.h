@@ -114,17 +114,25 @@ namespace DG
 		DG::ModelParamsWriter extended_params;  //!< extended model parameters
 	} ModelInfo;
 
-	/// prepare client-server response message string from input json
-	/// \param in server response json
-	/// \return response string
-	static std::string messagePrepare( const json &in )
+	/// Prepare client-server response message json from input json
+	/// \param in: server response json
+	/// \return client response json
+	static json messagePrepareJson( const json &in )
 	{
 		DG_ERROR_TRUE( in.is_object() );
 		if( in.contains( PROTOCOL_VERSION_TAG ) )
-			return in.dump();
+			return in;
 		auto out = in;
 		out[ PROTOCOL_VERSION_TAG ] = DG::CURRENT_PROTOCOL_VERSION;
-		return out.dump();
+		return out;
+	}
+
+	/// prepare client-server response message string from input json
+	/// \param in: server response json
+	/// \return client response string
+	static std::string messagePrepare( const json &in )
+	{		
+		return messagePrepareJson( in ).dump();
 	}
 
 }  // namespace DG
