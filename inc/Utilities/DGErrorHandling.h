@@ -193,7 +193,15 @@ public:
 	DGException( const std::string &message, bool inclSysMsg = false ): m_err_msg( message )
 	{
 		if( inclSysMsg )
-			m_err_msg += " : " + std::string( std::strerror( errno ) );
+		{
+		#ifdef _MSC_VER
+			char buf[ 256 ];
+			strerror_s( buf, sizeof buf, errno );
+		#else
+			const char *buf = std::strerror( errno );
+		#endif
+			m_err_msg += " : " + std::string( buf );
+		}
 	}
 
 	/// Destructor
