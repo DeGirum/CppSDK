@@ -415,13 +415,30 @@ Model Parameters Management</h2>
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Parameter Name </th><th class="markdownTableHeadNone">Type </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Possible Values </th><th class="markdownTableHeadNone">Default Value  </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">InputImgFmt </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">Input frame format: JPEG or raw binary </td><td class="markdownTableBodyNone">"JPEG", "RAW" </td><td class="markdownTableBodyNone">"JPEG"  </td></tr>
+<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::InputImgFmt </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">Input frame format: JPEG or raw binary </td><td class="markdownTableBodyNone">"JPEG", "RAW" </td><td class="markdownTableBodyNone">"JPEG"  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">InputRawDataType </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">Data type for raw binary frame format: byte of 32-bit float </td><td class="markdownTableBodyNone">"DG_UINT8", "DG_FLT" </td><td class="markdownTableBodyNone">"DG_UINT8"  </td></tr>
+<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::InputRawDataType </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">Data type for raw binary frame format: byte of 32-bit float </td><td class="markdownTableBodyNone">"DG_UINT8", "DG_FLT" </td><td class="markdownTableBodyNone">"DG_UINT8"  </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">InputImgRotation </td><td class="markdownTableBodyNone">int </td><td class="markdownTableBodyNone">Input image rotation angle in degrees, clockwise </td><td class="markdownTableBodyNone">0, 90, 180, 270 </td><td class="markdownTableBodyNone">0  </td></tr>
+<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::InputImgRotation </td><td class="markdownTableBodyNone">int </td><td class="markdownTableBodyNone">Input image rotation angle in degrees, clockwise </td><td class="markdownTableBodyNone">0, 90, 180, 270 </td><td class="markdownTableBodyNone">0  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::InputColorSpace </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">Input image colorspace (sequence of colors in C dimension) </td><td class="markdownTableBodyNone">"RGB", "BGR" </td><td class="markdownTableBodyNone">"RGB"  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::OutputPostprocessType </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">Post-processor type </td><td class="markdownTableBodyNone">see below </td><td class="markdownTableBodyNone">"None"  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::OutputConfThreshold </td><td class="markdownTableBodyNone">double </td><td class="markdownTableBodyNone">Confidence threshold </td><td class="markdownTableBodyNone">0..1 </td><td class="markdownTableBodyNone">0.1  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::OutputNMSThreshold </td><td class="markdownTableBodyNone">double </td><td class="markdownTableBodyNone">Threshold for non-max suppression </td><td class="markdownTableBodyNone">0..1 </td><td class="markdownTableBodyNone">0.6  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::OutputTopK </td><td class="markdownTableBodyNone">size_t </td><td class="markdownTableBodyNone">Number of classes with biggest scores to report for classification models </td><td class="markdownTableBodyNone">0,1... </td><td class="markdownTableBodyNone">0  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::MaxDetections </td><td class="markdownTableBodyNone">int </td><td class="markdownTableBodyNone">Maximum number of objects to report for detection models </td><td class="markdownTableBodyNone">&gt; 0 </td><td class="markdownTableBodyNone">20  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::MaxDetectionsPerClass </td><td class="markdownTableBodyNone">int </td><td class="markdownTableBodyNone">Maximum number of objects to report for each class for detection models </td><td class="markdownTableBodyNone">&gt; 0 </td><td class="markdownTableBodyNone">100  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::MaxClassesPerDetection </td><td class="markdownTableBodyNone">int </td><td class="markdownTableBodyNone">Maximum number of classes to report for detection models </td><td class="markdownTableBodyNone">&gt; 0 </td><td class="markdownTableBodyNone">30  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::UseRegularNMS </td><td class="markdownTableBodyNone">bool </td><td class="markdownTableBodyNone">Use regular (per-class) NMS algorithm as opposed to global (class-ignoring) NMS algorithm for detection models </td><td class="markdownTableBodyNone">true/false </td><td class="markdownTableBodyNone">true  </td></tr>
 </table>
-<p>InputColorSpace OutputPostprocessType | string | Post-processor type | see below | "None" OutputConfThreshold | double | Confidence threshold | 0..1 | 0.1 OutputNMSThreshold | double | Threshold for non-max suppression | 0..1 | 0.6 OutputTopK | size_t | Number of classes with biggest scores to report for classification models | 0,1... | 0 MaxDetections | int | Maximum number of objects to report for detection models | &gt; 0 | 20 MaxDetectionsPerClass | int | Maximum number of objects to report for each class for detection models | &gt; 0 | 100 MaxClassesPerDetection| int | Maximum number of classes to report for detection models | &gt; 0 | 30 UseRegularNMS | bool | Use regular (per-class) NMS algorithm as opposed to global (class-ignoring) NMS algorithm for detection models | true/false | true</p>
 <p>If you do not specify a runtime parameter, then the value for this parameter will be taken from the model Json configuration file from the local model zoo. If the model Json configuration file also does not specify this parameter, then the default value will be used.</p>
 <p>The following table lists currently available post-processor types.</p>
 <table class="markdownTable">
@@ -445,6 +462,11 @@ Model Parameters Management</h2>
 <td class="markdownTableBodyNone">"PoseDetection" </td><td class="markdownTableBodyNone">Pose detection models </td><td class="markdownTableBodyNone">Person pose detection post-processor for all DeGirum pose detection models  </td></tr>
 </table>
 <p><em>Note: not all post-processors are compatible with all models. Special care should be taken when specifying post-processor type other than "None".</em></p>
+<p>Notes of Input* parameters.</p>
+<p>DG::ModelParamsReadAccess::InputImgFmt parameter is used to tell pre-processor what input frame format to expect. The value of this parameter should match the frame data type you pass to predict() methods. You may change it to match the format of your input frames.</p>
+<p>DG::ModelParamsReadAccess::InputRawDataType parameter is used to tell pre-processor what data element type to expect for raw data frames (InputImgFmt is "RAW"). Again, the value of this parameter should match the frame data element type you pass to predict() methods. You may change it to match the format of your input frames.</p>
+<p>DG::ModelParamsReadAccess::InputImgRotation parameter is used to ask pre-processor to perform input image rotation by certain angle. It is convenient when your input frames are coming from your camera which is mounted on a side or upside down.</p>
+<p>DG::ModelParamsReadAccess::InputColorSpace defines the colorspace (pixel order) which the AI model expects (was trained to). In case when the input image format is "RAW", you should provide raw image frame with correct pixel order corresponding to the input colorspace parameter value. In case when the input image format is "JPEG", the pre-processor will perform the conversion to the proper pixel order when decoding the JPEG image. Usually you do not change this parameter, otherwise the model performance will degrade.</p>
 <h2><a class="anchor" id="ssec_format"></a>
 Format of Data Frames for Image Processing Models</h2>
 <p>The AI Client package supports two formats of the input data frames for image processing models: JPEG images and binary bitmaps, where binary format is used by default and typically set in Json model configuration files for all DeGirum models.</p>
