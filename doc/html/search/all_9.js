@@ -23,5 +23,6 @@ var searchData=
   ['modelparamswriteaccess_86',['ModelParamsWriteAccess',['../classDG_1_1ModelParamsWriteAccess.html',1,'DG::ModelParamsWriteAccess'],['../classDG_1_1ModelParamsWriteAccess.html#a1c5f4cf64d0c6fac259c790a9e68092d',1,'DG::ModelParamsWriteAccess::ModelParamsWriteAccess()']]],
   ['modelparamswriter_87',['ModelParamsWriter',['../namespaceDG.html#a1386bac643ff32870b2bbedc788585d6',1,'DG']]],
   ['modelquery_88',['ModelQuery',['../structDG_1_1ModelQuery.html',1,'DG']]],
-  ['modelzoolistget_89',['modelzooListGet',['../namespaceDG.html#a482a6ce0ec392df3b6f26db70b9b941e',1,'DG']]]
+  ['modelzoolistget_89',['modelzooListGet',['../namespaceDG.html#a482a6ce0ec392df3b6f26db70b9b941e',1,'DG']]],
+  ['modelzoomanage_90',['modelZooManage',['../namespaceDG.html#a8b45c5201f10959906c1fee9cc10b2c5',1,'DG']]]
 ];

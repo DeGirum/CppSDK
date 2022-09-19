@@ -40,7 +40,7 @@ namespace DG
 	const int MIN_COMPATIBLE_PROTOCOL_VERSION = 2;
 
 	/// current client-server protocol version
-	const int CURRENT_PROTOCOL_VERSION = 2;
+	const int CURRENT_PROTOCOL_VERSION = 3;
 
 	/// Runtime agent types
 	enum class RUNTIME_AGENT_TYPES
@@ -49,7 +49,7 @@ namespace DG
 		N2X,				//!< DeGirum nnExpress runtime agent
 		TFLITE,				//!< TF-Lite runtime agent
 		ONNX,				//!< Onnx runtime agent
-		OPENVINO,				//!< OpenVINO runtime agent
+		OPENVINO,			//!< OpenVINO runtime agent
 		DUMMY,				//!< dummy agent (for DeGirum internal use only)
 	};						
 

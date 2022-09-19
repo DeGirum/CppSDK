@@ -59,6 +59,30 @@ namespace DG
 	/// of AIModel and AIModelAsync instances.
 	void modelzooListGet( const std::string &server, std::vector< ModelInfo > &modelzoo_list );
 
+	/// Return host system information dictionary.
+	/// \param[in] server is a string specifying server domain name/IP address and port.
+	/// Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778.
+	json systemInfo( const std::string &server );
+
+	/// AI server tracing facility management
+	/// \param[in] server is a string specifying server domain name/IP address and port.
+	/// Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778.
+	/// \param[in] req - management request
+	/// \return results of management request completion (request-specific)
+	json traceManage( const std::string &server, const json &req );
+
+	/// AI server model zoo management
+	/// \param[in] server is a string specifying server domain name/IP address and port.
+	/// Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778.
+	/// \param[in] req - management request
+	/// \return results of management request completion (request-specific)
+	json modelZooManage( const std::string &server, const json &req );
+
+	/// Send shutdown request to AI server
+	/// [in] server is a string specifying server domain name/IP address and port.
+	/// Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778.
+	void shutdown( const std::string &server );
+
 	/// Model query structure used to search models on AI server which match a set of provided model attributes
 	struct ModelQuery
 	{
@@ -98,6 +122,12 @@ namespace DG
 	/// To obtain valid model name, either modelFind() or modelzooListGet() functions should be used.
 	/// \return JSON object containing model label dictionary
 	json labelDictionary( const std::string &server, const std::string &model_name );
+
+	/// Ping server with an instantaneous command
+	/// \param[in] server is a string specifying server domain name/IP address and port.
+	/// Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778.
+	/// return true if no error occurred during the ping
+	bool serverPing( const std::string &server );
 
 	/// Enumerator showing server status as detected by the below function
 	enum class DetectionStatus

@@ -59,6 +59,54 @@ void DG::modelzooListGet( const std::string &server, std::vector< DG::ModelInfo 
 
 
 //
+// Return host system information dictionary.
+// [in] server is a string specifying server domain name/IP address and port.
+// Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778.
+//
+json DG::systemInfo( const std::string &server )
+{
+	return DG::Client( server ).systemInfo();
+}
+
+
+//
+// AI server tracing facility management
+// [in] server is a string specifying server domain name/IP address and port.
+// Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778.
+// [in] req - management request
+// return results of management request completion (request-specific)
+//
+json DG::traceManage( const std::string &server, const json &req )
+{
+	return DG::Client( server ).traceManage( req );
+}
+
+
+//
+// AI server model zoo management
+// [in] server is a string specifying server domain name/IP address and port.
+// Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778.
+// [in] req - management request
+// return results of management request completion (request-specific)
+//
+json DG::modelZooManage( const std::string &server, const json &req )
+{
+	return DG::Client( server ).modelZooManage( req );
+}
+
+
+//
+// Send shutdown request to AI server
+// [in] server is a string specifying server domain name/IP address and port.
+// Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778.
+//
+void DG::shutdown( const std::string &server )
+{
+	DG::Client( server ).shutdown();
+}
+
+
+//
 // Find a model by name on AI server.
 // [in] server takes a string of server IP address and port.
 // format: "xxx.xxx.xxx.xxx:port", default port is 8778.
@@ -120,11 +168,32 @@ DG::json DG::labelDictionary( const std::string &server, const std::string &mode
 }
 
 
-/// Detect all ORCA servers from a given list of host names
-/// \param[in] source is an IP address in the network, formatted as "xxx.xxx.xxx.xxx[:port]". The port part is optional. If included, all servers
-/// will be scanned on the port.
-///		If omitted, the default port 8778 will be used.
-/// \return Vector of strings containing IPs of ORCA servers on the network.
+//
+// Ping server with an instantaneous command
+// \param[in] server is a string specifying server domain name/IP address and port.
+// Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778.
+// return true if no error occurred during the ping
+//
+bool DG::serverPing( const std::string &server )
+{
+	try
+	{
+		return DG::Client( server ).ping();
+	}
+	catch( ... )
+	{
+		return false;
+	}	
+}
+
+
+//
+// Detect all ORCA servers from a given list of host names
+// \param[in] source is an IP address in the network, formatted as "xxx.xxx.xxx.xxx[:port]". The port part is optional. If included, all servers
+// will be scanned on the port.
+//		If omitted, the default port 8778 will be used.
+// \return Vector of strings containing IPs of ORCA servers on the network.
+//
 static std::vector< std::tuple< std::string, DG::DetectionStatus > > detectServers( const std::set< std::string >& source )
 {
 	const static int BATCH_SIZE = 255;
@@ -171,11 +240,13 @@ static std::vector< std::tuple< std::string, DG::DetectionStatus > > detectServe
 }
 
 
-/// Constructs a hostname string from a pattern
-/// \param[in] pattern is a pattern suitable for snprintf
-/// \param[in] numeral is a the number to insert
-/// \param[in] port is a port number to append to the end of the hostname. Can be empty to skip the port
-/// \return hostname made by snprintf
+//
+// Constructs a hostname string from a pattern
+// \param[in] pattern is a pattern suitable for snprintf
+// \param[in] numeral is a the number to insert
+// \param[in] port is a port number to append to the end of the hostname. Can be empty to skip the port
+// \return hostname made by snprintf
+//
 static std::string hostnameFromPattern( const std::string& pattern, int numeral, const std::string& port )
 {
 	int raw_size = std::snprintf( nullptr, 0, pattern.c_str(), numeral ) + 1;  // Extra space for '\0'
@@ -188,13 +259,15 @@ static std::string hostnameFromPattern( const std::string& pattern, int numeral,
 }
 
 
-/// Detect all ORCA servers on a given subnet
-/// \param[in] root_ip is an IP address in the network, formatted as "xxx.xxx.xxx.xxx[:port]". The port part is optional. If included, all servers
-/// will be scanned on the port.
-///		If omitted, the default port 8778 will be used.
-/// \param[in] subnet_mask specifies the subnet with the associated IP, formatted as "xxx.xxx.xxx.xxx", where "xxx" is either 255 for fixed bits or 0
-/// for variable bits.
-/// \return Vector of strings containing IPs of ORCA servers on the network.
+//
+// Detect all ORCA servers on a given subnet
+// \param[in] root_ip is an IP address in the network, formatted as "xxx.xxx.xxx.xxx[:port]". The port part is optional. If included, all servers
+// will be scanned on the port.
+//		If omitted, the default port 8778 will be used.
+// \param[in] subnet_mask specifies the subnet with the associated IP, formatted as "xxx.xxx.xxx.xxx", where "xxx" is either 255 for fixed bits or 0
+// for variable bits.
+// \return Vector of strings containing IPs of ORCA servers on the network.
+//
 std::vector< std::tuple< std::string, DG::DetectionStatus > > DG::detectSubnetServers( const std::string& root_ip, const std::string& subnet_mask )
 {
 	asio::error_code error_code;
@@ -234,14 +307,16 @@ std::vector< std::tuple< std::string, DG::DetectionStatus > > DG::detectSubnetSe
 }
 
 
-/// Detect all ORCA servers with hostnames generated from a prefix and a range
-/// \param[in] prefix is a string prefix, formatted as "nnnn[:port]". This will be used to generate two sets of hostnames, one with the pattern "nnnn#", and one "nnnn###". For example,
-/// the prefix "farm", range_start 1, range_end 2 and numeral_width 3 will scan the hosts "farm1", "farm001", "farm2", "farm002". Setting numeral_width to 0 disables pattern generation,
-/// and will just scan the prefix. The port part is optional. If included, all servers will be scanned on the port. If omitted, the default port 8778 will be used.
-/// \param[in] range_start is the lowest numeral to be applied to the pattern
-/// \param[in] range_end is the highest numeral to be applied to the pattern, inclusive
-/// \param[in] numeral_width is the width of the numeral in the padded set. This is optional, set to 3 by default. Set to 0 to disable pattern generation.
-/// \return Vector of strings containing hostnames of ORCA servers on the network.
+//
+// Detect all ORCA servers with hostnames generated from a prefix and a range
+// \param[in] prefix is a string prefix, formatted as "nnnn[:port]". This will be used to generate two sets of hostnames, one with the pattern "nnnn#", and one "nnnn###". For example,
+// the prefix "farm", range_start 1, range_end 2 and numeral_width 3 will scan the hosts "farm1", "farm001", "farm2", "farm002". Setting numeral_width to 0 disables pattern generation,
+// and will just scan the prefix. The port part is optional. If included, all servers will be scanned on the port. If omitted, the default port 8778 will be used.
+// \param[in] range_start is the lowest numeral to be applied to the pattern
+// \param[in] range_end is the highest numeral to be applied to the pattern, inclusive
+// \param[in] numeral_width is the width of the numeral in the padded set. This is optional, set to 3 by default. Set to 0 to disable pattern generation.
+// \return Vector of strings containing hostnames of ORCA servers on the network.
+//
 std::vector< std::tuple< std::string, DG::DetectionStatus > > DG::detectHostnameServers( const std::string& prefix, const int range_start, const int range_end, const int numeral_width )
 {
 	std::string base_prefix;

@@ -72,6 +72,9 @@ namespace DG
 			constexpr const char* SLEEP			= "sleep";
 			constexpr const char* SHUTDOWN		= "shutdown";
 			constexpr const char* LABEL_DICT	= "label_dictionary";
+			constexpr const char* SYSTEM_INFO	= "system_info";
+			constexpr const char* TRACE_MANAGE	= "trace_manage";
+			constexpr const char* ZOO_MANAGE	= "zoo_manage";
 		}  // namespace commands
 
 
