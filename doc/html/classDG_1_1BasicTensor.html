@@ -128,6 +128,11 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="classDG_1_1BasicTensor.html">BasicTensor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#a827383222e45bcd30c127c57141a63d8">clone</a> () const</td></tr>
 <tr class="memdesc:a827383222e45bcd30c127c57141a63d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create and return exact copy of itself. <br /></td></tr>
 <tr class="separator:a827383222e45bcd30c127c57141a63d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe6aaffc9f9f1dcaf50855105b3d690f"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:abe6aaffc9f9f1dcaf50855105b3d690f"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classDG_1_1BasicTensor.html">BasicTensor</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#abe6aaffc9f9f1dcaf50855105b3d690f">convert</a> () const</td></tr>
+<tr class="separator:abe6aaffc9f9f1dcaf50855105b3d690f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace328612a9186b78d2fdff4206fbc821"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classDG_1_1BasicTensor.html">BasicTensor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#ace328612a9186b78d2fdff4206fbc821">convert</a> (DGType to_type) const</td></tr>
+<tr class="separator:ace328612a9186b78d2fdff4206fbc821"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad926dc575ebbc72106eb8b40a8b526f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classDG_1_1BasicTensor.html">BasicTensor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#ad926dc575ebbc72106eb8b40a8b526f2">copy</a> () const</td></tr>
 <tr class="separator:ad926dc575ebbc72106eb8b40a8b526f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62f174c899f37b0fa8a4e5ee7213e5b7"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
@@ -669,6 +674,73 @@ template&lt;typename T &gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="abe6aaffc9f9f1dcaf50855105b3d690f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe6aaffc9f9f1dcaf50855105b3d690f">&#9670;&nbsp;</a></span>convert() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classDG_1_1BasicTensor.html">BasicTensor</a> DG::BasicTensor::convert </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Convert tensor to new element type with casting and copying data </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">output</td><td>data type T </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>new owning tensor of type T </dd></dl>
+
+</div>
+</div>
+<a id="ace328612a9186b78d2fdff4206fbc821"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace328612a9186b78d2fdff4206fbc821">&#9670;&nbsp;</a></span>convert() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classDG_1_1BasicTensor.html">BasicTensor</a> DG::BasicTensor::convert </td>
+          <td>(</td>
+          <td class="paramtype">DGType&#160;</td>
+          <td class="paramname"><em>to_type</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Convert tensor to new element type with casting and copying data </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">to_type</td><td>- new element type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>new owning tensor </dd></dl>
 
 </div>
 </div>

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['_7eaimodel_154',['~AIModel',['../classDG_1_1AIModel.html#a96999a2543c918042cbbd33551413da5',1,'DG::AIModel']]],
-  ['_7eaimodelasync_155',['~AIModelAsync',['../classDG_1_1AIModelAsync.html#a01e5f514945867edae2ce91a1687f683',1,'DG::AIModelAsync']]],
-  ['_7ebasictensor_156',['~BasicTensor',['../classDG_1_1BasicTensor.html#a8dcb3edead181853801867e88345d0ec',1,'DG::BasicTensor']]]
+  ['_7eaimodel_160',['~AIModel',['../classDG_1_1AIModel.html#a96999a2543c918042cbbd33551413da5',1,'DG::AIModel']]],
+  ['_7eaimodelasync_161',['~AIModelAsync',['../classDG_1_1AIModelAsync.html#a01e5f514945867edae2ce91a1687f683',1,'DG::AIModelAsync']]],
+  ['_7ebasictensor_162',['~BasicTensor',['../classDG_1_1BasicTensor.html#a8dcb3edead181853801867e88345d0ec',1,'DG::BasicTensor']]]
 ];

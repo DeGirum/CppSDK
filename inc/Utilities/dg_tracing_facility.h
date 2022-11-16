@@ -188,6 +188,13 @@ namespace DGTrace
 	/// to avoid problems with non-deterministic initialization sequence of static objects.
 	struct TraceGroupsRegistry
 	{
+		/// Trace group descriptor
+		struct TraceGroupDesc
+		{
+			TraceLevel_t *m_groupAddress;	//!< address of trace group variable
+			const char *m_groupName;		//!< trace group symbolic name
+		};
+
 		/// Register trace group. Used in DG_TRACE_GROUP_DEF() macro.
 		/// Called during global variables initialization
 		/// \param[in] groupAddress - address of trace group variable
@@ -195,15 +202,39 @@ namespace DGTrace
 		/// \returns group trace level as it is read from configuration file or lvlNone if it is not in configuration file
 		TraceLevel_t registerTraceGroup( TraceLevel_t *groupAddress, const char *groupName )
 		{
-			m_groupsRegistry[ m_groupsCount ].m_groupAddress = groupAddress;
-			m_groupsRegistry[ m_groupsCount ].m_groupName = groupName;
-			applyConfig( m_groupsCount );
-			m_groupsCount++;
+			if( m_groupsCount < MAX_GROUPS )
+			{
+				m_groupsRegistry[ m_groupsCount ].m_groupAddress = groupAddress;
+				m_groupsRegistry[ m_groupsCount ].m_groupName = groupName;
+				applyConfig( m_groupsCount );
+				m_groupsCount++;
+			}
 			return *groupAddress;
 		}
 
-		/// Return # of registered trace groups
-		inline size_t size() const { return m_groupsCount; }
+		/// Return the list of registered trace groups: pointer to the beginning and size
+		std::pair< const TraceGroupDesc*, size_t > traceGroupsGet() const
+		{
+			return { m_groupsRegistry, m_groupsCount };
+		}
+
+		/// Apply tracing levels to registered trace groups
+		/// \param[in] config - trace configuration list of pairs: trace group name and its new tracing level;
+		/// trace group name should be one of returned by traceGroupsGet();
+		/// pass empty list to disable all groups
+		void traceGroupsApply( const std::vector< std::pair< std::string, TraceLevel_t > > &config )
+		{
+			for( size_t gi = 0; gi < m_groupsCount; gi++ )
+			{
+				auto c = std::find_if( config.begin(), config.end(), [&]( const auto &v ) {
+					return _stricmp( m_groupsRegistry[ gi ].m_groupName, v.first.c_str() ) == 0;
+				 } );
+
+				// group not in config -> disable it, otherwise set trace level from config
+				*( m_groupsRegistry[ gi ].m_groupAddress ) = c == config.end() ? lvlNone : c->second;
+			}
+		}
+
 
 		/// Print trace header into trace stream
 		void printHeader( std::ostream &out_stream )
@@ -211,17 +242,28 @@ namespace DGTrace
 			out_stream << "----------------------------------------\n";
 			out_stream << "Started: " << DG::TimeHelper::curStringTime() << '\n';
 
-			if( m_configsCount != -1 )
-			{
-				out_stream << "Configuration file: " << DG_TRC_CONFIG_FILE << "\n\n";
-				for( size_t ci = 0; ci < m_configsCount; ci++ )
-					out_stream << m_groupsConfig[ ci ].m_groupName << " = " << (
-						m_groupsConfig[ ci ].m_groupLevel == lvlBasic ? "Basic" :
-						m_groupsConfig[ ci ].m_groupLevel == lvlDetailed ? "Detailed" :
-						m_groupsConfig[ ci ].m_groupLevel == lvlFull? "Full" : "None") << '\n';
-			}
+			out_stream << "Enabled trace groups:\n";
+			bool nothing_enabled = true;
+			for( size_t ci = 0; ci < m_groupsCount; ci++ )
+				if( *(m_groupsRegistry[ ci ].m_groupAddress) != lvlNone )
+				{
+					nothing_enabled = false;
+					out_stream << "  " << std::setw( 32 ) << std::left << m_groupsRegistry[ ci ].m_groupName
+						<< " = " << (
+						*(m_groupsRegistry[ ci ].m_groupAddress) == lvlBasic ? "Basic" :
+						*(m_groupsRegistry[ ci ].m_groupAddress) == lvlDetailed ? "Detailed" :
+						*(m_groupsRegistry[ ci ].m_groupAddress) == lvlFull? "Full" : "None") << '\n';
+				}
+			if( nothing_enabled )
+				out_stream << "  <none>\n\n";
 			else
-				out_stream << "No configuration file loaded" << '\n';
+				out_stream << "\n";
+
+			if( m_TraceStatisticsEnable )
+				out_stream << "Trace statistics enabled\n";
+
+			if( m_TraceImmediateFlush )
+				out_stream << "Immediate flush enabled (NOTE: this option degrades performance)\n";
 
 			out_stream << "\n\nLine format:\n";
 			out_stream << "[<Timestamp, us>:<delta, us] <thread ID> [<level>] <type> <name>: <message> <-- <duration, usec>\n";
@@ -234,13 +276,6 @@ namespace DGTrace
 		bool m_TraceImmediateFlush;			//!< flush trace immediately, do not buffer
 
 	private:
-
-		/// Trace group descriptor
-		struct TraceGroupDesc
-		{
-			TraceLevel_t *m_groupAddress;	//!< address of trace group variable
-			const char *m_groupName;		//!< trace group symbolic name
-		};
 
 		enum { MAX_GROUPS = 1000 };			//!< max. # of trace groups
 		enum { MAX_GR_NAME = 64 };			//!< max. trace group name length
@@ -402,7 +437,8 @@ namespace DGTrace
 			m_isOwnStream( false ),
 			m_outStream( out_stream ),
 			m_poison( false ),
-			m_do_flush( false )
+			m_do_flush( false ),
+			m_do_restart( false )
 		{
 			if( out_stream == nullptr )
 			{
@@ -526,19 +562,40 @@ namespace DGTrace
 				traceDo( type, name, level, nullptr );
 		}
 
-		// Get path to DG temporary directory
-		inline static std::string getTempPath();
-
-		/// Get trace file while preserving previous trace file content
-		inline static std::string getTraceFileName();
 
 		/// Flush trace to file
-		void flush()
+		/// \param[in] do_wait - wait for flush completion
+		void flush( bool do_wait = false )
 		{
 			ensureThreadRuns();
 			m_do_flush = true;
-			m_thread_cv.notify_one();
+			{
+				std::unique_lock< std::mutex > lk( m_thread_mutex );
+				m_thread_cv.notify_one();  // notify under mutex to guarantee not loosing event
+			}
+			while( do_wait && m_do_flush )
+				std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
 		}
+
+
+		/// Restart trace file, backing up current trace file.
+		/// \param[in] do_wait - wait for restart completion
+		void restart( bool do_wait = false )
+		{
+			ensureThreadRuns();
+			m_do_restart = true;
+			{
+				std::unique_lock< std::mutex > lk( m_thread_mutex );
+				m_thread_cv.notify_one();  // notify under mutex to guarantee not loosing event
+			}
+			while( do_wait && m_do_restart )
+				std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
+		}
+
+		/// Read and return current trace file contents
+		/// \param[in] offset - start read offset in file
+		/// \param[in] size - size of data to read, -1 to read whole file
+		inline std::string readTraceFile( size_t offset = 0, size_t size = -1 );
 
 	private:
 
@@ -680,9 +737,11 @@ namespace DGTrace
 		std::mutex m_thread_mutex;				//!< worker thread mutex
 		std::atomic_bool m_poison;				//!< poison pill: flag to worker thread to exit
 		std::atomic_bool m_do_flush;			//!< flush flag
+		std::atomic_bool m_do_restart;			//!< restart flag
 
 		std::ostream *m_outStream;				//!< pointer to active output stream object to print trace into
 		std::ofstream m_outFileStream;			//!< file stream object to print trace into
+		std::string m_outFileName;				//!< filename of that stream
 		bool m_isOwnStream;						//!< 'is stream object owned by tracing facility' flag
 
 		/// trace statistics
@@ -888,7 +947,8 @@ namespace DGTrace
 				}
 				if( me->m_do_flush )
 				{
-					me->m_outStream->flush();
+					if( me->m_outStream->good() )
+						me->m_outStream->flush();
 					me->m_do_flush = false;
 				}
 				return std::make_tuple( lri, lspp );
@@ -913,9 +973,9 @@ namespace DGTrace
 				const size_t rp_pool = me->m_stringPool.m_BufRP;
 				const size_t wp = me->m_traceBuf.m_BufWP;			// then trace buffer
 				const size_t rp = me->m_traceBuf.m_BufRP;
-				if( wp > rp )
+				if( wp > rp || me->m_do_restart || me->m_do_flush )
 				{
-					me->ownStreamCheckOpen(); // Open file stream if it is owned by facility and not opened yet
+					me->ownStreamCheckOpen(); // open file stream if it is owned by facility and not opened yet or restart it if requested
 
 					size_t first_non_processed_trace;
 					size_t first_non_processed_string;
@@ -931,33 +991,45 @@ namespace DGTrace
 					break;
 			}
 
-			// print statistics
-			if( g_TraceGroupsRegistry.m_TraceStatisticsEnable )
-			{
-				me->m_outFileStream << "\n--------------Statistics--------------\n\n";
-				me->m_outFileStream << std::setprecision( 1 ) << std::fixed;
-				for( const auto v : me->m_trace_stats )
-				{
-					me->m_outFileStream << v.first << " = ["
-						<< 1e-3 * v.second.min_duration_ns << " < "
-						<< ( 1e-3 * v.second.total_duration_ns ) / v.second.count << "/"
-						<< v.second.count << " < "
-						<< 1e-3 * v.second.max_duration_ns << "] usec\n";
-				}
-			}
-
 			me->ownStreamClose();	// close file stream if it is owned by facility and not closed yet
 		}
-		
+
+		/// Print statistics into stream
+		void printStatistics()
+		{
+			if( m_outStream->good() )
+			{
+				// print statistics
+				if( g_TraceGroupsRegistry.m_TraceStatisticsEnable )
+				{
+					*m_outStream << "\n--------------Statistics--------------\n\n";
+					*m_outStream << std::setprecision( 1 ) << std::fixed;
+					for( const auto &v : m_trace_stats )
+					{
+						*m_outStream << v.first << " = [" << 1e-3 * v.second.min_duration_ns << " < "
+										<< ( 1e-3 * v.second.total_duration_ns ) / v.second.count << "/" << v.second.count << " < "
+										<< 1e-3 * v.second.max_duration_ns << "] usec\n";
+					}
+					m_trace_stats.clear();
+				}
+			}
+		}
+
 		/// Open file stream if it is owned by facility and not opened yet
 		inline void ownStreamCheckOpen();
 
-		/// Close file stream if it is owned by facility and not closed yet
+		/// Close file stream if it is owned by facility and not closed yet, printing statistics and footer
 		void ownStreamClose()
 		{
+			printStatistics();
+
 			if( m_outFileStream.is_open() )
 			{
-				m_outFileStream << "\n--------------end of trace--------------\n";
+				if( m_outFileStream.good() )
+				{
+					m_outFileStream << "\nFinished: " << DG::TimeHelper::curStringTime() << '\n';
+					m_outFileStream << "\n--------------end of trace--------------\n";
+				}
 				m_outFileStream.close();
 			}
 		}
@@ -1062,34 +1134,68 @@ namespace DGTrace
 
 #include "dg_file_utilities.h"
 
-
+//
 // Get path to DG temporary directory
+//
 inline std::string DGTrace::TraceGroupsRegistry::getTempPath()
 {
 	return DG::FileHelper::temp_dg_dir();
 }
 
-// Get trace file while preserving previous trace file content
-inline std::string DGTrace::TracingFacility::getTraceFileName()
-{
-	return DG::FileHelper::notUsedFileInDGTempDirBackupAndGet( DG_TRC_TRACE_FILE );
-}
 
+//
 // Open file stream if it is owned by facility and not opened yet
+//
 inline void DGTrace::TracingFacility::ownStreamCheckOpen()
 {
-	if( m_isOwnStream && !m_outFileStream.is_open() )
+	if( m_isOwnStream && ( !m_outFileStream.is_open() || m_do_restart ) )
 	{
-		const std::string trace_file_name = getTraceFileName();
+		// get full trace file path while preserving previous trace file content into .bak file
+		m_outFileName = DG::FileHelper::notUsedFileInDGTempDirBackupAndGet( DG_TRC_TRACE_FILE );
 
-		m_outFileStream.open( trace_file_name.c_str(), std::ios_base::out | std::ios_base::trunc );
+		if( m_outFileStream.is_open() )
+			ownStreamClose();
+
+		m_outFileStream.open( m_outFileName.c_str(), std::ios_base::out | std::ios_base::trunc );
 
 		if( m_outFileStream.good() )
 		{
 			DG::FileHelper::lockFileStreamUnderlyingFileHandle( m_outFileStream );
 			g_TraceGroupsRegistry.printHeader( m_outFileStream );
 		}
+
+		m_do_restart = false;
 	}
 }
+
+
+//
+// Read and return current trace file contents
+// [in] offset - start read offset in file
+// [in] size - size of data to read, -1 to read whole file
+//
+inline std::string DGTrace::TracingFacility::readTraceFile( size_t offset, size_t size )
+{
+	flush( true );
+	if( m_isOwnStream && m_outFileStream.is_open() )
+	{
+		std::ifstream fin( m_outFileName.c_str(), std::ios::in | std::ios::binary );
+		if( fin.good() )
+		{
+			if( offset > 0 )
+				fin.seekg( offset );
+
+			if( size == -1 )
+				return std::string( std::istreambuf_iterator< char >( fin ), std::istreambuf_iterator< char >() );
+
+			std::string ret( size, '\0' );
+			fin.read( ret.data(), size );
+			ret.resize( fin.gcount() );
+			return ret;
+		}
+	}	
+	return "";
+}
+
 
 #endif	// DG_TRACING_FACILITY_H
