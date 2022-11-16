@@ -54,6 +54,19 @@ namespace DG
 		/// \param[out] modelzoo_list - array of models in model zoos
 		void modelzooListGet( std::vector<DG::ModelInfo> &modelzoo_list );
 
+		/// Return host system information dictionary
+		json systemInfo();
+
+		/// AI server tracing facility management
+		/// \param[in] req - management request
+		/// \return results of management request completion (request-specific)
+		json traceManage( const json &req );
+
+		/// AI server model zoo management
+		/// \param[in] req - management request
+		/// \return results of management request completion (request-specific)
+		json modelZooManage( const json &req );
+
 		/// Ping server with an instantaneous command
 		/// \return true if no error occurred during the ping
 		bool ping();
@@ -64,7 +77,7 @@ namespace DG
 		/// \param[in] additional_model_parameters - additional model parameters in Json format compatible with DG Json model configuration
 		void openStream( const std::string &model_name, size_t frame_queue_depth, const json &additional_model_parameters = {} );
 
-		/// 'shutdown' op handler: shutdown local servers
+		/// Send shutdown request to AI server
 		void shutdown();
 
 		/// Get model label dictionary

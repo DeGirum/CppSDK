@@ -139,7 +139,7 @@ namespace DG
 	}
 
 
-	// 'shutdown' op handler: shutdown local servers
+	// Send shutdown request to AI server
 	void Client::shutdown()
 	{
 		DG_TRC_BLOCK( AIClient, shutdown, DGTrace::lvlBasic );
@@ -169,7 +169,7 @@ namespace DG
 		json response;
 
 		transmitCommand( "labelDictionary", request, response );
-		return response[ "label_dictionary" ];
+		return response[ main_protocol::commands::LABEL_DICT ];
 	}
 
 
@@ -212,8 +212,8 @@ namespace DG
 	}
 
 
-	/// Get list of models in all model zoos of all active servers
-	/// \param[out] modelzoo_list - array of models in model zoos
+	// Get list of models in all model zoos of all active servers
+	// [out] modelzoo_list - array of models in model zoos
 	void Client::modelzooListGet( std::vector<DG::ModelInfo> &modelzoo_list )
 	{
 		DG_TRC_BLOCK( AIClient, modelzooListGet, DGTrace::lvlBasic );
@@ -222,10 +222,10 @@ namespace DG
 
 		if( transmitCommand( "modelzooListGet", request, response ) )
 		{
-			for( size_t i = 0; i < response[ "modelzoo" ].size(); i++ )
+			for( size_t i = 0; i < response[ main_protocol::commands::MODEL_ZOO ].size(); i++ )
 			{
 				DG::ModelInfo mi;
-				const auto &node = response[ "modelzoo" ][ i ];
+				const auto &node = response[ main_protocol::commands::MODEL_ZOO ][ i ];
 				mi.id = node[ "id" ].get< size_t >();
 				mi.name = node[ "name" ].get< std::string >();
 				mi.W = node[ "W" ].get< int >();
@@ -248,8 +248,50 @@ namespace DG
 	}
 
 
-	/// Ping server with an instantaneous command
-	/// \return true if no error occurred during the ping
+	// Return host system information dictionary
+	json Client::systemInfo()
+	{
+		DG_TRC_BLOCK( AIClient, systemInfo, DGTrace::lvlBasic );
+		const json request = json( { { "op", main_protocol::commands::SYSTEM_INFO } } );
+		json response;
+
+		if( transmitCommand( "systemInfo", request, response ) )
+			return response[ main_protocol::commands::SYSTEM_INFO ];
+		return {};
+	}
+
+
+	// AI server tracing facility management
+	// [in] req - management request
+	// return results of management request completion (request-specific)
+	json Client::traceManage( const json &req )
+	{
+		DG_TRC_BLOCK( AIClient, traceManage, DGTrace::lvlBasic );
+		const json request = json( { { "op", main_protocol::commands::TRACE_MANAGE }, { "args", req } } );
+		json response;
+
+		if( transmitCommand( "traceManage", request, response ) )
+			return response[ main_protocol::commands::TRACE_MANAGE ];
+		return {};
+	}
+
+	// AI server model zoo management
+	// [in] req - management request
+	// return results of management request completion (request-specific)
+	json Client::modelZooManage( const json &req )
+	{
+		DG_TRC_BLOCK( AIClient, modelZooManage, DGTrace::lvlBasic );
+		const json request = json( { { "op", main_protocol::commands::ZOO_MANAGE }, { "args", req } } );
+		json response;
+
+		if( transmitCommand( "modelZooManage", request, response ) )
+			return response[ main_protocol::commands::ZOO_MANAGE ];
+		return {};
+	}
+
+
+	// Ping server with an instantaneous command
+	// return true if no error occurred during the ping
 	bool Client::ping()
 	{
 		DG_TRC_BLOCK( AIClient, ping, DGTrace::lvlBasic );

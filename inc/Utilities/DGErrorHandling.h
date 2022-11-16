@@ -832,7 +832,7 @@ inline std::string DG::ErrorHandling::location2str( const char *file, const char
 	const std::string cropped_file = std::filesystem::path( file ).filename().string();
 
 	std::string cropped_func = std::string( func );
-	cropped_func = cropped_func.substr( 0, cropped_func.find_first_of( "(" ) );		// cutoff arglist
+	cropped_func = cropped_func.substr( 0, cropped_func.find_last_of( "(" ) );		// cutoff arglist
 	const auto last_space_pos = cropped_func.find_last_of( " " );
 	if( last_space_pos != std::string::npos )
 		cropped_func = cropped_func.substr( cropped_func.find_last_of( " " ) + 1 );	// cutoff type

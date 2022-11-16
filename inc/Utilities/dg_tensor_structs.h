@@ -3,7 +3,7 @@
 /// \brief DG tensor container classes
 ///
 /// This file contains declaration of tensor container classes
-/// 
+///
 
 // Copyright DeGirum Corporation 2021
 // All rights reserved
@@ -27,7 +27,7 @@
 #include <numeric>
 #include <typeinfo>
 #include "Utilities/DGErrorHandling.h"
-#include "Utilities/DGType.h"
+#include "Utilities/TypeList.h"
 #include "Utilities/dg_math_utilities.h"
 #include "Utilities/dg_raii_helpers.h"
 #include "Utilities/nameof.hpp"
@@ -59,7 +59,7 @@ namespace DG
 				double m_scale;			//!< scale factor
 				int64_t m_zero;			//!< zero offset
 			};
-								
+
 			/// Default constructor
 			quant_params_t(): m_quant_axis( -1 ), m_quant_params( { { 1.0, 0 } } ){}
 
@@ -88,7 +88,7 @@ namespace DG
 				{
 					m_quant_params[ qi ].m_scale = scales[ qi ];
 					m_quant_params[ qi ].m_zero = zeros[ qi ];
-				}				
+				}
 			}
 
 			/// Get quantization axis (-1 means global quantization)
@@ -370,6 +370,46 @@ namespace DG
 		}
 
 
+		/// Convert tensor to new element type with casting and copying data
+		/// \tparam output data type T
+		/// \return new owning tensor of type T
+		template< typename T > BasicTensor convert() const
+		{
+			DG::BasicTensor ret( id(), name(), shape(), DGTypeOf< T >::value, quantParams() );
+			switch( dataTypeGet() )
+			{
+			#define _( type_id, ctype, width )                                          \
+				case type_id:                                                           \
+					std::copy_n( data< ctype >(), linearSizeGet(), ret.data< T >() );   \
+					break;
+
+				DG_TYPE_LIST
+			#undef _
+				case DG_UNDEFINED:
+					return ret;
+			}
+			return ret;
+		}
+
+		/// Convert tensor to new element type with casting and copying data
+		/// \param[in] to_type - new element type
+		/// \return new owning tensor
+		BasicTensor convert( DGType to_type ) const
+		{
+			switch( to_type )
+			{
+			#define _( type_id, ctype, width ) \
+				case type_id:                  \
+					return convert< ctype >();
+
+				DG_TYPE_LIST
+			#undef _
+				case DG_UNDEFINED:
+					return {};
+			}
+			return {};
+		}
+
 		/// Deallocate tensor data and clear tensor
 		void dealloc()
 		{
@@ -453,7 +493,7 @@ namespace DG
 				dim = m_shape[ q_axis ];
 				if( q_axis < m_shape.size() - 1 )
 					denom = std::accumulate( m_shape.begin() + q_axis + 1, m_shape.end(), 1, std::multiplies< size_t >() );
-			}			
+			}
 
 			for( size_t li = 0; li < m_linear_size; li++ )
 			{
@@ -474,10 +514,10 @@ namespace DG
 		//
 		// Accessors
 		//
-	
+
 		///  Get id
 		int32_t id() const { return m_id; }
-	
+
 		/// Get name
 		const std::string& name() const { return m_name; }
 
@@ -701,7 +741,7 @@ namespace DG
 				const size_t buf_sz = m_linear_size * m_el_size;
 				ret.m_linear_buffer = new char[ buf_sz ];
 				ret.m_external = false;
-				std::memcpy( ret.m_linear_buffer, m_linear_buffer, buf_sz );	
+				std::memcpy( ret.m_linear_buffer, m_linear_buffer, buf_sz );
 			}
 			return ret;
 		}
