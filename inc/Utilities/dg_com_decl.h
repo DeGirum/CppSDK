@@ -20,16 +20,6 @@
 //  - do not include other header files
 
 
-/// Cross-platform weak linkage attribute
-#if defined( _WIN32 )
-	#define WEAK_LINKAGE __declspec( selectany )
-#elif defined( __GNUG__ )
-	#define WEAK_LINKAGE __attribute__(( weak ))
-#else
-	#define WEAK_LINKAGE
-#endif
-
-
 /// Cross-platform signature of the current function
 #ifndef FUNCTION_NAME
 	#if defined( _WIN32 ) && !defined( LINUX_CMAKE )

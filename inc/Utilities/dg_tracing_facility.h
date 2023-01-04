@@ -270,6 +270,8 @@ namespace DGTrace
 			out_stream << "* in first position means timing of this trace point is distorted by forced file flush\n\n";
 		}
 
+		/// Get path to DG temporary directory
+		inline static std::string getTempPath();
 
 		// tracing facility configuration parameters 
 		bool m_TraceStatisticsEnable;		//!< enable collection and reporting of trace statistics
@@ -295,9 +297,6 @@ namespace DGTrace
 			m_groupsConfig[ MAX_GROUPS ];	//!< array of all loaded group config. records
 		size_t m_configsCount;				//!< # of config. records
 
-
-		/// Get path to DG temporary directory
-		inline static std::string getTempPath();
 
 		/// Load configuration from configuration file
 		void loadConfig()
@@ -906,7 +905,7 @@ namespace DGTrace
 					{
 						char sbuf[ DG_LOG_TRACE_BUF_SIZE ];
 
-						const bool need_message = rec.m_message != nullptr;
+						const bool need_message = message != nullptr;
 						const bool need_duration = rec.m_type == TraceType::Stop && indent_level >= 0;
 
 						int printf_ret = snprintf( sbuf, sizeof sbuf,
@@ -921,9 +920,7 @@ namespace DGTrace
 							rec.m_type == TraceType::Start ? "/" : (rec.m_type == TraceType::Stop ? "\\" : "-"),
 							rec.m_traceName,
 							need_message ? ": " : "",
-							need_message ?
-							((rec.m_Flags & TraceRec::InStringPool) ?
-								me->m_stringPool.get( rec.m_message ).c_str() : rec.m_message) : ""
+							need_message ? message : ""
 						);
 
 						if( printf_ret > 0 && printf_ret < sizeof sbuf - 1 && need_duration )
@@ -1139,7 +1136,7 @@ namespace DGTrace
 //
 inline std::string DGTrace::TraceGroupsRegistry::getTempPath()
 {
-	return DG::FileHelper::temp_dg_dir();
+	return DG::FileHelper::appdata_dg_dir() + "traces/";
 }
 
 
@@ -1151,7 +1148,7 @@ inline void DGTrace::TracingFacility::ownStreamCheckOpen()
 	if( m_isOwnStream && ( !m_outFileStream.is_open() || m_do_restart ) )
 	{
 		// get full trace file path while preserving previous trace file content into .bak file
-		m_outFileName = DG::FileHelper::notUsedFileInDGTempDirBackupAndGet( DG_TRC_TRACE_FILE );
+		m_outFileName = DG::FileHelper::notUsedFileInDirBackupAndGet( DGTrace::TraceGroupsRegistry::getTempPath(), DG_TRC_TRACE_FILE );
 
 		if( m_outFileStream.is_open() )
 			ownStreamClose();

@@ -37,10 +37,10 @@ namespace DG
 	constexpr const char *PROTOCOL_VERSION_TAG = "VERSION";
 
 	/// minimum compatible client-server protocol version
-	const int MIN_COMPATIBLE_PROTOCOL_VERSION = 2;
+	const int MIN_COMPATIBLE_PROTOCOL_VERSION = 4;
 
 	/// current client-server protocol version
-	const int CURRENT_PROTOCOL_VERSION = 3;
+	const int CURRENT_PROTOCOL_VERSION = 4;
 
 	/// Runtime agent types
 	enum class RUNTIME_AGENT_TYPES

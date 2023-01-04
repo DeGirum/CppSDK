@@ -255,7 +255,7 @@ inline bool DG::FileLogger::clear()
 	if( m_is_initialized && m_file.is_open() )
 		m_file.close();
 
-	m_fname = DG::FileHelper::notUsedFileInDGTempDirBackupAndGet( m_fname_suffix );
+	m_fname = DG::FileHelper::notUsedFileInDirBackupAndGet( DG::FileHelper::appdata_dg_dir() + "traces/", m_fname_suffix );
 	m_file.open( m_fname, std::ios_base::out | std::ios_base::trunc );
 	m_is_initialized = true;
 	const bool ret = m_file.is_open() && m_file.good();

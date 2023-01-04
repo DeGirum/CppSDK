@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
 /// \file  dg_model_parameters.h
-/// \brief DG centralized handling of Json model parameters 
+/// \brief DG centralized handling of Json model parameters
 ///
 /// This file implements classes for centralized handling of Json model parameters.
 /// Each AI model in DG framework is accompanied with Json configuration file,
@@ -9,7 +9,7 @@
 ///    ModelParamsReadAccess - read-only model parameters accessor
 ///    ModelParamsWriteAccess - read/write model parameters accessor
 ///    ModelParams - model parameters collection with access type defined by the template parameter
-/// 
+///
 
 // Copyright DeGirum Corporation 2021
 // All rights reserved
@@ -35,7 +35,7 @@ namespace DG
 
 	/// The most current version of Json model configuration, supported by this version of software.
 	/// Increment it each time you change any parameter definition or add/remove any parameter
-	const int MODEL_PARAMS_CURRENT_VERSION = 3;
+	const int MODEL_PARAMS_CURRENT_VERSION = 5;
 
 	/// The minimum compatible version of Json model configuration, still supported by this version of software.
 	/// Increase it when the software is modified such a way, that it stops supporting older Json model configuration versions.
@@ -154,14 +154,14 @@ namespace DG
 
 		/// Access to underlying Json array
 		/// \return constant non-owning reference to Json array with model configuration
-		operator const json&()
+		operator const json&() const
 		{
 			return m_cfg_ro;
 		}
 
 		/// Access to underlying Json array as string
 		/// \return Json text with model configuration
-		operator std::string()
+		operator std::string() const
 		{
 			return m_cfg_ro.dump();
 		}
@@ -181,7 +181,7 @@ namespace DG
 			if( config_version < MODEL_PARAMS_MIN_COMPATIBLE_VERSION )
 			{
 				error_msg = "The version " + std::to_string( config_version ) + " of '" + model_name +
-					"' model parameter collection is TOO OLD and is not supported by the current version of DeGirum framework software. " + 
+					"' model parameter collection is TOO OLD and is not supported by the current version of DeGirum framework software. " +
 					"The model version should be at least " + std::to_string( MODEL_PARAMS_MIN_COMPATIBLE_VERSION ) +
 					". Please upgrade your model zoo";
 			}
@@ -299,7 +299,7 @@ namespace DG
 			ModelParamsReadAccess patch( config );
 
 //! @cond Doxygen_Suppress
-//! 
+//!
 			#define _( name, section, c_type, default_val, mandatory, runtime, visible, fallback ) \
 				if( runtime && patch.name##_exist() ) name##_set( patch.name() );
 			DG_MODEL_PARAMS_LIST
@@ -375,6 +375,7 @@ namespace DG
 		ModelParams( const char *json_text = "{}" ) : Base( m_cfg )
 		{
 			m_cfg = DG_JSON_PARSE( json_text );
+			DG_ERROR_TRUE( m_cfg.is_object() ) << "ModelParams must be initialized with string containing json object";
 		}
 
 		/// Constructor. Creates model parameter collection by parsing Json text in std::string
@@ -382,6 +383,7 @@ namespace DG
 		explicit ModelParams( const std::string &json_text ) : Base( m_cfg )
 		{
 			m_cfg = DG_JSON_PARSE( json_text );
+			DG_ERROR_TRUE( m_cfg.is_object() ) << "ModelParams must be initialized with string containing json object";
 		}
 
 		/// Constructor. Creates model parameter collection from given Json array

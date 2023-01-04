@@ -23,6 +23,9 @@
 	_( InputRawDataType,		SECT_PRE_PROCESS,		std::string,				"DG_UINT8",		false,	true,	true,	InputImgRawDataType	) \
 	_( InputImgRotation,		SECT_PRE_PROCESS,		int,						0,				false,	true,	false,	None	) \
 	_( InputColorSpace,			SECT_PRE_PROCESS,		std::string,				"RGB",			false,	true,	true,	None	) \
+	_( InputResizeMethod,		SECT_PRE_PROCESS,		std::string,				"bilinear",		false,	false,	true,	None	) \
+	_( InputPadMethod,			SECT_PRE_PROCESS,		std::string,				"letterbox",	false,	false,	true,	None	) \
+	_( ImageBackend,			SECT_PRE_PROCESS,		std::string,				"auto",			false,	false,	true,	None	) \
 	\
 	_( OutputPostprocessType,	SECT_POST_PROCESS,		std::string,				"None",			false,	true,	true,	None	) \
 	_( OutputConfThreshold,		SECT_POST_PROCESS,		double,						0.1,			false,	true,	true,	None	) \
