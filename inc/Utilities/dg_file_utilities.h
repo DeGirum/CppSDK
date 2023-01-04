@@ -12,22 +12,25 @@
 #define DG_FILE_UTILITIES_H_
 
 #ifdef _MSC_VER
-#include <stdlib.h>
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+	#include <stdlib.h>
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
 #else
-#include <string.h>
-#include <sys/file.h>
-#include <unistd.h>
-#ifdef __APPLE__
-#include <libgen.h>
-#include <unistd.h>
-#include <mach-o/dyld.h>
-#else
-extern char *program_invocation_short_name;
-extern char *program_invocation_name;
+	#include <string.h>
+	#include <sys/file.h>
+	#include <sys/types.h>
+	#include <unistd.h>
+	#include <pwd.h>
+	#ifdef __APPLE__
+		#include <libgen.h>
+		#include <mach-o/dyld.h>
+	#else
+		extern char *program_invocation_short_name;
+		extern char *program_invocation_name;
+	#endif
 #endif
-#endif
+
+
 #include <sys/stat.h>
 #include <algorithm>
 #include <filesystem>
@@ -120,6 +123,20 @@ public:
 		return -1;
 	}
 
+	/// Return the size in bytes of directory contents
+	/// \param[in] directory - directory path
+	/// \return size of all files located inside directory
+	static size_t dir_size( const std::string &directory )
+	{
+		size_t size{ 0 };
+		for( const auto &entry : std::filesystem::recursive_directory_iterator( directory ) )
+		{
+			if( entry.is_regular_file() && !entry.is_symlink() )
+				size += entry.file_size();
+		}
+		return size;
+	}
+
 	/// Check if given path is absolute path
 	/// \return true if it is absolute
 	static bool is_abs_path( const std::string &path )
@@ -148,8 +165,8 @@ public:
 		const bool path_ends_with_slash = path.back() == '/';
 #endif
 		if( !path_ends_with_slash )
-			return path + '/';
-		return path;
+			return std::filesystem::path( path + '/' ).generic_string();
+		return std::filesystem::path( path ).generic_string();
 	}
 
 	/// Prepend given input path with given root path, if the input path is relative,
@@ -207,30 +224,74 @@ public:
 		path_split( fullpath, path_ret, name_ret, nullptr );
 	}
 
-	/// Get path to DeGirum-specific temporary directory (with trailing slash).
-	/// If no such directory existed before, it will be created.
-	/// For Linux it is /var/tmp/DeGirum
-	/// For Windows it is %TEMP%\DeGirum
-	static std::string temp_dg_dir()
+	/// Check for existence of given directory and create it with write access rights if it does not exist
+	/// \param[in] dir_name - directory name to create
+	/// \return true if directory was creates
+	static bool dir_create_if_not_exist( const std::string &dir_name )
 	{
-		std::string temp_path;
-#ifdef _MSC_VER
+		if( !dir_exist( dir_name ) )
 		{
-			char tpath[ _MAX_PATH ];
-			GetTempPathA( sizeof tpath, tpath );
-			temp_path = std::string( tpath ) + "DeGirum\\";
-		}
-#else  // GCC
-		temp_path = std::string( std::getenv( "HOME" ) ) + "/tmp/DeGirum/";
-#endif
-		if( !dir_exist( temp_path ) )
-		{
-			std::filesystem::create_directories( temp_path );
+			std::filesystem::create_directories( dir_name );
 			std::filesystem::permissions(
-				temp_path,
+				dir_name,
 				std::filesystem::perms::owner_all | std::filesystem::perms::group_all | std::filesystem::perms::others_all );
+			return true;
 		}
-		return temp_path;
+		return false;
+	}
+
+	/// Get path to user home directory (with trailing slash).
+	static std::string home_dir()
+	{
+#if defined( WIN32 ) || defined( _WIN32 )
+		const char *home_path = std::getenv( "USERPROFILE" );
+
+#elif defined( __linux__ ) || defined( __APPLE__ )
+		const char *home_path = std::getenv( "HOME" );
+		if( home_path == nullptr )
+		{
+			struct passwd *pwd = getpwuid( getuid() );
+			if( pwd != nullptr )
+				home_path = pwd->pw_dir;
+		}
+#endif
+		if( home_path == nullptr )
+			return "";
+
+		return path_with_slash( home_path );
+	}
+
+	/// Get path to DeGirum-specific application data directory: the directory which applications can use to write data to
+	/// (with trailing slash).
+	/// If no such directory existed before, it will be created.
+	/// For Linux it is $HOME/.local/share/DeGirum
+	/// For Windows it is %APPDATA%\DeGirum
+	/// For MacOS it is $HOME/Library/Application Support/DeGirum
+	static std::string appdata_dg_dir()
+	{
+		auto appdata_path{ std::filesystem::temp_directory_path() / "DeGirum" };  // temp path is used as a fallback
+
+#if defined( WIN32 ) || defined( _WIN32 )
+		{
+			const char *profile_path = std::getenv( "APPDATA" );
+			if( profile_path != nullptr )
+				appdata_path = std::filesystem::path( profile_path ) / "DeGirum";
+		}
+#elif defined( __linux__ ) || defined( __APPLE__ )
+		{
+			std::filesystem::path home_path( home_dir() );
+			if( !home_path.empty() )
+#if defined( __linux__ )
+				appdata_path = home_path / ".local/share/DeGirum";
+#elif defined( __APPLE__ )
+				appdata_path = home_path / "Library/Application Support/DeGirum";
+#endif
+		}
+#endif
+
+		const std::string ret = appdata_path.generic_string();
+		dir_create_if_not_exist( ret );
+		return path_with_slash( ret );
 	}
 
 	/// Set current working directory to current executable location directory
@@ -280,24 +341,25 @@ public:
 	}
 
 	/// Get a path to a file with file name beginning with the current process name,
-	/// ending with provided file name suffix, located in DG-specific temporary directory,
+	/// ending with provided file name suffix, located in given directory,
 	/// which is not currently opened by any other process.
 	/// If such file existed before, rename it to .bak
 	/// Full filename will be in the following format:
-	/// [DG temp dir]/[executable name].[number].[file suffix]
+	/// [dir]/[executable name].[number].[file suffix]
 	///
+	/// \param[in] dir - directory to deal with
 	/// \param[in] file_suffix - desired file name suffix with extension
 	/// \return full path to such file
 	/// NOTE: implementation is not protected against race conditions!
-	static std::string notUsedFileInDGTempDirBackupAndGet( const std::string &file_suffix )
+	static std::string notUsedFileInDirBackupAndGet( const std::string &dir, const std::string &file_suffix )
 	{
-		const std::string temp_path = temp_dg_dir();
 		const std::string suffix_stem = std::filesystem::path( file_suffix ).stem().string();      // name w/o extension
 		const std::string suffix_ext = std::filesystem::path( file_suffix ).extension().string();  // extension with dot
 		std::string mod_name;
 		module_path( nullptr, &mod_name, false /*use current module*/ );
-		std::string path_prefix = temp_path + mod_name + ".";
+		std::string path_prefix =  path_with_slash( dir ) + mod_name + ".";
 
+		dir_create_if_not_exist( dir );
 		for( int idx = 0; idx < 100 /*we need some limit anyway*/; idx++ )
 		{
 			const std::string try_filename_no_ext = path_prefix + ( idx == 0 ? "" : std::to_string( idx ) + "." ) + suffix_stem;
