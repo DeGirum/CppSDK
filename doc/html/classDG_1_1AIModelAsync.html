@@ -89,8 +89,8 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aeafdb2c1dd459f57a9425e5f85102c95"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1AIModelAsync.html#aeafdb2c1dd459f57a9425e5f85102c95">AIModelAsync</a> (const std::string &amp;server, const std::string &amp;model_name, <a class="el" href="classDG_1_1AIModelAsync.html#adfa9cbec9241ac0e413ddc647444dad2">callback_t</a> callback, const <a class="el" href="classDG_1_1ModelParamsReadAccess.html">ModelParamsReadAccess</a> &amp;model_params=<a class="el" href="classDG_1_1ModelParamsReadAccess.html">ModelParamsReadAccess</a>({}), size_t frame_queue_depth=8)</td></tr>
-<tr class="separator:aeafdb2c1dd459f57a9425e5f85102c95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0e5105262dee19f53f5166ddc7c3acc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1AIModelAsync.html#aa0e5105262dee19f53f5166ddc7c3acc">AIModelAsync</a> (const std::string &amp;server, const std::string &amp;model_name, <a class="el" href="classDG_1_1AIModelAsync.html#adfa9cbec9241ac0e413ddc647444dad2">callback_t</a> callback, const <a class="el" href="classDG_1_1ModelParamsReadAccess.html">ModelParamsReadAccess</a> &amp;model_params=<a class="el" href="classDG_1_1ModelParamsReadAccess.html">ModelParamsReadAccess</a>({}), size_t frame_queue_depth=8, size_t connection_timeout_ms=10000, size_t inference_timeout_ms=180000)</td></tr>
+<tr class="separator:aa0e5105262dee19f53f5166ddc7c3acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25c1ada23af9b591a45171e9a795092b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1AIModelAsync.html#a25c1ada23af9b591a45171e9a795092b">lastError</a> () const</td></tr>
 <tr class="separator:a25c1ada23af9b591a45171e9a795092b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4262c7337d952d2543f8265791c0d535"><td class="memItemLeft" align="right" valign="top"><a id="a4262c7337d952d2543f8265791c0d535"></a>
@@ -128,8 +128,8 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aeafdb2c1dd459f57a9425e5f85102c95"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeafdb2c1dd459f57a9425e5f85102c95">&#9670;&nbsp;</a></span>AIModelAsync()</h2>
+<a id="aa0e5105262dee19f53f5166ddc7c3acc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0e5105262dee19f53f5166ddc7c3acc">&#9670;&nbsp;</a></span>AIModelAsync()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -165,7 +165,19 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>frame_queue_depth</em> = <code>8</code>&#160;</td>
+          <td class="paramname"><em>frame_queue_depth</em> = <code>8</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>connection_timeout_ms</em> = <code>10000</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>inference_timeout_ms</em> = <code>180000</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -186,6 +198,8 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
     <tr><td class="paramdir">[in]</td><td class="paramname">callback</td><td>is user callback functional, which will be called asynchronously from the main execution thread as soon as prediction result is ready. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">model_params</td><td>is runtime parameter collection, which defines the model runtime behavior. This is optional parameter: if not specified, then default runtime parameters (as defined in the model zoo) are used. ModelParamsWriter class instance can be used to conveniently define runtime parameters. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">frame_queue_depth</td><td>is the depth of the internal frame queue. If <a class="el" href="classDG_1_1AIModelAsync.html#a1b12692b190b36e7e0e366f0bb59fdef">predict()</a> methods are invoked too often and the number of non-processed (aka "outstanding") frames exceeds this parameter, the consecutive call to any <a class="el" href="classDG_1_1AIModelAsync.html#a1b12692b190b36e7e0e366f0bb59fdef">predict()</a> method will be blocked until the number of outstanding frames in the queue becomes smaller than the queue depth thus allowing to post one more frame. This is optional parameter: by default it is set to 8 frames. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">connection_timeout_ms</td><td>is the AI server connection timeout in milliseconds. This is optional parameter: by default it is set to 10 sec. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">inference_timeout_ms</td><td>is the AI server inference timeout in milliseconds. This is optional parameter: by default it is set to 180 sec. </td></tr>
   </table>
   </dd>
 </dl>

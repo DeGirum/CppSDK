@@ -42,8 +42,9 @@ namespace DG
 
 		/// Constructor. Sets up active server using address.
 		/// \param[in] server_address - server address
-		/// \param[in] timeout_s - connection timeout in seconds
-		Client( const std::string &server_address, size_t timeout_s = 10 );
+		/// \param[in] connection_timeout_ms - connection timeout in milliseconds
+		/// \param[in] inference_timeout_ms - AI server inference timeout in milliseconds
+		Client( const std::string &server_address, size_t connection_timeout_ms = 10000, size_t inference_timeout_ms = 180000 );
 
 		Client( const Client &s ) = delete;
 
@@ -168,7 +169,8 @@ namespace DG
 		size_t m_frame_queue_depth;								//!< depth of frame queue
 		std::queue< std::string > m_frame_info_queue;			//!< frame info queue
 		std::string m_last_error;								//!< last prediction error (or empty)
-		size_t m_timeout_s;										//!< socket connection timeout, in seconds
+		size_t m_connection_timeout_ms;							//!< socket connection timeout, in milliseconds
+		size_t m_inference_timeout_ms;							//!< AI server inference timeout, in milliseconds
 	};
 }  // namespace DG
 

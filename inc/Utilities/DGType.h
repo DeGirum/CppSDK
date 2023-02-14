@@ -56,6 +56,11 @@ typedef enum DGType
 #ifdef __cplusplus
 namespace DG
 {
+	namespace DGTypeStrings {
+	#define _(X, ctype, bitw) static constexpr const char* s##X = #X;
+		DG_TYPE_LIST
+	#undef _
+	}
 #endif
 
 	/// Return bit width of given type ID

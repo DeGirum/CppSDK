@@ -364,9 +364,14 @@ std::vector< std::tuple< std::string, DG::DetectionStatus > > DG::detectHostname
 // format: "xxx.xxx.xxx.xxx:port", default port is 8778.
 // [in] model_name is an input and should contain the model name.
 // [in] model_params is runtime parameters, which define model runtime behavior (optional)
+// [in] connection_timeout_ms is the AI server connection timeout in milliseconds (optional)
 //
-DG::AIModel::AIModel( const std::string &server, const std::string &model_name, const ModelParamsReadAccess &model_params ):
-	m_client( new DG::Client( server ) )
+DG::AIModel::AIModel(
+	const std::string &server,
+	const std::string &model_name,
+	const ModelParamsReadAccess &model_params,
+	size_t connection_timeout_ms ) :
+	m_client( new DG::Client( server, connection_timeout_ms ) )
 {
 	m_client->openStream( model_name, 0, model_params.jsonGet() );
 }
@@ -401,14 +406,18 @@ void DG::AIModel::predict( std::vector< std::vector< char > > &data, json &json_
 // [in] callback is user callback functional, which will be called as soon as prediction result is ready
 // [in] model_params is runtime parameters, which define model runtime behavior (optional) 
 // [in] frame_queue_depth is the depth of internal frame queue (optional)
+// [in] connection_timeout_ms is the AI server connection timeout in milliseconds (optional)
+// [in] inference_timeout_ms is the AI server inference timeout in milliseconds (optional)
 //
 DG::AIModelAsync::AIModelAsync(
 	const std::string &server,
 	const std::string &model_name,
 	callback_t callback,
 	const ModelParamsReadAccess &model_params,
-	size_t frame_queue_depth ) :
-	m_client( new DG::Client( server ) )
+	size_t frame_queue_depth,
+	size_t connection_timeout_ms,
+	size_t inference_timeout_ms ) :
+	m_client( new DG::Client( server, connection_timeout_ms, inference_timeout_ms ) )
 {
 	m_client->openStream( model_name, frame_queue_depth, model_params.jsonGet() );
 	m_client->resultObserve( callback );
