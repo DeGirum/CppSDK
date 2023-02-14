@@ -185,8 +185,13 @@ namespace DG
 		/// This is optional parameter: if not specified, then default runtime parameters
 		/// (as defined in the model zoo) are used.
 		/// ModelParamsWriter class instance can be used to conveniently define runtime parameters.
-		explicit AIModel( const std::string &server, const std::string& model_name,
-			const ModelParamsReadAccess &model_params = ModelParamsReadAccess( {} ) );
+		/// \param[in] connection_timeout_ms is the AI server connection timeout in milliseconds.
+		/// This is optional parameter: by default it is set to 10 sec.
+		explicit AIModel(
+			const std::string &server,
+			const std::string &model_name,
+			const ModelParamsReadAccess &model_params = ModelParamsReadAccess( {} ),
+			size_t connection_timeout_ms = 10 );
 
 		// Deleted copy constructor and copy assignment operator
 		AIModel( const AIModel & ) = delete;
@@ -254,12 +259,19 @@ namespace DG
 		/// consecutive call to any predict() method will be blocked until the number of outstanding frames in the
 		/// queue becomes smaller than the queue depth thus allowing to post one more frame.
 		/// This is optional parameter: by default it is set to 8 frames.
+		/// \param[in] connection_timeout_ms is the AI server connection timeout in milliseconds.
+		/// This is optional parameter: by default it is set to 10 sec.
+		/// \param[in] inference_timeout_ms is the AI server inference timeout in milliseconds.
+		/// This is optional parameter: by default it is set to 180 sec.
 		explicit AIModelAsync(
 			const std::string &server,
 			const std::string &model_name,
 			callback_t callback,
 			const ModelParamsReadAccess &model_params = ModelParamsReadAccess( {} ),
-			size_t frame_queue_depth = 8 );
+			size_t frame_queue_depth = 8,
+			size_t connection_timeout_ms = 10000,
+			size_t inference_timeout_ms = 180000
+			);
 
 		// Deleted copy constructor and copy assignment operator
 		AIModelAsync( const AIModelAsync & ) = delete;

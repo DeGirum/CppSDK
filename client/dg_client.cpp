@@ -86,9 +86,10 @@ static void readFileContent( const char *file_name, std::vector< char > &data )
 namespace DG 
 {
 	/// Constructor. Sets up active server using address.
-	/// \param[in] server_address - server address
-	/// \param[in] timeout_s - connection timeout in seconds
-	Client::Client( const std::string &server_address, size_t timeout_s ) :
+	/// [in] server_address - server address
+	/// [in] connection_timeout_ms - connection timeout in milliseconds
+	/// [in] inference_timeout_ms - AI server inference timeout in milliseconds
+	Client::Client( const std::string &server_address, size_t connection_timeout_ms, size_t inference_timeout_ms ) :
 		m_command_socket( m_io_context ),
 		m_stream_socket( m_io_context ),
 		m_async_result_callback( nullptr ),
@@ -97,7 +98,8 @@ namespace DG
 		m_async_stop( false ),
 		m_read_size( 0 ),
 		m_frame_queue_depth( 0 ),
-		m_timeout_s( timeout_s )
+		m_connection_timeout_ms( connection_timeout_ms ),
+		m_inference_timeout_ms( inference_timeout_ms )
 	{
 		DG_TRC_BLOCK( AIClient, constructor, DGTrace::lvlBasic );
 		const std::string::size_type	delimiter = server_address.find( ":" );
@@ -115,7 +117,7 @@ namespace DG
 
 		{
 			DG_TRC_BLOCK( AIClient, constructor::socket_connect, DGTrace::lvlBasic );
-			m_command_socket = main_protocol::socket_connect( m_io_context, m_server_address.ip, m_server_address.port, m_timeout_s );
+			m_command_socket = main_protocol::socket_connect( m_io_context, m_server_address.ip, m_server_address.port, m_connection_timeout_ms / 1000 );
 		}
 	}
 
@@ -151,7 +153,7 @@ namespace DG
 		// establish new client connection and send final empty packet to push server out of accept loop
 		{
 			DG_TRC_BLOCK( AIClient, shutdown::socket_connect, DGTrace::lvlBasic );
-			auto temp_socket = main_protocol::socket_connect( m_io_context, m_server_address.ip, m_server_address.port, m_timeout_s );
+			auto temp_socket = main_protocol::socket_connect( m_io_context, m_server_address.ip, m_server_address.port, m_connection_timeout_ms / 1000 );
 			main_protocol::write( temp_socket, "", 0 );
 			main_protocol::socket_close( temp_socket );
 		}
@@ -190,7 +192,7 @@ namespace DG
 
 		{
 			DG_TRC_BLOCK( AIClient, openStream::socket_connect, DGTrace::lvlBasic );
-			m_stream_socket = main_protocol::socket_connect( m_io_context, m_server_address.ip, m_server_address.port, m_timeout_s );
+			m_stream_socket = main_protocol::socket_connect( m_io_context, m_server_address.ip, m_server_address.port, m_connection_timeout_ms / 1000 );
 		}
 		main_protocol::write( m_stream_socket, request.data(), request.size() );
 	}
@@ -205,7 +207,7 @@ namespace DG
 			// send empty packet to indicate end-of-stream;
 			// we use async write to avoid long timeouts when writing to closed socket
 			main_protocol::write_async( m_stream_socket, "", 0 );
-			main_protocol::run_async( m_io_context, 1000 /*timeout ms*/ );
+			main_protocol::run_async( m_io_context, m_connection_timeout_ms );
 
 			main_protocol::socket_close( m_stream_socket );
 		}
@@ -274,6 +276,7 @@ namespace DG
 			return response[ main_protocol::commands::TRACE_MANAGE ];
 		return {};
 	}
+
 
 	// AI server model zoo management
 	// [in] req - management request
@@ -366,13 +369,35 @@ namespace DG
 		{
 			std::unique_lock< std::mutex > lock( m_communication_mutex );
 
+			// check if error was detected
+			auto check_last_error = [ & ]() {				
+				return m_async_stop && !m_last_error.empty();
+			};
+
 			// If error occurred then return: no need to send frame
-			if( m_async_stop && !m_last_error.empty() )
+			if( check_last_error() )
 				return;
 
 			// Wait until number of outstanding frames becomes less than frame queue depth
 			if( m_async_outstanding_results >= m_frame_queue_depth )
-				m_waiter.wait( lock, [ & ] { return m_async_outstanding_results < m_frame_queue_depth || m_async_stop; } );
+			{
+				if( !m_waiter.wait_for( lock, std::chrono::milliseconds( m_inference_timeout_ms ), [ & ] {
+					return m_async_outstanding_results < m_frame_queue_depth || m_async_stop;
+				} ) )
+				{
+					DG_ERROR(
+						DG_FORMAT(
+							"Timeout waiting for inference response from server '"
+							<< m_command_socket.remote_endpoint().address().to_string() << ":"
+							<< m_command_socket.remote_endpoint().port() ),
+						ErrTimeout );
+				}
+
+			}
+
+			// Check for error one more time: it may happen while waiting in the previous statement
+			if( check_last_error() )
+				return;
 
 			// Put frame info into the queue first
 			m_frame_info_queue.push( frame_info );
@@ -405,7 +430,7 @@ namespace DG
 						// Loop until stop is requested AND then all outstanding results are received
 						while( !m_async_stop || m_async_outstanding_results > 0 )
 						{
-							// Run ASIO executor
+							// Run ASIO executor indefinitely until result is received or server disconnects
 							main_protocol::run_async( m_io_context );
 
 							// Wait until a restart is signaled
@@ -415,12 +440,17 @@ namespace DG
 							}
 						}
 					}
-					catch( ... )	// this thread does not have any parent code to report exceptions,
-									// so we just catch all of them and ignore;
-									// in normal cases there should be no exceptions in this thread,
-									// but in abnormal cases (internal bugs) we don't want to crash
-									// client application by not catching exceptions in this thread (see SD-613)
-					{}
+					catch( std::exception &e )
+					{
+						// signal abort in case of communication error
+						{
+							std::lock_guard< std::mutex > lock( m_communication_mutex );
+							m_last_error = e.what();
+							m_async_outstanding_results = 0;
+							m_async_stop = true;
+						}
+						m_waiter.notify_all();  // notify main thread to stop waiting
+					}
 				} );
 		}
 		else

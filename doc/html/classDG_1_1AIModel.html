@@ -83,8 +83,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7e44aabc646d845e9783488838d6d088"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1AIModel.html#a7e44aabc646d845e9783488838d6d088">AIModel</a> (const std::string &amp;server, const std::string &amp;model_name, const <a class="el" href="classDG_1_1ModelParamsReadAccess.html">ModelParamsReadAccess</a> &amp;model_params=<a class="el" href="classDG_1_1ModelParamsReadAccess.html">ModelParamsReadAccess</a>({}))</td></tr>
-<tr class="separator:a7e44aabc646d845e9783488838d6d088"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac04674fe3f3216173c234cddd744929b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1AIModel.html#ac04674fe3f3216173c234cddd744929b">AIModel</a> (const std::string &amp;server, const std::string &amp;model_name, const <a class="el" href="classDG_1_1ModelParamsReadAccess.html">ModelParamsReadAccess</a> &amp;model_params=<a class="el" href="classDG_1_1ModelParamsReadAccess.html">ModelParamsReadAccess</a>({}), size_t connection_timeout_ms=10)</td></tr>
+<tr class="separator:ac04674fe3f3216173c234cddd744929b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7a35ec0ba3e9e4fa2312718ba959c86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1AIModel.html#ad7a35ec0ba3e9e4fa2312718ba959c86">predict</a> (std::vector&lt; std::vector&lt; char &gt; &gt; &amp;data, <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> &amp;json_response)</td></tr>
 <tr class="separator:ad7a35ec0ba3e9e4fa2312718ba959c86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96999a2543c918042cbbd33551413da5"><td class="memItemLeft" align="right" valign="top"><a id="a96999a2543c918042cbbd33551413da5"></a>
@@ -98,8 +98,8 @@ Public Member Functions</h2></td></tr>
 <p>On construction this class performs connection to AI server, selection of AI model, and setting model run-time parameters.</p>
 <p>Once constructed, it can be used to perform sequential AI inference by invoking <a class="el" href="classDG_1_1AIModel.html#ad7a35ec0ba3e9e4fa2312718ba959c86">predict()</a> method. The <a class="el" href="classDG_1_1AIModel.html#ad7a35ec0ba3e9e4fa2312718ba959c86">predict()</a> methods accept the input frame data in various formats and return the inference results. These are blocking methods, i.e. they return execution only when the inference of an input frame is complete. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a7e44aabc646d845e9783488838d6d088"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e44aabc646d845e9783488838d6d088">&#9670;&nbsp;</a></span>AIModel()</h2>
+<a id="ac04674fe3f3216173c234cddd744929b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac04674fe3f3216173c234cddd744929b">&#9670;&nbsp;</a></span>AIModel()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -123,7 +123,13 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="classDG_1_1ModelParamsReadAccess.html">ModelParamsReadAccess</a> &amp;&#160;</td>
-          <td class="paramname"><em>model_params</em> = <code><a class="el" href="classDG_1_1ModelParamsReadAccess.html">ModelParamsReadAccess</a>({})</code>&#160;</td>
+          <td class="paramname"><em>model_params</em> = <code><a class="el" href="classDG_1_1ModelParamsReadAccess.html">ModelParamsReadAccess</a>({})</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>connection_timeout_ms</em> = <code>10</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -142,6 +148,7 @@ Public Member Functions</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">server</td><td>is a string specifying server domain name/IP address and port. Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">model_name</td><td>specifies the AI model to be used for inference. To obtain valid model name, either <a class="el" href="namespaceDG.html#ae6fb2ad5460b7160220feb74635845a1">modelFind()</a> or <a class="el" href="namespaceDG.html#a482a6ce0ec392df3b6f26db70b9b941e">modelzooListGet()</a> functions should be used. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">model_params</td><td>is runtime parameter collection, which defines the model runtime behavior. This is optional parameter: if not specified, then default runtime parameters (as defined in the model zoo) are used. ModelParamsWriter class instance can be used to conveniently define runtime parameters. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">connection_timeout_ms</td><td>is the AI server connection timeout in milliseconds. This is optional parameter: by default it is set to 10 sec. </td></tr>
   </table>
   </dd>
 </dl>
