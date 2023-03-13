@@ -347,6 +347,32 @@ Format of Inference Results</h2>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">"connect" </td><td class="markdownTableBodyNone">list of adjacent landmarks indices </td><td class="markdownTableBodyNone">Json array of integers  </td></tr>
 </table>
+<p>For hand detection types each detected object is represented by the following Json object:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Json Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">"score" </td><td class="markdownTableBodyNone">Probability of detected hand </td><td class="markdownTableBodyNone">floating point  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">"handedness" </td><td class="markdownTableBodyNone">Probability of right hand </td><td class="markdownTableBodyNone">floating point  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">"landmarks" </td><td class="markdownTableBodyNone">hand description landmarks </td><td class="markdownTableBodyNone">array of landmark Json objects  </td></tr>
+</table>
+<p>The following is the structure of hand description landmark Json object:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Json Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">"label" </td><td class="markdownTableBodyNone">Classified object class label </td><td class="markdownTableBodyNone">string  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">"category_id" </td><td class="markdownTableBodyNone">Classified object class index </td><td class="markdownTableBodyNone">integer  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">"landmark" </td><td class="markdownTableBodyNone">landmark point </td><td class="markdownTableBodyNone">three-element Json array [x, y, z]  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">"world_landmark" </td><td class="markdownTableBodyNone">metric world landmark point </td><td class="markdownTableBodyNone">three-element Json array [x, y, z]  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">"connect" </td><td class="markdownTableBodyNone">list of adjacent landmarks indices </td><td class="markdownTableBodyNone">Json array of integers  </td></tr>
+</table>
 <p>When you specify post-processing type as "None" (see section <a class="el" href="index.html#ssec_params">Model Parameters Management</a>) then the inference result Json array contains network output tensors. Each element of that array corresponds to one tensor. Each tensor is represented by the following Json object:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -431,41 +457,43 @@ Model Parameters Management</h2>
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Parameter Name </th><th class="markdownTableHeadNone">Type </th><th class="markdownTableHeadNone">Access </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Possible Values </th><th class="markdownTableHeadNone">Default Value  </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::MeasureTime </td><td class="markdownTableBodyNone">bool </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Enable inference time measurements </td><td class="markdownTableBodyNone">true/false </td><td class="markdownTableBodyNone">false  </td></tr>
+<td class="markdownTableBodyNone"><code>CloudToken</code> </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Cloud API access token </td><td class="markdownTableBodyNone">Valid cloud API access token </td><td class="markdownTableBodyNone">""  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::InputImgFmt </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Input frame format: JPEG or raw binary </td><td class="markdownTableBodyNone">"JPEG", "RAW" </td><td class="markdownTableBodyNone">"JPEG"  </td></tr>
+<td class="markdownTableBodyNone"><code>EagerBatchSize</code> </td><td class="markdownTableBodyNone">size_t </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">The size of the batch to be used by device scheduler when inferencing this model. The batch is the number of consecutive frames before this model is switched to another model during batch predict. </td><td class="markdownTableBodyNone">1..80 </td><td class="markdownTableBodyNone">8  </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::InputRawDataType </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Data type for raw binary frame format: byte of 32-bit float </td><td class="markdownTableBodyNone">"DG_UINT8", "DG_FLT" </td><td class="markdownTableBodyNone">"DG_UINT8"  </td></tr>
+<td class="markdownTableBodyNone"><code>InputImgFmt</code> </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Input frame format: JPEG or raw binary </td><td class="markdownTableBodyNone">"JPEG", "RAW" </td><td class="markdownTableBodyNone">"JPEG"  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::InputImgRotation </td><td class="markdownTableBodyNone">int </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Input image rotation angle in degrees, clockwise </td><td class="markdownTableBodyNone">0, 90, 180, 270 </td><td class="markdownTableBodyNone">0  </td></tr>
+<td class="markdownTableBodyNone"><code>InputRawDataType</code> </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Data type for raw binary frame format: byte of 32-bit float </td><td class="markdownTableBodyNone">"DG_UINT8", "DG_FLT" </td><td class="markdownTableBodyNone">"DG_UINT8"  </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::InputColorSpace </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Input image colorspace (sequence of colors in C dimension) </td><td class="markdownTableBodyNone">"RGB", "BGR" </td><td class="markdownTableBodyNone">"RGB"  </td></tr>
+<td class="markdownTableBodyNone"><code>InputImgRotation</code> </td><td class="markdownTableBodyNone">int </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Input image rotation angle in degrees, clockwise </td><td class="markdownTableBodyNone">0, 90, 180, 270 </td><td class="markdownTableBodyNone">0  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::InputResizeMethod </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/O </td><td class="markdownTableBodyNone">Interpolation algorithm used for image resizing during model training </td><td class="markdownTableBodyNone">"nearest", "bilinear", "area", "bicubic", "lanczos" </td><td class="markdownTableBodyNone">"bilinear"  </td></tr>
+<td class="markdownTableBodyNone"><code>InputColorSpace</code> </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Input image colorspace (sequence of colors in C dimension) </td><td class="markdownTableBodyNone">"RGB", "BGR" </td><td class="markdownTableBodyNone">"RGB"  </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::InputPadMethod </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/O </td><td class="markdownTableBodyNone">How input image is padded when resized during model training </td><td class="markdownTableBodyNone">"stretch", "letterbox" </td><td class="markdownTableBodyNone">"letterbox"  </td></tr>
+<td class="markdownTableBodyNone"><code>InputResizeMethod</code> </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/O </td><td class="markdownTableBodyNone">Interpolation algorithm used for image resizing during model training </td><td class="markdownTableBodyNone">"nearest", "bilinear", "area", "bicubic", "lanczos" </td><td class="markdownTableBodyNone">"bilinear"  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::InputCropPercentage </td><td class="markdownTableBodyNone">double </td><td class="markdownTableBodyNone">R/O </td><td class="markdownTableBodyNone">How much input image was cropped during model training </td><td class="markdownTableBodyNone">0..1 </td><td class="markdownTableBodyNone">1  </td></tr>
+<td class="markdownTableBodyNone"><code>InputPadMethod</code> </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/O </td><td class="markdownTableBodyNone">How input image is padded when resized during model training </td><td class="markdownTableBodyNone">"stretch", "letterbox", "crop-first", "crop-last" </td><td class="markdownTableBodyNone">"letterbox"  </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::ImageBackend </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/O </td><td class="markdownTableBodyNone">Graphical package used for image processing during model training </td><td class="markdownTableBodyNone">"pil", "opencv", "auto" </td><td class="markdownTableBodyNone">"auto"  </td></tr>
+<td class="markdownTableBodyNone"><code>InputCropPercentage</code> </td><td class="markdownTableBodyNone">double </td><td class="markdownTableBodyNone">R/O </td><td class="markdownTableBodyNone">How much input image was cropped during model training </td><td class="markdownTableBodyNone">0..1 </td><td class="markdownTableBodyNone">1  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::OutputPostprocessType </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Post-processor type </td><td class="markdownTableBodyNone">see below </td><td class="markdownTableBodyNone">"None"  </td></tr>
+<td class="markdownTableBodyNone"><code>ImageBackend</code> </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/O </td><td class="markdownTableBodyNone">Graphical package used for image processing during model training </td><td class="markdownTableBodyNone">"pil", "opencv", "auto" </td><td class="markdownTableBodyNone">"auto"  </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::OutputConfThreshold </td><td class="markdownTableBodyNone">double </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Confidence threshold </td><td class="markdownTableBodyNone">0..1 </td><td class="markdownTableBodyNone">0.1  </td></tr>
+<td class="markdownTableBodyNone"><code>MaxDetections</code> </td><td class="markdownTableBodyNone">int </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Maximum number of objects to report for detection models </td><td class="markdownTableBodyNone">&gt; 0 </td><td class="markdownTableBodyNone">20  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::OutputNMSThreshold </td><td class="markdownTableBodyNone">double </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Threshold for non-max suppression </td><td class="markdownTableBodyNone">0..1 </td><td class="markdownTableBodyNone">0.6  </td></tr>
+<td class="markdownTableBodyNone"><code>MaxDetectionsPerClass</code> </td><td class="markdownTableBodyNone">int </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Maximum number of objects to report for each class for detection models </td><td class="markdownTableBodyNone">&gt; 0 </td><td class="markdownTableBodyNone">100  </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::OutputTopK </td><td class="markdownTableBodyNone">size_t </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Number of classes with biggest scores to report for classification models </td><td class="markdownTableBodyNone">0,1... </td><td class="markdownTableBodyNone">0  </td></tr>
+<td class="markdownTableBodyNone"><code>MaxClassesPerDetection</code> </td><td class="markdownTableBodyNone">int </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Maximum number of classes to report for detection models </td><td class="markdownTableBodyNone">&gt; 0 </td><td class="markdownTableBodyNone">30  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::MaxDetections </td><td class="markdownTableBodyNone">int </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Maximum number of objects to report for detection models </td><td class="markdownTableBodyNone">&gt; 0 </td><td class="markdownTableBodyNone">20  </td></tr>
+<td class="markdownTableBodyNone"><code>MeasureTime</code> </td><td class="markdownTableBodyNone">bool </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Enable inference time measurements </td><td class="markdownTableBodyNone">true/false </td><td class="markdownTableBodyNone">false  </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::MaxDetectionsPerClass </td><td class="markdownTableBodyNone">int </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Maximum number of objects to report for each class for detection models </td><td class="markdownTableBodyNone">&gt; 0 </td><td class="markdownTableBodyNone">100  </td></tr>
+<td class="markdownTableBodyNone"><code>OutputPostprocessType</code> </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Post-processor type </td><td class="markdownTableBodyNone">see below </td><td class="markdownTableBodyNone">"None"  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::MaxClassesPerDetection </td><td class="markdownTableBodyNone">int </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Maximum number of classes to report for detection models </td><td class="markdownTableBodyNone">&gt; 0 </td><td class="markdownTableBodyNone">30  </td></tr>
+<td class="markdownTableBodyNone"><code>OutputConfThreshold</code> </td><td class="markdownTableBodyNone">double </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Confidence threshold </td><td class="markdownTableBodyNone">0..1 </td><td class="markdownTableBodyNone">0.1  </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::UseRegularNMS </td><td class="markdownTableBodyNone">bool </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Use regular (per-class) NMS algorithm as opposed to global (class-ignoring) NMS algorithm for detection models </td><td class="markdownTableBodyNone">true/false </td><td class="markdownTableBodyNone">true  </td></tr>
+<td class="markdownTableBodyNone"><code>OutputNMSThreshold</code> </td><td class="markdownTableBodyNone">double </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Threshold for non-max suppression </td><td class="markdownTableBodyNone">0..1 </td><td class="markdownTableBodyNone">0.6  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">DG::ModelParamsReadAccess::CloudToken </td><td class="markdownTableBodyNone">string </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Cloud API access token </td><td class="markdownTableBodyNone">Valid cloud API access token </td><td class="markdownTableBodyNone">""  </td></tr>
+<td class="markdownTableBodyNone"><code>OutputTopK</code> </td><td class="markdownTableBodyNone">size_t </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Number of classes with biggest scores to report for classification models </td><td class="markdownTableBodyNone">0,1... </td><td class="markdownTableBodyNone">0  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>UseRegularNMS</code> </td><td class="markdownTableBodyNone">bool </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Use regular (per-class) NMS algorithm as opposed to global (class-ignoring) NMS algorithm for detection models </td><td class="markdownTableBodyNone">true/false </td><td class="markdownTableBodyNone">true  </td></tr>
 </table>
 <p>If you do not specify a runtime parameter, then the value for this parameter will be taken from the model Json configuration file from the local model zoo. If the model Json configuration file also does not specify this parameter, then the default value will be used.</p>
 <p>The following table lists currently available post-processor types.</p>
@@ -490,6 +518,8 @@ Model Parameters Management</h2>
 <td class="markdownTableBodyNone">"FaceDetection" </td><td class="markdownTableBodyNone">Face detection models </td><td class="markdownTableBodyNone">Face detection post-processor for all DeGirum face detection models  </td></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">"PoseDetection" </td><td class="markdownTableBodyNone">Pose detection models </td><td class="markdownTableBodyNone">Person pose detection post-processor for all DeGirum pose detection models  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">"HandDetection" </td><td class="markdownTableBodyNone">Hand detection models </td><td class="markdownTableBodyNone">Hand landmark detection post-processor for all DeGirum hand detection models  </td></tr>
 </table>
 <p><em>Note: not all post-processors are compatible with all models. Special care should be taken when specifying post-processor type other than "None".</em></p>
 <p>Notes of Input* parameters.</p>
