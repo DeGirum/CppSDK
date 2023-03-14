@@ -14,37 +14,10 @@
 
 #include <asio.hpp>
 
-namespace {
-	/// DG socket exception class
-	class SocketException : public std::exception
-	{
-	public:
-		// Construct a SocketException with a explanatory message.
-		// \param[in] message - explanatory message
-		// \param[in] incSysMsg - true if system message (from strerror(errno))
-		// should be postfixed to the user provided message
-		SocketException( const std::string &message, bool inclSysMsg = false ) throw()
-			: m_userMessage( message )
-		{
-			if( inclSysMsg )
-			{
-				std::stringstream ss;
-				ss << ": " << errno;
-				m_userMessage += ss.str();
-			}
-		}
 
-		//   Provided just to guarantee that no exceptions are thrown.
-		~SocketException() throw() {}
-
-		// Get the exception message
-		// \return exception message
-		const char* what() const throw() { return m_userMessage.c_str(); }
-
-	private:
-		std::string m_userMessage;	//!< Exception message
-	};
-}  // namespace
+/// Error handling macro for asio errors
+#define throw_exception_if_error_is_serious( _ec ) \
+	do { if( _ec && !( _ec == asio::error::eof ) ) DG_ERROR( _ec.message(), ErrSystem ); } while( 0 )
 
 
 namespace DG 
@@ -76,15 +49,6 @@ namespace DG
 			constexpr const char* TRACE_MANAGE	= "trace_manage";
 			constexpr const char* ZOO_MANAGE	= "zoo_manage";
 		}  // namespace commands
-
-
-		/// Throw exception if error is serious
-		/// \param[in] error - error code to check/process
-		inline void throw_exception_if_error_is_serious( const asio::error_code& error )
-		{
-			if( error && !( error == asio::error::eof ) )
-				throw asio::system_error( error );
-		}
 
 
 		/// Run executor in I/O context to handle asynchronous operations
@@ -152,7 +116,7 @@ namespace DG
 
 			// Determine whether a connection was successfully established.
 			if( error )
-				throw std::system_error( error );
+				DG_ERROR( error.message(), ErrSystem );
 
 			ret.set_option( asio::ip::tcp::no_delay( true ) );
 			return ret;
@@ -186,7 +150,7 @@ namespace DG
 			if( bytes_read == 0 )
 				return 0;
 			else if( bytes_read < HEADER_SIZE )
-				throw SocketException( "Fail to read incoming packet length from socket " + socket.remote_endpoint().address().to_string() );
+				DG_ERROR( "Fail to read incoming packet length from socket " + socket.remote_endpoint().address().to_string(), ErrOperationFailed );
 			throw_exception_if_error_is_serious( error );
 
 			// Use the length to allocate buffer
@@ -221,7 +185,7 @@ namespace DG
 			if( bytes_read == 0 )
 				return 0;
 			else if( bytes_read < HEADER_SIZE )
-				throw SocketException( "Fail to read incoming packet length from socket " + socket.remote_endpoint().address().to_string() );
+				DG_ERROR( "Fail to read incoming packet length from socket " + socket.remote_endpoint().address().to_string(), ErrOperationFailed );
 			throw_exception_if_error_is_serious( error );
 
 			// Use the length to allocate buffer
@@ -392,15 +356,6 @@ namespace DG
 		const int MESSAGE_SIZE = CHUNK_SIZE + HEADER_SIZE;					//!< Total length of message we send
 
 
-		/// Throw exception if error is serious
-		/// \param[in] error - ASIO error
-		inline void throw_exception_if_error_is_serious( const asio::error_code& error )
-		{
-			if( error && !( error == asio::error::eof ) )
-				throw asio::system_error( error );
-		}
-
-
 		/// Read all incoming data to buffer, synchronously. Returns one chunk's worth of data
 		/// \param[in] socket - ASIO socket to use. Must be connected
 		/// \param[out] response_buffer - buffer for response. Should be sized properly
@@ -539,3 +494,5 @@ namespace DG
 		}
 	}  // namespace protocol
 }  // namespace DG
+
+#undef throw_exception_if_error_is_serious
