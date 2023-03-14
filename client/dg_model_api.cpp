@@ -225,7 +225,7 @@ static std::vector< std::tuple< std::string, DG::DetectionStatus > > detectServe
 						else
 							result.push_back( std::tuple< std::string, DG::DetectionStatus >( *element, DG::DetectionStatus::ProtocolMismatch ) );
 					}
-					catch( asio::system_error e )
+					catch( ... )
 					{}
 				},
 				source,

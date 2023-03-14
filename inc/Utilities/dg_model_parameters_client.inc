@@ -19,6 +19,8 @@
 	_( MeasureTime,					SECT_TOP,				bool,						false,			false,	true,	true,	None	) \
 	_( CloudToken,					SECT_TOP,				std::string,				"",				false,	true,	false,	None	) \
 	\
+	_( EagerBatchSize,				SECT_DEVICE,			size_t,						8,				false,	true,	true,	None	) \
+	\
 	_( InputImgFmt,					SECT_PRE_PROCESS,		std::string,				"JPEG",			false,	true,	false,	None	) \
 	_( InputImgRawDataType,			SECT_PRE_PROCESS,		std::string,				"DG_UINT8",		false,	true,	false,	None	) \
 	_( InputRawDataType,			SECT_PRE_PROCESS,		std::string,				"DG_UINT8",		false,	true,	true,	InputImgRawDataType	) \
