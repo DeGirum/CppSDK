@@ -365,13 +365,15 @@ std::vector< std::tuple< std::string, DG::DetectionStatus > > DG::detectHostname
 // [in] model_name is an input and should contain the model name.
 // [in] model_params is runtime parameters, which define model runtime behavior (optional)
 // [in] connection_timeout_ms is the AI server connection timeout in milliseconds (optional)
+// [in] inference_timeout_ms is the AI server inference timeout in milliseconds (optional)
 //
 DG::AIModel::AIModel(
 	const std::string &server,
 	const std::string &model_name,
 	const ModelParamsReadAccess &model_params,
-	size_t connection_timeout_ms ) :
-	m_client( new DG::Client( server, connection_timeout_ms ) )
+	size_t connection_timeout_ms,
+	size_t inference_timeout_ms ) :
+	m_client( new DG::Client( server, connection_timeout_ms, inference_timeout_ms ) )
 {
 	m_client->openStream( model_name, 0, model_params.jsonGet() );
 }
@@ -464,6 +466,10 @@ void DG::AIModelAsync::predict( std::vector< std::vector< char > > &data, const 
 void DG::AIModelAsync::waitCompletion()
 {
 	m_client->dataEnd();
+
+	const std::string ret = lastError();
+	if( !ret.empty() )
+		throw std::runtime_error( ret );
 }
 
 

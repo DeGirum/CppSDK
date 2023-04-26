@@ -53,8 +53,7 @@
 	_( WARNING,				"[WARNING]",	"warning: no exception is thrown, but error is registered in global error collection" ) \
 	_( VALIDATION_ERROR,	"[VALIDATION]",	"validation error: exception is thrown, but error is NOT registered in global error collection" ) \
 	_( RUNTIME_ERROR,		"[ERROR]",		"regular runtime error: exception is thrown, and error is registered in global error collection" ) \
-	_( CRITICAL_ERROR,		"[CRITICAL]",	"critical error: like RUNTIME_ERROR, but also sets global critical error flag in global error collection" ) \
-	_( EXIT_ERROR,			"[EXIT]",		"exit error: like CRITICAL_ERROR, but with another label" ) \
+	_( CRITICAL_ERROR,		"[CRITICAL]",	"critical/non-recoverable error: runtime error + deactivation of failed node" ) \
 
 
 namespace DG
@@ -90,10 +89,6 @@ namespace DG
 /// Throw validation error, do not report
 #define DG_VALIDATION_ERROR( err_msg )		do { DG::ErrorHandling::errorAdd( __FILE__, TOSTRING(__LINE__), FUNCTION_NAME, \
 	DG::ErrorType::VALIDATION_ERROR, DG::ErrCompilerBadState, err_msg ); } while( 0 )
-
-/// Report and throw exit error, set critical flag
-#define DG_EXIT_ERROR( err_msg, err_code )	do { DG::ErrorHandling::errorAdd( __FILE__, TOSTRING(__LINE__), FUNCTION_NAME, \
-	DG::ErrorType::EXIT_ERROR, DG::err_code, err_msg ); } while( 0 )
 
 /// Report and throw critical error, set critical flag
 #define DG_CRITICAL_ERROR( err_msg, err_code )	do { DG::ErrorHandling::errorAdd( __FILE__, TOSTRING(__LINE__), FUNCTION_NAME, \

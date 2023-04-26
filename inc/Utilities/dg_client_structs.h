@@ -56,6 +56,15 @@ namespace DG
 	/// Default TCP port of AI server
 	const int DEFAULT_PORT = 8778;
 
+	/// Default connection timeout, ms
+	const int DEFAULT_CONNECTION_TIMEOUT_MS = 10000;
+
+	/// Default inference timeout, ms
+	const int DEFAULT_INFERENCE_TIMEOUT_MS = 180000;
+
+	/// Default frame queue depth
+	const int DEFAULT_FRAME_QUEUE_DEPTH = 8;
+
 	/// ServerAddress is the server address structure. It keeps AI server TCP/IP address.
 	typedef struct ServerAddress
 	{

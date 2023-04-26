@@ -44,7 +44,10 @@ namespace DG
 		/// \param[in] server_address - server address
 		/// \param[in] connection_timeout_ms - connection timeout in milliseconds
 		/// \param[in] inference_timeout_ms - AI server inference timeout in milliseconds
-		Client( const std::string &server_address, size_t connection_timeout_ms = 10000, size_t inference_timeout_ms = 180000 );
+		Client(
+			const std::string &server_address,
+			size_t connection_timeout_ms = DEFAULT_CONNECTION_TIMEOUT_MS,
+			size_t inference_timeout_ms = DEFAULT_INFERENCE_TIMEOUT_MS );
 
 		Client( const Client &s ) = delete;
 

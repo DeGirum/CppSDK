@@ -207,7 +207,7 @@ namespace DG
 			// send empty packet to indicate end-of-stream;
 			// we use async write to avoid long timeouts when writing to closed socket
 			main_protocol::write_async( m_stream_socket, "", 0 );
-			main_protocol::run_async( m_io_context, m_connection_timeout_ms );
+			main_protocol::run_async( m_io_context, std::min( m_connection_timeout_ms, size_t{ 500 } ) );
 
 			main_protocol::socket_close( m_stream_socket );
 		}
@@ -387,9 +387,10 @@ namespace DG
 				{
 					DG_ERROR(
 						DG_FORMAT(
-							"Timeout waiting for inference response from server '"
-							<< m_command_socket.remote_endpoint().address().to_string() << ":"
-							<< m_command_socket.remote_endpoint().port() ),
+							"Timeout waiting for space "
+							"in queue on AI server '"
+							<< m_command_socket.remote_endpoint().address().to_string() << ":" << m_command_socket.remote_endpoint().port()
+							<< " (queue depth is " << m_frame_queue_depth << ")" ),
 						ErrTimeout );
 				}
 
@@ -430,8 +431,15 @@ namespace DG
 						// Loop until stop is requested AND then all outstanding results are received
 						while( !m_async_stop || m_async_outstanding_results > 0 )
 						{
-							// Run ASIO executor indefinitely until result is received or server disconnects
-							main_protocol::run_async( m_io_context );
+							// Run ASIO executor until result is received or server disconnects or timeout happens
+							const size_t completed_tasks = main_protocol::run_async( m_io_context, m_inference_timeout_ms );
+							if( completed_tasks == 0 )
+								DG_ERROR(
+									DG_FORMAT(
+										"Timeout waiting for response from AI server '" << m_stream_socket.remote_endpoint().address().to_string()
+																						<< ":" << m_stream_socket.remote_endpoint().port() ),
+									ErrTimeout );
+
 
 							// Wait until a restart is signaled
 							{
