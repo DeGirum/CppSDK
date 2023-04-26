@@ -248,12 +248,6 @@ namespace DG
 			return t;
 		}
 
-		/// Create and return Json error packet with given message
-		static json errorCreate( const std::string &message )
-		{
-			return json( { { "success", false }, { "msg", message } } );
-		}
-
 		/// Check server Json response for errors and throw exception, if any
 		/// \param[in] response - Json response from server/core
 		/// \param[in] source - description of the server command initiator

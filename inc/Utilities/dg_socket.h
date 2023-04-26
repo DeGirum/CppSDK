@@ -54,7 +54,8 @@ namespace DG
 		/// Run executor in I/O context to handle asynchronous operations
 		/// \param[in] io_context - I/O context object to run
 		/// \param[in] timeout_ms - running timeout in ms; 0 to run until completion of all tasks
-		inline void run_async( io_context_t &io_context, size_t timeout_ms = 0 )
+		/// \return number of completed tasks
+		inline size_t run_async( io_context_t &io_context, size_t timeout_ms = 0 )
 		{
 			// If ASIO executor was stopped, we need to restart it
 			if( io_context.stopped() )
@@ -62,9 +63,9 @@ namespace DG
 
 			// Run ASIO executor
 			if( timeout_ms > 0 )
-				io_context.run_for( std::chrono::milliseconds( timeout_ms ) );
+				return io_context.run_for( std::chrono::milliseconds( timeout_ms ) );
 			else			
-				io_context.run();
+				return io_context.run();
 		}
 
 

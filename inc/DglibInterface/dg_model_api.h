@@ -153,7 +153,8 @@ namespace DG
 	/// \param[in] range_end is the highest numeral to be applied to the pattern, inclusive
 	/// \param[in] numeral_width is the width of the numeral in the padded set. This is optional, set to 3 by default. Set to 0 to disable pattern generation.
 	/// \return Vector of strings containing hostnames of ORCA servers on the network.
-	std::vector< std::tuple< std::string, DG::DetectionStatus > > detectHostnameServers( const std::string& prefix, const int range_start, const int range_end, const int numeral_width = 3 );
+	std::vector< std::tuple< std::string, DG::DetectionStatus > >
+	detectHostnameServers( const std::string &prefix, const int range_start, const int range_end, const int numeral_width = 3 );
 
 
 	class Client;	// forward declaration
@@ -187,11 +188,14 @@ namespace DG
 		/// ModelParamsWriter class instance can be used to conveniently define runtime parameters.
 		/// \param[in] connection_timeout_ms is the AI server connection timeout in milliseconds.
 		/// This is optional parameter: by default it is set to 10 sec.
+		/// \param[in] inference_timeout_ms is the AI server inference timeout in milliseconds.
+		/// This is optional parameter: by default it is set to 180 sec.
 		explicit AIModel(
 			const std::string &server,
 			const std::string &model_name,
 			const ModelParamsReadAccess &model_params = ModelParamsReadAccess( {} ),
-			size_t connection_timeout_ms = 10 );
+			size_t connection_timeout_ms = DEFAULT_CONNECTION_TIMEOUT_MS,
+			size_t inference_timeout_ms = DEFAULT_INFERENCE_TIMEOUT_MS );
 
 		// Deleted copy constructor and copy assignment operator
 		AIModel( const AIModel & ) = delete;
@@ -268,9 +272,9 @@ namespace DG
 			const std::string &model_name,
 			callback_t callback,
 			const ModelParamsReadAccess &model_params = ModelParamsReadAccess( {} ),
-			size_t frame_queue_depth = 8,
-			size_t connection_timeout_ms = 10000,
-			size_t inference_timeout_ms = 180000
+			size_t frame_queue_depth = DEFAULT_FRAME_QUEUE_DEPTH,
+			size_t connection_timeout_ms = DEFAULT_CONNECTION_TIMEOUT_MS,
+			size_t inference_timeout_ms = DEFAULT_INFERENCE_TIMEOUT_MS
 			);
 
 		// Deleted copy constructor and copy assignment operator
