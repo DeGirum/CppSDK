@@ -13,40 +13,40 @@
 #define DG_ERROR_HANDLING_H
 
 /// List of all global error codes
-#define DG_ERROR_LIST \
-	_( ErrSuccess,				0x00000000, "Success" ) \
-	_( Success,					0x00000000, "Success" ) \
-	_( ErrNotImplemented,		0x00000001, "Functionality is not implemented" ) \
-	_( ErrNotSupported,			0x00000002, "Functionality is not supported" ) \
-	_( ErrNotInitialized,		0x00000003, "Subsystem is not initialized" ) \
-	_( ErrBadParameter,			0x00000004, "Incorrect value of parameter" ) \
-	_( ErrTimeout,				0x00000005, "Timeout detected" ) \
-	_( ErrInsufficientMemory,	0x00000006, "Insufficient memory" ) \
-	_( ErrOperationFailed,		0x00000007, "Operation failed" ) \
-	_( ErrInvalidAddress,		0x00000008, "Invalid address" ) \
-	_( ErrBadValue,				0x00000009, "Incorrect value" ) \
-	_( ErrResourceError,		0x0000000A, "Resource access error" ) \
-	_( ErrOverFlow,				0x0000000B, "Overflow is detected" ) \
-	_( ErrFileNotFound,			0x0000000C, "File not found" ) \
-	_( ErrDeviceNotFound,		0x0000000D, "Device not found" ) \
-	_( ErrNullPointer,			0x0000000E, "Null pointer passed" ) \
-	_( ErrInconsistentData,		0x0000000F, "Inconsistent data structure" ) \
-	_( ErrLoadModel,			0x00000010, "Loading model failed" ) \
-	_( ErrFileWriteFailed,		0x00000011, "File writing failure" ) \
-	_( ErrFileReadFailed,		0x00000012, "File reading failure" ) \
-	_( ErrFileOperationFailed,	0x00000013, "File operation failed" ) \
-	_( ErrParseError,			0x00000014, "Parsing error" ) \
-	_( ErrDirNotFound,			0x00000015, "Directory not found" ) \
-	_( ErrDeviceAccess,			0x00000016, "Device access error" ) \
-	_( ErrDeviceBusy,			0x00000017, "Device is busy" ) \
-	_( ErrNotSupportedVersion,	0x00000018, "Version is not supported" ) \
-	_( ErrCompilerBadState,		0x00000019, "Failure in compiler stage" ) \
-	_( ErrFailedUserConstraints,0x0000001A, "Failed to satisfy user-specified constraints" ) \
-	\
-	_( ErrContinue,				0x00001000, "<continued>" ) \
-	_( ErrAssert,				0x00001001, "Execution failed" ) \
-	_( ErrSystem,				0x00010000, "OS error" ) \
-
+#define DG_ERROR_LIST                                                                         \
+	_( ErrSuccess, 0x00000000, "Success" )                                                    \
+	_( Success, 0x00000000, "Success" )                                                       \
+	_( ErrNotImplemented, 0x00000001, "Functionality is not implemented" )                    \
+	_( ErrNotSupported, 0x00000002, "Functionality is not supported" )                        \
+	_( ErrNotInitialized, 0x00000003, "Subsystem is not initialized" )                        \
+	_( ErrBadParameter, 0x00000004, "Incorrect value of parameter" )                          \
+	_( ErrTimeout, 0x00000005, "Timeout detected" )                                           \
+	_( ErrInsufficientMemory, 0x00000006, "Insufficient memory" )                             \
+	_( ErrOperationFailed, 0x00000007, "Operation failed" )                                   \
+	_( ErrInvalidAddress, 0x00000008, "Invalid address" )                                     \
+	_( ErrBadValue, 0x00000009, "Incorrect value" )                                           \
+	_( ErrResourceError, 0x0000000A, "Resource access error" )                                \
+	_( ErrOverFlow, 0x0000000B, "Overflow is detected" )                                      \
+	_( ErrFileNotFound, 0x0000000C, "File not found" )                                        \
+	_( ErrDeviceNotFound, 0x0000000D, "Device not found" )                                    \
+	_( ErrNullPointer, 0x0000000E, "Null pointer passed" )                                    \
+	_( ErrInconsistentData, 0x0000000F, "Inconsistent data structure" )                       \
+	_( ErrLoadModel, 0x00000010, "Loading model failed" )                                     \
+	_( ErrFileWriteFailed, 0x00000011, "File writing failure" )                               \
+	_( ErrFileReadFailed, 0x00000012, "File reading failure" )                                \
+	_( ErrFileOperationFailed, 0x00000013, "File operation failed" )                          \
+	_( ErrParseError, 0x00000014, "Parsing error" )                                           \
+	_( ErrDirNotFound, 0x00000015, "Directory not found" )                                    \
+	_( ErrDeviceAccess, 0x00000016, "Device access error" )                                   \
+	_( ErrDeviceBusy, 0x00000017, "Device is busy" )                                          \
+	_( ErrNotSupportedVersion, 0x00000018, "Version is not supported" )                       \
+	_( ErrCompilerBadState, 0x00000019, "Failure in compiler stage" )                         \
+	_( ErrFailedUserConstraints, 0x0000001A, "Failed to satisfy user-specified constraints" ) \
+	_( ErrFirmwareLoad, 0x0000001B, "Firmware load failed" )                                  \
+                                                                                              \
+	_( ErrContinue, 0x00001000, "<continued>" )                                               \
+	_( ErrAssert, 0x00001001, "Execution failed" )                                            \
+	_( ErrSystem, 0x00010000, "OS error" )
 
 /// List of all error types
 #define DG_ERROR_TYPE_LIST \

@@ -100,12 +100,14 @@
 /// Helper macros used in DG_TRC_xxx macros to reduce copy-paste
 /// Trace with static message
 #define DG_TRC_DO( group, name, level, type, ... ) \
-	{ if( ( level ) <= DG_TRC_GROUP_VAR( group ) ) \
-		DGTrace::g_TracingFacility.traceDo( type, #group "::" #name, level, ##__VA_ARGS__ ); }
+	do { if( ( level ) <= DG_TRC_GROUP_VAR( group ) ) \
+		DGTrace::g_TracingFacility.traceDo( type, #group "::" #name, level, ##__VA_ARGS__ ); \
+	} while( 0 )
 /// Trace with printf-like message
 #define DG_TRC_PRINTF_DO( group, name, level, type, msg, ... ) \
-	{ if( ( level ) <= DG_TRC_GROUP_VAR( group ) ) \
-		DGTrace::g_TracingFacility.tracePrintfDo( type, #group "::" #name, level, msg, ##__VA_ARGS__ ); }
+	do { if( ( level ) <= DG_TRC_GROUP_VAR( group ) ) \
+		DGTrace::g_TracingFacility.tracePrintfDo( type, #group "::" #name, level, msg, ##__VA_ARGS__ ); \
+	} while( 0 )
 
 /// Trace starting point of some activity
 #define DG_TRC_START( group, name, level, ... ) \

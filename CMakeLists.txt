@@ -48,6 +48,8 @@ target_include_directories( aiclientlib PUBLIC ${INCPATH} )
 
 if( WIN32 )
 	target_link_libraries( aiclientlib PUBLIC Ws2_32 )
+else()
+	target_link_libraries( aiclientlib PUBLIC pthread dl )
 endif()
 
 add_subdirectory( ${EXAMPLESPATH} )

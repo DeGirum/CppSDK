@@ -12,24 +12,24 @@
 #define DG_FILE_UTILITIES_H_
 
 #ifdef _MSC_VER
-	#include <stdlib.h>
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
+#include <stdlib.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #else
-	#include <string.h>
-	#include <sys/file.h>
-	#include <sys/types.h>
-	#include <unistd.h>
-	#include <pwd.h>
-	#ifdef __APPLE__
-		#include <libgen.h>
-		#include <mach-o/dyld.h>
-	#else
-		extern char *program_invocation_short_name;
-		extern char *program_invocation_name;
-	#endif
+#include <dlfcn.h>
+#include <pwd.h>
+#include <string.h>
+#include <sys/file.h>
+#include <sys/types.h>
+#include <unistd.h>
+#ifdef __APPLE__
+#include <libgen.h>
+#include <mach-o/dyld.h>
+#else
+extern char *program_invocation_short_name;
+extern char *program_invocation_name;
 #endif
-
+#endif
 
 #include <sys/stat.h>
 #include <algorithm>
@@ -192,6 +192,7 @@ public:
 	static void module_path( std::string *path_ret, std::string *name_ret = nullptr, bool for_top_module = true )
 	{
 		std::string fullpath;
+
 #ifdef _MSC_VER
 		HMODULE hModule = NULL;
 		if( !for_top_module )  // get module handle of DLL, where this function is linked into
@@ -203,22 +204,38 @@ public:
 		GetModuleFileNameA( hModule, my_filepath, _MAX_PATH );
 		fullpath = my_filepath;
 		std::replace( fullpath.begin(), fullpath.end(), '\\', '/' );
+
 #elif defined( __APPLE__ )
-		char app_path[ PATH_MAX ];
-		uint32_t size = PATH_MAX;
-		if( !_NSGetExecutablePath( app_path, &size ) )
+		if( !for_top_module )
 		{
-			fullpath = std::filesystem::canonical( app_path );
+			Dl_info info;
+			if( dladdr( (void* )&module_path, &info ) )
+				fullpath = std::string( info.dli_fname );
 		}
+		if( fullpath.empty() )
+		{
+			char app_path[ PATH_MAX ];
+			uint32_t size = PATH_MAX;
+			if( 0 == _NSGetExecutablePath( app_path, &size ) )
+				fullpath = std::filesystem::canonical( app_path ).string();
+		}
+
 #else  // GCC
-		try
+		if( !for_top_module )
 		{
-			fullpath = std::filesystem::weakly_canonical( program_invocation_name );
+			Dl_info info;
+			if( dladdr( (void* )&module_path, &info ) )
+				fullpath = std::string( info.dli_fname );
 		}
-		catch( std::exception & )
-		{
-			fullpath = program_invocation_name;
-		}
+		if( fullpath.empty() )
+			try
+			{
+				fullpath = std::filesystem::weakly_canonical( program_invocation_name ).string();
+			}
+			catch( std::exception & )
+			{
+				fullpath = program_invocation_name;
+			}
 #endif
 
 		path_split( fullpath, path_ret, name_ret, nullptr );
@@ -357,7 +374,7 @@ public:
 		const std::string suffix_ext = std::filesystem::path( file_suffix ).extension().string();  // extension with dot
 		std::string mod_name;
 		module_path( nullptr, &mod_name, false /*use current module*/ );
-		std::string path_prefix =  path_with_slash( dir ) + mod_name + ".";
+		std::string path_prefix = path_with_slash( dir ) + mod_name + ".";
 
 		dir_create_if_not_exist( dir );
 		for( int idx = 0; idx < 100 /*we need some limit anyway*/; idx++ )

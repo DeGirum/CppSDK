@@ -26,7 +26,7 @@ namespace DG
 	_( EDGETPU, "EDGETPU", 6, "Google EdgeTPU" )                                                    \
 	_( MYRIAD, "MYRIAD", 7, "Intel MyriadX (NCS2 and others)" )                                     \
 	_( BIG_FPGA_1P1, "BIG_FPGA_1P1", 8, "DG advanced FPGA simulator for ORCA1.1 (aka 'big' FPGA)" ) \
-	_( ORCA_1P1, "ORCA_1P1", 9, "DG Orca 1.1 based accelerator" )
+	_( ORCA_1P1, "ORCA1", 9, "DG Orca 1.1 based accelerator" )
 
 enum DEVICE_TYPES : int
 {
