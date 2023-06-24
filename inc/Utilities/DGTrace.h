@@ -23,10 +23,10 @@
 // To enable tracing via these legacy macros, create dg_trace.ini file in the
 // current directory of the process you work with, and add line LegacyTrace=Basic into that file.
 //
-#define DG_TRACE() DGTrace::Tracer __dg_trace_( &DGTrace::g_TracingFacility, &DG_TRC_GROUP_VAR( LegacyTrace ), FUNCTION_NAME, DGTrace::lvlBasic )
+#define DG_TRACE() DGTrace::Tracer __dg_trace_( &DGTrace::getTracingFacility(), &DG_TRC_GROUP_VAR( LegacyTrace ), FUNCTION_NAME, DGTrace::lvlBasic )
 #define DG_TRACE_OP( x ) \
 	DGTrace::Tracer      \
-		__dg_trace_( &DGTrace::g_TracingFacility, &DG_TRC_GROUP_VAR( LegacyTrace ), FUNCTION_NAME, DGTrace::lvlBasic, "Operation = %d", (int)( x ) )
+		__dg_trace_( &DGTrace::getTracingFacility(), &DG_TRC_GROUP_VAR( LegacyTrace ), FUNCTION_NAME, DGTrace::lvlBasic, "Operation = %d", (int)( x ) )
 #define DG_TRACE_COMMENT( a )         __dg_trace_.Trace( DGTrace::TracingFacility::TraceType::Point, a )
 #define DG_TRACE_STREAM               __dg_trace_
 #define DG_TRACE_STREAM_OUT()         __dg_trace_ << '\n';

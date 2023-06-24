@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['tflite_338',['TFLITE',['../namespaceDG.html#a665d711747916741a743540697e08616ac8870525f369b218cd652cd9f7e27868',1,'DG']]]
+  ['yes_325',['Yes',['../structDG_1_1ModelQuery.html#a9def9bedb44f0f0856183c3f8e235ecaaa7c6732e38a4ceeff3def6e94ac29c72',1,'DG::ModelQuery']]]
 ];

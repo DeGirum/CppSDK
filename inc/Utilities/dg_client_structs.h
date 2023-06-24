@@ -27,7 +27,6 @@
 #include <tuple>
 #include <map>
 #include <sstream>
-#include "dg_device_types.h"
 #include "Utilities/dg_model_parameters.h"
 
 
@@ -40,18 +39,7 @@ namespace DG
 	const int MIN_COMPATIBLE_PROTOCOL_VERSION = 4;
 
 	/// current client-server protocol version
-	const int CURRENT_PROTOCOL_VERSION = 4;
-
-	/// Runtime agent types
-	enum class RUNTIME_AGENT_TYPES
-	{	
-		DEFAULT,			//!< default runtime agent
-		N2X,				//!< DeGirum nnExpress runtime agent
-		TFLITE,				//!< TF-Lite runtime agent
-		ONNX,				//!< Onnx runtime agent
-		OPENVINO,			//!< OpenVINO runtime agent
-		DUMMY,				//!< dummy agent (for DeGirum internal use only)
-	};						
+	const int CURRENT_PROTOCOL_VERSION = 4;					
 
 	/// Default TCP port of AI server
 	const int DEFAULT_PORT = 8778;

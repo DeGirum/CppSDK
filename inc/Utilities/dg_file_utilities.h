@@ -373,7 +373,7 @@ public:
 		const std::string suffix_stem = std::filesystem::path( file_suffix ).stem().string();      // name w/o extension
 		const std::string suffix_ext = std::filesystem::path( file_suffix ).extension().string();  // extension with dot
 		std::string mod_name;
-		module_path( nullptr, &mod_name, false /*use current module*/ );
+		module_path( nullptr, &mod_name, false );
 		std::string path_prefix = path_with_slash( dir ) + mod_name + ".";
 
 		dir_create_if_not_exist( dir );
@@ -388,11 +388,15 @@ public:
 #ifndef _MSC_VER
 			// check file lock
 			{
-				int fd = open( try_filename.c_str(), O_RDONLY );
-				if( fd == -1 || flock( fd, LOCK_EX | LOCK_NB ) != 0 )
-					continue;  // cannot lock: file is most likely opened by another process, try next one
-				flock( fd, LOCK_UN );
+				const int fd = open( try_filename.c_str(), O_RDONLY );
+				if( fd == -1 )
+					continue;  // cannot open file
+				const bool locked = flock( fd, LOCK_EX | LOCK_NB ) == 0;
+				if( locked )
+					flock( fd, LOCK_UN );
 				close( fd );
+				if( !locked )
+					continue; // cannot lock: file is most likely opened by another process, try next one
 			}
 #endif
 

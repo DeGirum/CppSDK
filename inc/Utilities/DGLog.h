@@ -15,17 +15,17 @@
 
 
 /// Write printf-like message to system log file
-#define DG_LOG_PRINTF( msg, ...)	DG::FileLogger::instance.log( msg, ##__VA_ARGS__ )
+#define DG_LOG_PRINTF( msg, ...)	DG::FileLogger::get_FileLogger().log( msg, ##__VA_ARGS__ )
 
 
 /// Write std::string message to system log file
-#define DG_LOG_PRINTS( msg )		DG::FileLogger::instance.log( "%s", msg )
+#define DG_LOG_PRINTS( msg )		DG::FileLogger::get_FileLogger().log( "%s", msg )
 
 /// Write string message to system log file with newline ending
-#define DG_LOG_PUTS( msg )		DG::FileLogger::instance.log( "%s\n", msg )
+#define DG_LOG_PUTS( msg )			DG::FileLogger::get_FileLogger().log( "%s\n", msg )
 
 /// Clear log file
-#define DG_LOG_CLEAR()				DG::FileLogger::instance.clear()
+#define DG_LOG_CLEAR()				DG::FileLogger::get_FileLogger().clear()
 
 
 
@@ -140,8 +140,12 @@ namespace DG
 			return _log(fmt, unwrap_std_strings(args)...);
 		}
 
-		/// System logger singleton
-		static FileLogger instance;
+		/// Get system logger singleton
+		static FileLogger& get_FileLogger()
+		{
+			static FileLogger instance;
+			return instance;
+		}
 
 	private:
 		std::recursive_mutex m_mx;	//!< thread protecting mutex
@@ -150,9 +154,6 @@ namespace DG
 		std::ofstream m_file;		//!< log file stream
 		bool m_is_initialized;		//!< log is initialized flag
 	};
-
-	/// System logger singleton
-	inline FileLogger FileLogger::instance;
 
 }	// namespace DG
 
@@ -252,6 +253,8 @@ private:
 // Clear log file (implementation)
 inline bool DG::FileLogger::clear()
 {
+	std::lock_guard< std::recursive_mutex > lk( m_mx );
+
 	if( m_is_initialized && m_file.is_open() )
 		m_file.close();
 
