@@ -260,17 +260,17 @@ namespace DG
 		/// Clear collection of registered errors
 		static void clear()
 		{
-			m_error_collection.clear();
+			get_error_collection().clear();
 		}
 
 		/// Check, if there are any critical errors registered
 		static bool isErrorCritical()
 		{
-			return m_error_collection.m_most_severe_error_type >= ErrorType::CRITICAL_ERROR;
+			return get_error_collection().m_most_severe_error_type >= ErrorType::CRITICAL_ERROR;
 		}
 
 		/// Get # of registered error (for unit tests only)
-		static size_t errorCount() { return m_error_collection.m_err_deque.size(); }
+		static size_t errorCount() { return get_error_collection().m_err_deque.size(); }
 
 		/// Handle assertion
 		/// \param[in] file - file where assertion happens
@@ -355,17 +355,20 @@ namespace DG
 		/// \param[in] depth - desired stack depth to capture
 		inline static std::string stackTrace( size_t skip, size_t depth );
 
-		static ErrorCollection m_error_collection;	//!< global collection of registered errors
+		/// Get global collection of registered errors
+		static ErrorCollection& get_error_collection()
+		{
+			static ErrorCollection instance;
+			return instance;
+		}
 
 public:
 		/// Last error recorded
 		inline static ErrorRecord lastErrorRecord()
 		{
-			return m_error_collection.m_err_deque.back();
+			return get_error_collection().m_err_deque.back();
 		}
 	};
-
-	inline ErrorHandling::ErrorCollection ErrorHandling::m_error_collection;	//!< global collection of registered errors
 
 	/// Check, if given exception object contains certain DG error type
 	/// \param[in] e - exception object containing DG error
@@ -855,7 +858,7 @@ inline void DG::ErrorHandling::errorAdd( const char *file, const char *line, con
 
 	// add to collection
 	if( type != ErrorType::VALIDATION_ERROR )
-		m_error_collection.add( ErrorRecord( full_msg, type, err_code ) );
+		get_error_collection().add( ErrorRecord( full_msg, type, err_code ) );
 
 	// trace it
 	DG_TRC_CRITICAL( type_str, (msg + " | "  + location2str( file, line, func ) ).c_str() );
@@ -880,10 +883,10 @@ inline bool DG::ErrorHandling::errorsPrint( std::ostream &strm, const std::strin
 	std::stringstream all_errors;
 	std::stringstream critical_errors;
 
-	if( m_error_collection.m_err_deque.empty() )
+	if( get_error_collection().m_err_deque.empty() )
 		return false;
 
-	for( auto &rec : m_error_collection.m_err_deque )
+	for( auto &rec : get_error_collection().m_err_deque )
 	{
 		all_errors << rec.m_err_msg;
 		if( rec.m_err_type >= ErrorType::CRITICAL_ERROR )

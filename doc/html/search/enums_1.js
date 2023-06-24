@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['runtime_5fagent_5ftypes_326',['RUNTIME_AGENT_TYPES',['../namespaceDG.html#a665d711747916741a743540697e08616',1,'DG']]]
+  ['tristate_319',['TriState',['../structDG_1_1ModelQuery.html#a9def9bedb44f0f0856183c3f8e235eca',1,'DG::ModelQuery']]]
 ];
