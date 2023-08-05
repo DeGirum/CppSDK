@@ -98,12 +98,13 @@
 
 /// Helper macros used in DG_TRC_xxx macros to reduce copy-paste
 /// Trace with static message
-#define DG_TRC_DO( group, name, level, type, ... )                                                  \
-	do                                                                                              \
-	{                                                                                               \
-		if( ( level ) <= DG_TRC_GROUP_VAR( group ) )                                                \
-			DGTrace::getTracingFacility().traceDo( type, #group "::" #name, level, ##__VA_ARGS__ ); \
+#define DG_TRC_DO( group, name, level, type, ... )                                                     \
+	do                                                                                                 \
+	{                                                                                                  \
+		if( ( level ) <= DG_TRC_GROUP_VAR( group ) )                                                   \
+			DGTrace::getTracingFacility().traceDo( type, #group "::" #name, level, ##__VA_ARGS__, 0 ); \
 	} while( 0 )
+
 /// Trace with printf-like message
 #define DG_TRC_PRINTF_DO( group, name, level, type, msg, ... )                                                 \
 	do                                                                                                         \
