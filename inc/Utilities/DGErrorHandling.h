@@ -356,11 +356,7 @@ namespace DG
 		inline static std::string stackTrace( size_t skip, size_t depth );
 
 		/// Get global collection of registered errors
-		static ErrorCollection& get_error_collection()
-		{
-			static ErrorCollection instance;
-			return instance;
-		}
+		static ErrorCollection& get_error_collection();
 
 public:
 		/// Last error recorded

@@ -83,41 +83,56 @@ namespace DG
 		/// \param[in] port - server TCP port number
 		/// \param[in] timeout_s - intended timeout in seconds
 		/// \return socket object with established connection to server
-		inline socket_t socket_connect( io_context_t &io_context, const std::string &ip, int port, size_t timeout_s )
+		inline socket_t socket_connect( io_context_t &io_context, const std::string &ip, int port, size_t timeout_s, int retries = 3 )
 		{
 			asio::error_code error;
 			asio::ip::tcp::resolver resolver( io_context );
 			asio::ip::tcp::resolver::results_type endpoints = resolver.resolve( asio::ip::tcp::v4(), ip, std::to_string( port ) );
 			socket_t ret( io_context );
 
-			// Start the asynchronous operation itself. The lambda that is used as a
-			// callback will update the error variable when the operation completes.
-			asio::async_connect(
-				ret,
-				endpoints,
-				[ &error ]( const asio::error_code &result_error, const asio::ip::tcp::endpoint & /*result_endpoint*/ ) { error = result_error; } );
-
-			// Run the operation until it completes, or until the timeout.
-			run_async( io_context, timeout_s * 1000 );
-
-			// If the asynchronous operation completed successfully then the io_context
-			// would have been stopped due to running out of work. If it was not
-			// stopped, then the io_context::run_for call must have timed out.
-			if( !io_context.stopped() )
+			for( int attempt = 0; attempt < retries; attempt++ )
 			{
-				// Close the socket to cancel the outstanding asynchronous operation.
-				ret.close();
+				error = asio::error_code(); // clear error code
 
-				// Run the io_context again until the operation completes.
-				io_context.run();
+				// Start the asynchronous operation itself. The lambda that is used as a
+				// callback will update the error variable when the operation completes.
+				asio::async_connect(
+					ret,
+					endpoints,
+					[ &error ]( const asio::error_code &result_error, const asio::ip::tcp::endpoint & /*result_endpoint*/ ) {
+						error = result_error;
+					} );
+
+				// Run the operation until it completes, or until the timeout.
+				run_async( io_context, timeout_s * 1000 );
+
+				// If the asynchronous operation completed successfully then the io_context
+				// would have been stopped due to running out of work. If it was not
+				// stopped, then the io_context::run_for call must have timed out.
+				if( !io_context.stopped() )
+				{
+					// Close the socket to cancel the outstanding asynchronous operation.
+					ret.close();
+
+					// Run the io_context again until the operation completes.
+					io_context.run();
+				}
+
+				// Restart the io_context to leave it pristine
+				io_context.restart();
+
+				// Determine whether a connection was successfully established.
+				if( !error )
+					break;
 			}
 
-			// Restart the io_context to leave it pristine
-			io_context.restart();
-
-			// Determine whether a connection was successfully established.
+			// Report final error
 			if( error )
-				DG_ERROR( error.message(), ErrSystem );
+				DG_ERROR(
+					DG_FORMAT(
+						"Error connecting to " << ip << ":" << port << " after " << retries << " retries with timeout " << timeout_s
+											   << " s: " << error.message() ),
+					ErrSystem );
 
 			ret.set_option( asio::ip::tcp::no_delay( true ) );
 			return ret;

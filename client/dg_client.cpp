@@ -387,10 +387,11 @@ namespace DG
 				{
 					DG_ERROR(
 						DG_FORMAT(
-							"Timeout waiting for space "
-							"in queue on AI server '"
-							<< m_command_socket.remote_endpoint().address().to_string() << ":" << m_command_socket.remote_endpoint().port()
-							<< " (queue depth is " << m_frame_queue_depth << ")" ),
+							"Timeout " << m_inference_timeout_ms
+									   << " ms waiting for space in queue on AI server '"
+									   << m_command_socket.remote_endpoint().address().to_string()
+									   << ":" << m_command_socket.remote_endpoint().port()
+									   << " (queue depth is " << m_frame_queue_depth << ")" ),
 						ErrTimeout );
 				}
 
@@ -436,8 +437,9 @@ namespace DG
 							if( completed_tasks == 0 )
 								DG_ERROR(
 									DG_FORMAT(
-										"Timeout waiting for response from AI server '" << m_stream_socket.remote_endpoint().address().to_string()
-																						<< ":" << m_stream_socket.remote_endpoint().port() ),
+										"Timeout " << m_inference_timeout_ms << " ms waiting for response from AI server '"
+												   << m_stream_socket.remote_endpoint().address().to_string() << ":"
+												   << m_stream_socket.remote_endpoint().port() ),
 									ErrTimeout );
 
 

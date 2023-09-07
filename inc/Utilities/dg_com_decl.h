@@ -35,12 +35,12 @@
 #ifndef CPPVISIBILITY
 	#if defined( __GNUG__ )
 		#define CPPVISIBILITY(vis) __attribute__((visibility(#vis)))
-    #define DLL_PUBLIC __attribute__ ((visibility ("default")))
-    #define DLL_LOCAL  __attribute__ ((visibility ("hidden")))
+	#define DLL_PUBLIC __attribute__ ((visibility ("default")))
+	#define DLL_LOCAL  __attribute__ ((visibility ("hidden")))
 	#else
 		#define CPPVISIBILITY(vis)
-    #define DLL_PUBLIC
-    #define DLL_LOCAL
+	#define DLL_PUBLIC
+	#define DLL_LOCAL
 	#endif
 #endif
 
@@ -72,5 +72,15 @@
 
 /// Size of various string buffers used in DG tracing and logging facilities to buffer strings
 #define DG_LOG_TRACE_BUF_SIZE 2048
+
+
+/// Shared library export macro
+#if defined(WIN32) || defined(_WIN32)
+	#define DG_EXPORT_API __declspec(dllexport)
+#elif __APPLE__
+	#define DG_EXPORT_API __attribute__ ((visibility("default"))) 
+#else
+	#define DG_EXPORT_API 
+#endif
 
 #endif	// DG_COM_DECL_H
