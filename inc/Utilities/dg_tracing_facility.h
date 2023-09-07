@@ -87,8 +87,9 @@
 /// trace points. The tracing level can be set for each trace group in the configuration file.
 /// A trace point will be traced only when the tracing level of that trace point is not higher than
 /// the tracing level currently set for the corresponding trace group.
-#define DG_TRC_GROUP_DEF( name ) \
-	inline DGTrace::TraceLevel_t DG_TRC_GROUP_VAR( name ) = DGTrace::getTraceGroupsRegistry().registerTraceGroup( &DG_TRC_GROUP_VAR( name ), #name );
+#define DG_TRC_GROUP_DEF( name )                   \
+	inline DGTrace::TraceLevel_t DG_TRC_GROUP_VAR( \
+		name ) = DGTrace::getTracingFacility().m_trace_registry.registerTraceGroup( &DG_TRC_GROUP_VAR( name ), #name );
 
 /// RAII-style macro to trace entry-exit points from a block
 #define DG_TRC_BLOCK( group, name, level, ... ) \
@@ -275,8 +276,8 @@ struct TraceGroupsRegistry
 	inline static std::string getTempPath();
 
 	// tracing facility configuration parameters
-	bool m_TraceStatisticsEnable;  //!< enable collection and reporting of trace statistics
-	bool m_TraceImmediateFlush;    //!< flush trace immediately, do not buffer
+	bool m_TraceStatisticsEnable = false;  //!< enable collection and reporting of trace statistics
+	bool m_TraceImmediateFlush = false;    //!< flush trace immediately, do not buffer
 
 private:
 	enum
@@ -286,7 +287,7 @@ private:
 	enum
 	{
 		MAX_GR_NAME = 64
-	};                                              //!< max. trace group name length
+	};  //!< max. trace group name length
 
 	size_t m_groupsCount;                           //!< # of registered trace groups
 	TraceGroupDesc m_groupsRegistry[ MAX_GROUPS ];  //!< array of all registered trace groups
@@ -298,8 +299,8 @@ private:
 		char m_groupName[ MAX_GR_NAME ];  //!< group symbolic name
 	};
 
-	TraceGroupConfig m_groupsConfig[ MAX_GROUPS ];  //!< array of all loaded group config. records
-	size_t m_configsCount;                          //!< # of config. records
+	TraceGroupConfig m_groupsConfig[ MAX_GROUPS ] = {};  //!< array of all loaded group config. records
+	size_t m_configsCount = 0;                           //!< # of config. records
 
 	/// Load configuration from configuration file
 	void loadConfig()
@@ -387,7 +388,7 @@ private:
 	/// Apply configuration to given group entry
 	void applyConfig( size_t idx )
 	{
-		if( m_configsCount == 0 )   // == 0 means config was never loaded
+		if( m_configsCount == 0 )  // == 0 means config was never loaded
 			loadConfig();
 		if( m_configsCount == -1 )  // == -1 means config was loaded unsuccessfully
 			return;
@@ -404,19 +405,12 @@ private:
 	}
 };
 
-/// Define global variable to store trace groups registry with weak linkage.
-/// Weak linkage is needed so this variable will be linked only once when this file is
-/// included in multiple .cpp files
-inline TraceGroupsRegistry &getTraceGroupsRegistry()
-{
-	static TraceGroupsRegistry instance;
-	return instance;
-}
-
 /// Tracing facility class: implements all functionality of tracing facility
 class TracingFacility
 {
 public:
+	TraceGroupsRegistry m_trace_registry;  //!< trace groups registry
+
 	/// Trace point types
 	enum class TraceType : int
 	{
@@ -495,7 +489,7 @@ public:
 		rec.m_type = type;  // should be assigned last; this marks that the record becomes valid
 
 		// flush critical traces and if flush is enabled globally
-		if( level == lvlNone || getTraceGroupsRegistry().m_TraceImmediateFlush )
+		if( level == lvlNone || m_trace_registry.m_TraceImmediateFlush )
 			flush();
 	}
 
@@ -531,7 +525,7 @@ public:
 		{
 			m_stringPool.lock();  // lock string pool to have strings in pool in the same order as records in trace buffer
 
-								  // reserve space in the pool: atomically increment write pointer
+			// reserve space in the pool: atomically increment write pointer
 			size_t free_pos = m_stringPool.m_BufWP.fetch_add( msg_len );
 			unsigned flags = TraceRec::InStringPool;
 
@@ -602,13 +596,13 @@ private:
 		std::thread::id m_threadID;     //!< thread ID, which performed tracing
 		const char *m_message;          //!< additional trace message (can be nullptr)
 
-										/// various bit flags
+		/// various bit flags
 		enum Flags : unsigned
 		{
 			TimingDistorted = 0x01,  //!< timing of this record may be distorted due to waiting for buffer flush
 			InStringPool = 0x02,     //!< message is in string pool
 		};
-		unsigned m_Flags;            //!< various bit flags
+		unsigned m_Flags;  //!< various bit flags
 
 		/// Are two trace points match?
 		bool match( const TraceRec &rhs )
@@ -637,7 +631,7 @@ private:
 		std::atomic< size_t > m_BufWP;  //!< buffer current write position (free-running)
 		std::atomic< size_t > m_BufRP;  //!< buffer current read position (free-running)
 
-										/// Constructor
+		/// Constructor
 		RingBuffer( size_t new_size )
 		{
 			m_BufSize = new_size;
@@ -723,8 +717,8 @@ private:
 	};
 
 	// trace records buffer: arranged as circular buffer with free-running pointers
-	RingBuffer< TraceRec > m_traceBuf;    //!< trace buffer
-	StringPool m_stringPool;              //!< string pool
+	RingBuffer< TraceRec > m_traceBuf;  //!< trace buffer
+	StringPool m_stringPool;            //!< string pool
 
 	std::thread m_thread;                 //!< worker thread to periodically print the buffer
 	std::condition_variable m_thread_cv;  //!< condition variable to wake up worker thread
@@ -733,10 +727,10 @@ private:
 	std::atomic_bool m_do_flush;          //!< flush flag
 	std::atomic_bool m_do_restart;        //!< restart flag
 
-	std::ostream *m_outStream;            //!< pointer to active output stream object to print trace into
-	std::ofstream m_outFileStream;        //!< file stream object to print trace into
-	std::string m_outFileName;            //!< filename of that stream
-	bool m_isOwnStream;                   //!< 'is stream object owned by tracing facility' flag
+	std::ostream *m_outStream;      //!< pointer to active output stream object to print trace into
+	std::ofstream m_outFileStream;  //!< file stream object to print trace into
+	std::string m_outFileName;      //!< filename of that stream
+	bool m_isOwnStream;             //!< 'is stream object owned by tracing facility' flag
 
 	/// trace statistics
 	struct TraceStats
@@ -861,7 +855,7 @@ private:
 					else
 						indent_level = -1;  // start/stop do not match: unknown indent
 
-					if( getTraceGroupsRegistry().m_TraceStatisticsEnable && indent_level >= 0 )
+					if( me->m_trace_registry.m_TraceStatisticsEnable && indent_level >= 0 )
 					{
 						auto it = me->m_trace_stats.find( rec.m_traceName );
 						if( it == me->m_trace_stats.end() )
@@ -902,7 +896,7 @@ private:
 						"%c%6lld.%08.1f :%10.1f] %2s [%1u] %s%*s %s%s%s\n",
 						( rec.m_Flags & TraceRec::TimingDistorted ) ? '*' : '[',
 						timestamp_s,
-						(timestamp_ns - timestamp_s * 1e9) * 1e-3,
+						( timestamp_ns - timestamp_s * 1e9 ) * 1e-3,
 						delta_ns * 1e-3,
 						thread_state.thread_label,
 						rec.m_level,
@@ -956,7 +950,7 @@ private:
 			// cache shared vars:
 			const size_t wp_pool = me->m_stringPool.m_BufWP;  // string pool first (it is OK to release not whole pool)
 			const size_t rp_pool = me->m_stringPool.m_BufRP;
-			const size_t wp = me->m_traceBuf.m_BufWP;         // then trace buffer
+			const size_t wp = me->m_traceBuf.m_BufWP;  // then trace buffer
 			const size_t rp = me->m_traceBuf.m_BufRP;
 			if( wp > rp || me->m_do_restart || me->m_do_flush )
 			{
@@ -985,7 +979,7 @@ private:
 		if( m_outStream->good() )
 		{
 			// print statistics
-			if( getTraceGroupsRegistry().m_TraceStatisticsEnable )
+			if( m_trace_registry.m_TraceStatisticsEnable )
 			{
 				*m_outStream << "\n--------------Statistics--------------\n\n";
 				*m_outStream << std::setprecision( 1 ) << std::fixed;
@@ -1020,13 +1014,21 @@ private:
 	}
 };
 
-/// Define global variable to store tracing facility singleton with weak linkage.
-/// Weak linkage is needed so this variable will be linked only once when this file is
-/// included in multiple .cpp files
+/// Original tracing facility object designator
+#define DG_TRC_ORIGINAL_FACILITY ( reinterpret_cast< DGTrace::TracingFacility * >( -1 ) )
+
+/// Get global tracing facility object and optionally substitute it with another object provided as a parameter
+/// \param[in] substitute - pointer to an object to substitute global tracing facility object with
+/// Special values:
+///  - nullptr - do not substitute
+///  - DG_TRC_ORIGINAL_FACILITY - reset to original
+/// \return reference to current (either original or substituted) tracing facility object
+extern "C" DG_EXPORT_API TracingFacility *manageTracingFacility( TracingFacility *substitute = nullptr );
+
+/// Get global tracing facility object
 inline TracingFacility &getTracingFacility()
 {
-	static TracingFacility instance;
-	return instance;
+	return *manageTracingFacility();
 }
 
 /// RAII-style tracer class, which issues starting trace on construction and ending trace on destruction
@@ -1144,7 +1146,7 @@ inline void DGTrace::TracingFacility::ownStreamCheckOpen()
 		if( m_outFileStream.good() )
 		{
 			DG::FileHelper::lockFileStreamUnderlyingFileHandle( m_outFileStream );
-			getTraceGroupsRegistry().printHeader( m_outFileStream );
+			m_trace_registry.printHeader( m_outFileStream );
 		}
 
 		m_do_restart = false;

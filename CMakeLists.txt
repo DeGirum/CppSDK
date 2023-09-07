@@ -38,6 +38,7 @@ endif()
 set( DG_API_SRCs
 	${SRCPATH}/dg_client.cpp
   	${SRCPATH}/dg_model_api.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/inc/Utilities/dg_utility_singletons.cpp
 )
 
 find_package( Threads REQUIRED )
