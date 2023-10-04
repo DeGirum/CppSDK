@@ -554,6 +554,9 @@ public:
 	void flush( bool do_wait = false )
 	{
 		ensureThreadRuns();
+		if( !m_thread.joinable() )
+			return;
+
 		m_do_flush = true;
 		{
 			std::unique_lock< std::mutex > lk( m_thread_mutex );
@@ -754,14 +757,17 @@ private:
 	{
 		if( !m_thread.joinable() )
 		{
+			std::unique_lock< std::mutex > lk( m_thread_mutex );
 			ownStreamCheckOpen();  // open file stream if it is owned by facility and not opened yet
 			try
 			{
-				std::unique_lock< std::mutex > lk( m_thread_mutex );
-				// start worker thread
-				m_thread = std::thread( workerThreadFunc, this );
-				// wait for start
-				m_thread_cv.wait_for( lk, std::chrono::milliseconds( 1000 ) );
+				if( !m_thread.joinable() ) // check one more time to avoid race conditions
+				{
+					// start worker thread
+					m_thread = std::thread( workerThreadFunc, this );
+					// wait for start
+					m_thread_cv.wait_for( lk, std::chrono::milliseconds( 1000 ) );
+				}
 			}
 			catch( ... )  // ignore all errors
 			{}
@@ -940,7 +946,8 @@ private:
 		for( ;; )
 		{
 			// sleep on CV
-			auto wait_ret = me->m_thread_cv.wait_for( lk, std::chrono::milliseconds( 1000 ) );
+			if( !me->m_poison )
+				auto wait_ret = me->m_thread_cv.wait_for( lk, std::chrono::milliseconds( 1000 ) );
 			// here we own m_thread_mutex
 
 			//

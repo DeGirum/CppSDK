@@ -17,6 +17,7 @@
 #define DG_TYPE_H
 
 #include <string.h>
+#include <stdint.h>
 
 
 /// Type bit width enumerator
@@ -53,14 +54,22 @@ typedef enum DGType
 }
 	DGType;
 
+
 #ifdef __cplusplus
 namespace DG
 {
+
 	namespace DGTypeStrings {
 	#define _(X, ctype, bitw) static constexpr const char* s##X = #X;
 		DG_TYPE_LIST
 	#undef _
 	}
+	template< typename T>
+	struct DGTypeDetails {};
+	#define _(X, ctype, bitw) template <> struct DGTypeDetails<ctype> { static constexpr DGType type = X; static constexpr const char* string = DGTypeStrings::s ## X; };
+		DG_TYPE_LIST
+	#undef _
+
 #endif
 
 	/// Return bit width of given type ID
