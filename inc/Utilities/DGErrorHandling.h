@@ -43,6 +43,7 @@
 	_( ErrCompilerBadState, 0x00000019, "Failure in compiler stage" )                         \
 	_( ErrFailedUserConstraints, 0x0000001A, "Failed to satisfy user-specified constraints" ) \
 	_( ErrFirmwareLoad, 0x0000001B, "Firmware load failed" )                                  \
+	_( ErrIncorrectAPIUse, 0x0000001C, "Incorrect API usage" )                                \
                                                                                               \
 	_( ErrContinue, 0x00001000, "<continued>" )                                               \
 	_( ErrAssert, 0x00001001, "Execution failed" )                                            \

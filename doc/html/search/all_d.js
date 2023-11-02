@@ -1,10 +1,12 @@
 var searchData=
 [
-  ['quant_5faxis_116',['quant_axis',['../structDG_1_1BasicTensor_1_1quant__params__t.html#ace33c3b7ea31b9c15712d52bf0bee15d',1,'DG::BasicTensor::quant_params_t']]],
-  ['quant_5fparams_117',['quant_params',['../structDG_1_1BasicTensor_1_1quant__params__t.html#ae45912e42a2d0fa752cf3bbb94598440',1,'DG::BasicTensor::quant_params_t']]],
-  ['quant_5fparams_5ft_118',['quant_params_t',['../structDG_1_1BasicTensor_1_1quant__params__t.html',1,'DG::BasicTensor::quant_params_t'],['../structDG_1_1BasicTensor_1_1quant__params__t.html#aa6e1ce915d14fccc6b98cc439683e102',1,'DG::BasicTensor::quant_params_t::quant_params_t()'],['../structDG_1_1BasicTensor_1_1quant__params__t.html#a78ad9aeefbf7a6365977cbb9e5057bf0',1,'DG::BasicTensor::quant_params_t::quant_params_t(const scale_t &amp;global_qparam)'],['../structDG_1_1BasicTensor_1_1quant__params__t.html#a93c7d6f0b7ae7ff48322a4b2460182f7',1,'DG::BasicTensor::quant_params_t::quant_params_t(int axis, const std::vector&lt; scale_t &gt; &amp;qparams)'],['../structDG_1_1BasicTensor_1_1quant__params__t.html#a9b66dd0237d0a0d0d1357e51adedc37f',1,'DG::BasicTensor::quant_params_t::quant_params_t(int axis, const std::vector&lt; SCALE_T &gt; &amp;scales, const std::vector&lt; ZERO_T &gt; &amp;zeros)']]],
-  ['quant_5fscales_119',['quant_scales',['../structDG_1_1BasicTensor_1_1quant__params__t.html#a65ec56cc1cb8f7a3ff80f05b265b235e',1,'DG::BasicTensor::quant_params_t']]],
-  ['quant_5fzeros_120',['quant_zeros',['../structDG_1_1BasicTensor_1_1quant__params__t.html#a47fcf2016f4e6c3d6e6a107dc6b593cf',1,'DG::BasicTensor::quant_params_t']]],
-  ['quantize_121',['quantize',['../classDG_1_1BasicTensor.html#a3be5e9987f59546e494252dd8c342aed',1,'DG::BasicTensor']]],
-  ['quantparams_122',['quantParams',['../classDG_1_1BasicTensor.html#a94e8fe543e4673809deb2333d825e004',1,'DG::BasicTensor']]]
+  ['paramexist_112',['paramExist',['../classDG_1_1ModelParamsReadAccess.html#afcb6c0195cc2250457c96a5733474809',1,'DG::ModelParamsReadAccess']]],
+  ['paramget_113',['paramGet',['../classDG_1_1ModelParamsReadAccess.html#a16166ca43b484f4667baae7da397ef6b',1,'DG::ModelParamsReadAccess']]],
+  ['paramset_114',['paramSet',['../classDG_1_1ModelParamsWriteAccess.html#a43c1bd1341f5a1d6fda7e15b1d5b0c71',1,'DG::ModelParamsWriteAccess']]],
+  ['parse_115',['parse',['../classDG_1_1JsonHelper.html#ad522c938938ea878e844f157890be683',1,'DG::JsonHelper']]],
+  ['parse_5fignore_5ferrors_116',['parse_ignore_errors',['../classDG_1_1JsonHelper.html#a32f23e96e0371374d8b7eadca5ba5c24',1,'DG::JsonHelper']]],
+  ['port_117',['port',['../structDG_1_1ServerAddress.html#a4320a1309cdaafd3bcdf4b0656066a09',1,'DG::ServerAddress']]],
+  ['predict_118',['predict',['../classDG_1_1AIModel.html#ad7a35ec0ba3e9e4fa2312718ba959c86',1,'DG::AIModel::predict()'],['../classDG_1_1AIModelAsync.html#a1b12692b190b36e7e0e366f0bb59fdef',1,'DG::AIModelAsync::predict()']]],
+  ['protocol_5fversion_5ftag_119',['PROTOCOL_VERSION_TAG',['../namespaceDG.html#a9df49a2853772920734be7d99e96aade',1,'DG']]],
+  ['protocolmismatch_120',['ProtocolMismatch',['../namespaceDG.html#ac0697b890ca551f2b714b743707db549a2e226d5a8a29a5a5c482573c88d31e01',1,'DG']]]
 ];

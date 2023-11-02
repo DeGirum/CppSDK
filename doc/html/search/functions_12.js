@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['waitcompletion_265',['waitCompletion',['../classDG_1_1AIModelAsync.html#a9c08f21e655345c17617df8d6d71774b',1,'DG::AIModelAsync']]]
+  ['versionget_275',['versionGet',['../namespaceDG.html#ae8feea95766cbc4474d6d9c0601b2fd6',1,'DG']]]
 ];

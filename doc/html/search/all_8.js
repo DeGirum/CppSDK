@@ -1,8 +1,14 @@
 var searchData=
 [
-  ['label_62',['label',['../structDG_1_1ModelParamsSection.html#a651fd5d97de46e5493633ee4335dbc06',1,'DG::ModelParamsSection']]],
-  ['labeldictionary_63',['labelDictionary',['../namespaceDG.html#acac45c44fa4c75613f425b56561c2e84',1,'DG']]],
-  ['lasterror_64',['lastError',['../classDG_1_1AIModelAsync.html#a25c1ada23af9b591a45171e9a795092b',1,'DG::AIModelAsync']]],
-  ['linearsizeget_65',['linearSizeGet',['../classDG_1_1BasicTensor.html#a05aa65fdfbba955356a035514515600c',1,'DG::BasicTensor']]],
-  ['linearsizeget_5fbytes_66',['linearSizeGet_bytes',['../classDG_1_1BasicTensor.html#a5798c5685780149297cdd9314bb00349',1,'DG::BasicTensor']]]
+  ['json_58',['json',['../namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95',1,'DG']]],
+  ['jsondeserialize_59',['jsonDeserialize',['../classDG_1_1JsonHelper.html#aad5191012f4b74f288996a5d91632ef7',1,'DG::JsonHelper']]],
+  ['jsondeserializestr_60',['jsonDeserializeStr',['../classDG_1_1JsonHelper.html#a02e88aa5718fb41a51e63e135b7296e4',1,'DG::JsonHelper']]],
+  ['jsonget_61',['jsonGet',['../classDG_1_1ModelParamsReadAccess.html#afec208ca905d9ccf726afef0312ad1eb',1,'DG::ModelParamsReadAccess']]],
+  ['jsongetmandatoryvalue_62',['jsonGetMandatoryValue',['../namespaceDG.html#af9744e0c4c628a3e463dbab49714ab8d',1,'DG']]],
+  ['jsongetoptionalvalue_63',['jsonGetOptionalValue',['../namespaceDG.html#a38e8c2c3b9fed556325c4a6d53bd01cf',1,'DG']]],
+  ['jsonhelper_64',['JsonHelper',['../classDG_1_1JsonHelper.html',1,'DG']]],
+  ['jsonkeyexist_65',['jsonKeyExist',['../namespaceDG.html#a195837ffaa5e4fe9374639b44e999e40',1,'DG']]],
+  ['jsonserialize_66',['jsonSerialize',['../classDG_1_1JsonHelper.html#a6f59073d190b364768ce941813a44a2b',1,'DG::JsonHelper']]],
+  ['jsonserializestr_67',['jsonSerializeStr',['../classDG_1_1JsonHelper.html#ac4fc3a4d28e856540d5f804c1b661caa',1,'DG::JsonHelper']]],
+  ['jsonsetoptionalvalue_68',['jsonSetOptionalValue',['../namespaceDG.html#aec2d22826812f2e2c49839fde15637e7',1,'DG']]]
 ];

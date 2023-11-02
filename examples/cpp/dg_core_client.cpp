@@ -71,8 +71,7 @@ int main( int argc, char **argv )
 		//
 		if( do_shutdown )
 		{
-			DG::Client client( server_ip );
-			client.shutdown();
+			DG::shutdown( server_ip );
 			std::cout << "Shutdown " << server_ip << "\n";
 			return 0;
 		}
@@ -121,7 +120,7 @@ int main( int argc, char **argv )
 			std::cout << "File: " << files[ fi ] << "...";
 
 			// send frame for inference
-			json resp;
+			DG::json resp;
 			std::vector< std::vector< char > > frame = { DG::FileHelper::file2vector< char >( files[ fi ] ) };
 			model.predict( frame, resp );
 

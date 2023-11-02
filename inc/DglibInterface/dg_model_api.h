@@ -110,9 +110,9 @@ namespace DG
 	/// If the model is not found, the model descriptor contains an empty model name.
 	ModelInfo modelFind( const std::string &server, const ModelQuery &query );
 
-	/// Check given AI server Json response for run-time errors. If AI server reported run-time error
-	/// in the given Json response, then this function extracts and returns the error message string from 
-	/// the provided Json array, otherwise it returns an empty string.
+	/// Check given AI server JSON response for run-time errors. If AI server reported run-time error
+	/// in the given JSON response, then this function extracts and returns the error message string from 
+	/// the provided JSON array, otherwise it returns an empty string.
 	std::string errorCheck( const json &json_response );
 
 	/// Get model label dictionary
@@ -241,7 +241,7 @@ namespace DG
 
 		/// User callback type. The callback is called asynchronously from the main execution thread
 		/// as soon as prediction result is ready.
-		/// Consecutive prediction result in a form of Json array is passed as the inference_result argument.
+		/// Consecutive prediction result in a form of JSON array is passed as the inference_result argument.
 		/// Corresponding frame info string (provided to predict() call) is passed as the frame_info argument.
 		using callback_t = std::function< void( const json &inference_result, const std::string &frame_info ) >;
 

@@ -77,7 +77,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Json helper class: contains assorted static methods to operate with Json configurations.  
+<p>JSON helper class: contains assorted static methods to operate with JSON configurations.  
  <a href="classDG_1_1JsonHelper.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="dg__json__helpers_8h_source.html">dg_json_helpers.h</a>&gt;</code></p>
@@ -86,7 +86,7 @@ $(function() {
 Public Types</h2></td></tr>
 <tr class="memitem:ac52d8abb6d17a3ee97eb5e7f2133c794"><td class="memItemLeft" align="right" valign="top"><a id="ac52d8abb6d17a3ee97eb5e7f2133c794"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1JsonHelper.html#ac52d8abb6d17a3ee97eb5e7f2133c794">serial_container_t</a> = json::binary_t::container_type</td></tr>
-<tr class="memdesc:ac52d8abb6d17a3ee97eb5e7f2133c794"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container type for serialized Json array (it is std::vector&lt; unit8_t &gt;) <br /></td></tr>
+<tr class="memdesc:ac52d8abb6d17a3ee97eb5e7f2133c794"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container type for serialized JSON array (it is std::vector&lt; unit8_t &gt;) <br /></td></tr>
 <tr class="separator:ac52d8abb6d17a3ee97eb5e7f2133c794"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
@@ -95,8 +95,12 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a21b6afd6e3ad91941642c2e1de25109a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad5191012f4b74f288996a5d91632ef7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1JsonHelper.html#aad5191012f4b74f288996a5d91632ef7">jsonDeserialize</a> (const <a class="el" href="classDG_1_1JsonHelper.html#ac52d8abb6d17a3ee97eb5e7f2133c794">serial_container_t</a> &amp;v)</td></tr>
 <tr class="separator:aad5191012f4b74f288996a5d91632ef7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02e88aa5718fb41a51e63e135b7296e4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1JsonHelper.html#a02e88aa5718fb41a51e63e135b7296e4">jsonDeserializeStr</a> (const std::string &amp;v)</td></tr>
+<tr class="separator:a02e88aa5718fb41a51e63e135b7296e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f59073d190b364768ce941813a44a2b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classDG_1_1JsonHelper.html#ac52d8abb6d17a3ee97eb5e7f2133c794">serial_container_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1JsonHelper.html#a6f59073d190b364768ce941813a44a2b">jsonSerialize</a> (const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> &amp;j)</td></tr>
 <tr class="separator:a6f59073d190b364768ce941813a44a2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4fc3a4d28e856540d5f804c1b661caa"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1JsonHelper.html#ac4fc3a4d28e856540d5f804c1b661caa">jsonSerializeStr</a> (const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> &amp;j)</td></tr>
+<tr class="separator:ac4fc3a4d28e856540d5f804c1b661caa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad522c938938ea878e844f157890be683"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1JsonHelper.html#ad522c938938ea878e844f157890be683">parse</a> (const std::string &amp;json_cfg, const char *file, const char *line, const char *func)</td></tr>
 <tr class="separator:ad522c938938ea878e844f157890be683"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32f23e96e0371374d8b7eadca5ba5c24"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1JsonHelper.html#a32f23e96e0371374d8b7eadca5ba5c24">parse_ignore_errors</a> (const std::string json_cfg)</td></tr>
@@ -107,7 +111,7 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:ac6756098142e29fc61a6493548772b18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Json helper class: contains assorted static methods to operate with Json configurations. </p>
+<div class="textblock"><p>JSON helper class: contains assorted static methods to operate with JSON configurations. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a21b6afd6e3ad91941642c2e1de25109a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a21b6afd6e3ad91941642c2e1de25109a">&#9670;&nbsp;</a></span>errorCheck()</h2>
@@ -148,9 +152,9 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Check server Json response for errors and throw exception, if any </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Check server JSON response for errors and throw exception, if any </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">response</td><td>- Json response from server/core </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">response</td><td>- JSON response from server/core </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">source</td><td>- description of the server command initiator </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">do_throw</td><td>- if true, throws exception in case of error </td></tr>
   </table>
@@ -183,13 +187,46 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Deserialize given byte vector with msgpack data into Json array </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Deserialize given byte vector with msgpack data into JSON array </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">v</td><td>- byte vector with msgpack data to deserialize </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Json array </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>JSON array </dd></dl>
+
+</div>
+</div>
+<a id="a02e88aa5718fb41a51e63e135b7296e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02e88aa5718fb41a51e63e135b7296e4">&#9670;&nbsp;</a></span>jsonDeserializeStr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> DG::JsonHelper::jsonDeserializeStr </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Deserialize given string with msgpack data into JSON array </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">v</td><td>- byte vector with msgpack data to deserialize </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>JSON array </dd></dl>
 
 </div>
 </div>
@@ -216,13 +253,46 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Serialize given Json array into byte vector using conversion to msgpack </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Serialize given JSON array into byte vector using conversion to msgpack </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">j</td><td>- Json array to serialize </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">j</td><td>- JSON array to serialize </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>byte vector with Json array contents converted to msgpack representation </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>byte vector with JSON array contents converted to msgpack representation </dd></dl>
+
+</div>
+</div>
+<a id="ac4fc3a4d28e856540d5f804c1b661caa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4fc3a4d28e856540d5f804c1b661caa">&#9670;&nbsp;</a></span>jsonSerializeStr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::string DG::JsonHelper::jsonSerializeStr </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>j</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Serialize given JSON array into string using conversion to msgpack </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">j</td><td>- JSON array to serialize </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>string with JSON array contents converted to msgpack representation </dd></dl>
 
 </div>
 </div>
@@ -271,16 +341,16 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Parse given Json string with proper exception handling </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Parse given JSON string with proper exception handling </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">json_cfg</td><td>- Json string to parse </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">json_cfg</td><td>- JSON string to parse </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">file</td><td>- file where parsing happens </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">line</td><td>- line in file where parsing happens </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">func</td><td>- function where parsing happens </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Json array </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>JSON array </dd></dl>
 
 </div>
 </div>
@@ -307,13 +377,13 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Parse given Json string with swallowing exceptions </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Parse given JSON string with swallowing exceptions </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">json_cfg</td><td>- Json string to parse </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">json_cfg</td><td>- JSON string to parse </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Json array or empty array, if parsing failed </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>JSON array or empty array, if parsing failed </dd></dl>
 
 </div>
 </div>
@@ -340,9 +410,9 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Convert Json array to basic tensor </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Convert JSON array to basic tensor </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">j</td><td>- Json array </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">j</td><td>- JSON array </td></tr>
   </table>
   </dd>
 </dl>
@@ -373,13 +443,13 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Convert basic tensor to Json array </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Convert basic tensor to JSON array </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">t</td><td>- basic tensor </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Json array </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>JSON array </dd></dl>
 
 </div>
 </div>
