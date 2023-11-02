@@ -197,6 +197,15 @@ struct TraceGroupsRegistry
 		const char *m_groupName;       //!< trace group symbolic name
 	};
 
+	/// Get trace level name from enum value
+	/// \param[in] level - trace level
+	/// \returns trace level name
+	static const char *traceLevelName( TraceLevel_t level )
+	{
+		return level == lvlBasic ? "Basic" : level == lvlDetailed ? "Detailed" : level == lvlFull ? "Full" : "None";
+	}
+
+
 	/// Register trace group. Used in DG_TRACE_GROUP_DEF() macro.
 	/// Called during global variables initialization
 	/// \param[in] groupAddress - address of trace group variable
@@ -212,6 +221,21 @@ struct TraceGroupsRegistry
 			m_groupsCount++;
 		}
 		return *groupAddress;
+	}
+
+	/// Unregister trace group
+	/// \param[in] groupAddress - address of trace group variable
+	/// \param[in] groupName - trace group symbolic name: used in configuration file to reference trace groups.
+	void unregisterTraceGroup( TraceLevel_t *groupAddress, const char *groupName )
+	{
+		for( size_t gi = 0; gi < m_groupsCount; gi++ )
+			if( m_groupsRegistry[ gi ].m_groupAddress == groupAddress &&
+				strcmp( m_groupsRegistry[ gi ].m_groupName, groupName ) == 0 )
+			{
+				m_groupsCount--;
+				std::swap( m_groupsRegistry[ gi ], m_groupsRegistry[ m_groupsCount ] );
+				break;
+			}
 	}
 
 	/// Return the list of registered trace groups: pointer to the beginning and size
@@ -250,11 +274,7 @@ struct TraceGroupsRegistry
 			{
 				nothing_enabled = false;
 				out_stream << "  " << std::setw( 32 ) << std::left << m_groupsRegistry[ ci ].m_groupName << " = "
-						   << ( *( m_groupsRegistry[ ci ].m_groupAddress ) == lvlBasic          ? "Basic"
-									: *( m_groupsRegistry[ ci ].m_groupAddress ) == lvlDetailed ? "Detailed"
-									: *( m_groupsRegistry[ ci ].m_groupAddress ) == lvlFull     ? "Full"
-																								: "None" )
-						   << '\n';
+						   << traceLevelName( *( m_groupsRegistry[ ci ].m_groupAddress ) ) << '\n';
 			}
 		if( nothing_enabled )
 			out_stream << "  <none>\n\n";
@@ -440,17 +460,26 @@ public:
 	/// Destructor
 	~TracingFacility()
 	{
-		if( m_traceBuf.m_BufWP > m_traceBuf.m_BufRP )
-			flush();
-
 		// send termination request to worker thread and wait for completion
 		if( m_thread.joinable() )
 		{
+			if( m_traceBuf.m_BufWP > m_traceBuf.m_BufRP )
+				flush();
+
 			std::unique_lock< std::mutex > lk( m_thread_mutex );
 			m_poison = true;
 			m_thread_cv.notify_one();
 			lk.unlock();
 			m_thread.join();
+		}
+		else
+		{
+			// if no worker thread is running, flush traces in main thread
+			if( m_traceBuf.m_BufWP > m_traceBuf.m_BufRP )
+			{
+				m_poison = true;
+				workerThreadFunc( this );
+			}
 		}
 	}
 

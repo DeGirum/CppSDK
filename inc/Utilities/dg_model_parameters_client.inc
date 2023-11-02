@@ -19,8 +19,25 @@
 	_( MeasureTime,					SECT_TOP,				bool,						false,			false,	true,	true,	None	) \
 	_( CloudToken,					SECT_TOP,				std::string,				"",				false,	true,	false,	None	) \
 	\
+	_( DeviceType,					SECT_DEVICE,			std::string,				"CPU",			false,	false,	true,	None	) \
+	_( RuntimeAgent,				SECT_DEVICE,			std::string,				"Default",		false,	false,	true,	None	) \
 	_( EagerBatchSize,				SECT_DEVICE,			size_t,						8,				false,	true,	true,	None	) \
 	\
+	_( ModelInputN,					SECT_MODEL_PARAMETERS,	int,						0,				true,	false,	false,	None	) \
+	_( ModelInputH,					SECT_MODEL_PARAMETERS,	int,						0,				true,	false,	false,	None	) \
+	_( ModelInputW,					SECT_MODEL_PARAMETERS,	int,						0,				true,	false,	false,	None	) \
+	_( ModelInputC,					SECT_MODEL_PARAMETERS,	int,						0,				true,	false,	false,	None	) \
+	_( ModelQuantEn,				SECT_MODEL_PARAMETERS,	bool,						false,			false,	false,	false,	None	) \
+	_( ModelFmt,					SECT_MODEL_PARAMETERS,	std::string,				"NHWC",			false,	false,	false,	None	) \
+	\
+	_( InputN,						SECT_PRE_PROCESS,		int,						0,				true,	false,	true,	ModelInputN ) \
+	_( InputH,						SECT_PRE_PROCESS,		int,						0,				true,	false,	true,	ModelInputH ) \
+	_( InputW,						SECT_PRE_PROCESS,		int,						0,				true,	false,	true,	ModelInputW ) \
+	_( InputC,						SECT_PRE_PROCESS,		int,						0,				true,	false,	true,	ModelInputC ) \
+	_( InputQuantEn,				SECT_PRE_PROCESS,		bool,						false,			false,	false,	true,	ModelQuantEn ) \
+	_( InputType,					SECT_PRE_PROCESS,		std::string,				"Image",		false,	false,	true,	None	) \
+	_( InputFmt,					SECT_PRE_PROCESS,		std::string,				"NHWC",			false,	false,	false,	ModelFmt	) \
+	_( InputTensorLayout,			SECT_PRE_PROCESS,		std::string,				"NHWC",			false,	false,	true,	InputFmt	) \
 	_( InputImgFmt,					SECT_PRE_PROCESS,		std::string,				"JPEG",			false,	true,	false,	None	) \
 	_( InputImgRawDataType,			SECT_PRE_PROCESS,		std::string,				"DG_UINT8",		false,	true,	false,	None	) \
 	_( InputRawDataType,			SECT_PRE_PROCESS,		std::string,				"DG_UINT8",		false,	true,	true,	InputImgRawDataType	) \

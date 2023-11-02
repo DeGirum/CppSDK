@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['no_322',['No',['../structDG_1_1ModelQuery.html#a9def9bedb44f0f0856183c3f8e235ecaa2300dbcb31f161ac28994ed74cb9336f',1,'DG::ModelQuery']]]
+  ['hostalive_334',['HostAlive',['../namespaceDG.html#ac0697b890ca551f2b714b743707db549ac0677dea360a0a36ccfcb27f2eab50e5',1,'DG']]],
+  ['http_335',['HTTP',['../namespaceDG.html#ab303c8ae900467383169dbcbaefcbaf3a293c9ea246ff9985dc6f62a650f78986',1,'DG']]]
 ];

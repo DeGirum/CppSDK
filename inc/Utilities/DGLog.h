@@ -152,8 +152,8 @@ public:
 	template< typename... Args >
 	bool log( const char *fmt, const Args &...args )
 	{
-		const auto unwrap_std_strings = []( auto arg ) constexpr {
-			if constexpr( std::is_same_v< decltype( arg ), std::string > )
+		const auto unwrap_std_strings = []( const auto &arg ) constexpr {
+			if constexpr( std::is_same_v< decltype( arg ), const std::string& > )
 				return arg.c_str();
 			else
 				return arg;

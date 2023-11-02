@@ -70,8 +70,7 @@ int main( int argc, char **argv )
 		//
 		if( do_shutdown )
 		{
-			DG::Client client( server_ip );
-			client.shutdown();
+			DG::shutdown( server_ip );
 			std::cout << "Shutdown " << server_ip << "\n";
 			return 0;
 		}
@@ -106,7 +105,7 @@ int main( int argc, char **argv )
 		//
 		// define user callback, which will handle inference results
 		//
-		auto callback = [ out_file, files ]( const json &inference_result, const std::string &frame_info )
+		auto callback = [ out_file, files ]( const DG::json &inference_result, const std::string &frame_info )
 		{
 			int response_index = std::stoi( frame_info );
 			std::string response_string = inference_result.dump();

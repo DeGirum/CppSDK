@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['yes_154',['Yes',['../structDG_1_1ModelQuery.html#a9def9bedb44f0f0856183c3f8e235ecaaa7c6732e38a4ceeff3def6e94ac29c72',1,'DG::ModelQuery']]]
+  ['w_160',['W',['../structDG_1_1ModelInfo.html#a444c7ca36e62bc1da60ee557546ebbe7',1,'DG::ModelInfo']]],
+  ['waitcompletion_161',['waitCompletion',['../classDG_1_1AIModelAsync.html#a9c08f21e655345c17617df8d6d71774b',1,'DG::AIModelAsync']]]
 ];

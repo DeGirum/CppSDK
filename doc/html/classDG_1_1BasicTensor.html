@@ -96,9 +96,12 @@ using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cla
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2554ca91c27c8b75306a940c38a8ae7c"><td class="memTemplParams" colspan="2">template&lt;class CONTAINER &gt; </td></tr>
-<tr class="memitem:a2554ca91c27c8b75306a940c38a8ae7c"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#a2554ca91c27c8b75306a940c38a8ae7c">alloc</a> (const CONTAINER &amp;source, bool do_copy=true, int32_t <a class="el" href="classDG_1_1BasicTensor.html#a7ff410ad73092d30a048ba99a958b361">id</a>=0, const std::string &amp;<a class="el" href="classDG_1_1BasicTensor.html#a99b9d4ca946716cc7907249e1bbf99d2">name</a>=&quot;&quot;, const <a class="el" href="classDG_1_1BasicTensor.html#a72d7916aa19b7e0f32c20a054fc38a18">shape_t</a> &amp;<a class="el" href="classDG_1_1BasicTensor.html#aa84ead1cde0ee4a49c8429d557f54804">shape</a>={}, const <a class="el" href="structDG_1_1BasicTensor_1_1quant__params__t.html">quant_params_t</a> &amp;quant_params={}) -&gt; decltype(source.data(), source.size(), void())</td></tr>
-<tr class="separator:a2554ca91c27c8b75306a940c38a8ae7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac73a5ec7f22ad70b588d341dc018be2a"><td class="memTemplParams" colspan="2">template&lt;class CONTAINER &gt; </td></tr>
+<tr class="memitem:ac73a5ec7f22ad70b588d341dc018be2a"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#ac73a5ec7f22ad70b588d341dc018be2a">adopt</a> (CONTAINER &amp;&amp;source, int32_t <a class="el" href="classDG_1_1BasicTensor.html#a7ff410ad73092d30a048ba99a958b361">id</a>=0, const std::string &amp;<a class="el" href="classDG_1_1BasicTensor.html#a99b9d4ca946716cc7907249e1bbf99d2">name</a>=&quot;&quot;, const <a class="el" href="classDG_1_1BasicTensor.html#a72d7916aa19b7e0f32c20a054fc38a18">shape_t</a> &amp;<a class="el" href="classDG_1_1BasicTensor.html#aa84ead1cde0ee4a49c8429d557f54804">shape</a>={}, const <a class="el" href="structDG_1_1BasicTensor_1_1quant__params__t.html">quant_params_t</a> &amp;quant_params={}) -&gt; decltype(source.data(), source.size(), void())</td></tr>
+<tr class="separator:ac73a5ec7f22ad70b588d341dc018be2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac52e9d03cad3679dbf63b0f56d8f1e52"><td class="memTemplParams" colspan="2">template&lt;class CONTAINER &gt; </td></tr>
+<tr class="memitem:ac52e9d03cad3679dbf63b0f56d8f1e52"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#ac52e9d03cad3679dbf63b0f56d8f1e52">alloc</a> (const CONTAINER &amp;source, bool do_copy, int32_t <a class="el" href="classDG_1_1BasicTensor.html#a7ff410ad73092d30a048ba99a958b361">id</a>=0, const std::string &amp;<a class="el" href="classDG_1_1BasicTensor.html#a99b9d4ca946716cc7907249e1bbf99d2">name</a>=&quot;&quot;, const <a class="el" href="classDG_1_1BasicTensor.html#a72d7916aa19b7e0f32c20a054fc38a18">shape_t</a> &amp;<a class="el" href="classDG_1_1BasicTensor.html#aa84ead1cde0ee4a49c8429d557f54804">shape</a>={}, const <a class="el" href="structDG_1_1BasicTensor_1_1quant__params__t.html">quant_params_t</a> &amp;quant_params={}) -&gt; decltype(source.data(), source.size(), void())</td></tr>
+<tr class="separator:ac52e9d03cad3679dbf63b0f56d8f1e52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5dc5711d093dd7ad4de94c143cf67067"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a5dc5711d093dd7ad4de94c143cf67067"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#a5dc5711d093dd7ad4de94c143cf67067">alloc</a> (int32_t <a class="el" href="classDG_1_1BasicTensor.html#a7ff410ad73092d30a048ba99a958b361">id</a>, const std::string &amp;<a class="el" href="classDG_1_1BasicTensor.html#a99b9d4ca946716cc7907249e1bbf99d2">name</a>, const <a class="el" href="classDG_1_1BasicTensor.html#a72d7916aa19b7e0f32c20a054fc38a18">shape_t</a> &amp;<a class="el" href="classDG_1_1BasicTensor.html#aa84ead1cde0ee4a49c8429d557f54804">shape</a>, const <a class="el" href="structDG_1_1BasicTensor_1_1quant__params__t.html">quant_params_t</a> &amp;quant_params={}, T *ext_lin_buffer=nullptr)</td></tr>
 <tr class="separator:a5dc5711d093dd7ad4de94c143cf67067"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -455,6 +458,7 @@ template&lt;class CONTAINER &gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">id</td><td>- tensor ID </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>- tensor name </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>- tensor shape vector, which defines dimensions of new tensor </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data_type</td><td>- tensor element data type id </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">quant_params</td><td>- tensor quantization parameters </td></tr>
   </table>
   </dd>
@@ -463,8 +467,8 @@ template&lt;class CONTAINER &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a2554ca91c27c8b75306a940c38a8ae7c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2554ca91c27c8b75306a940c38a8ae7c">&#9670;&nbsp;</a></span>alloc() <span class="overload">[1/3]</span></h2>
+<a id="ac73a5ec7f22ad70b588d341dc018be2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac73a5ec7f22ad70b588d341dc018be2a">&#9670;&nbsp;</a></span>adopt()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -475,16 +479,10 @@ template&lt;class CONTAINER &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto DG::BasicTensor::alloc </td>
+          <td class="memname">auto DG::BasicTensor::adopt </td>
           <td>(</td>
-          <td class="paramtype">const CONTAINER &amp;&#160;</td>
+          <td class="paramtype">CONTAINER &amp;&amp;&#160;</td>
           <td class="paramname"><em>source</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>do_copy</em> = <code>true</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -514,9 +512,85 @@ template&lt;class CONTAINER &gt; </div>
           <td></td>
           <td>)</td>
           <td></td><td> -&gt; decltype( source.data(), source.size(), void() )
-			
+	
 
-		</td>
+	</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Adopt data from given linear container by moving it to internal storage. CONTAINER type should have value_type, <a class="el" href="classDG_1_1BasicTensor.html#a62f174c899f37b0fa8a4e5ee7213e5b7">data()</a>, and size() methods.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">source</td><td>- linear container (such as string or vector) with tensor data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">id</td><td>- tensor ID </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>- tensor name </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>- tensor shape vector, which defines dimensions of new tensor </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">quant_params</td><td>- tensor quantization parameters </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac52e9d03cad3679dbf63b0f56d8f1e52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac52e9d03cad3679dbf63b0f56d8f1e52">&#9670;&nbsp;</a></span>alloc() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class CONTAINER &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto DG::BasicTensor::alloc </td>
+          <td>(</td>
+          <td class="paramtype">const CONTAINER &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>do_copy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>id</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em> = <code>&quot;&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classDG_1_1BasicTensor.html#a72d7916aa19b7e0f32c20a054fc38a18">shape_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>shape</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structDG_1_1BasicTensor_1_1quant__params__t.html">quant_params_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>quant_params</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; decltype( source.data(), source.size(), void() )
+	
+
+	</td>
         </tr>
       </table>
   </td>

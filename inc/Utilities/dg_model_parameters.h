@@ -166,6 +166,45 @@ namespace DG
 			return m_cfg_ro.dump();
 		}
 
+		/// Function to return the full JSON of model parameters
+		/// This returns the model parameter JSON merged with a JSON
+		/// of default values for all the parameters that aren't listed
+		json fullJsonGet() const
+		{
+			json resultJson = m_cfg_ro;
+
+	#define _( name, section, c_type, default_val, mandatory, runtime, visible, fallback )                           \
+		if( runtime )                                                                                                \
+		{                                                                                                            \
+			if( section.label[ 0 ] == 0 )                                                                            \
+			{                                                                                                        \
+				if( !resultJson.contains( #name ) )                                                                  \
+					resultJson[ #name ] = default_val;                                                               \
+			}                                                                                                        \
+			else                                                                                                     \
+			{                                                                                                        \
+				if( !resultJson.contains( section.label ) )                                                          \
+					resultJson[ section.label ] = json::array();                                                     \
+																													 \
+				if( resultJson[ section.label ].is_array() )                                                         \
+				{                                                                                                    \
+					for( auto &item : resultJson[ section.label ] )                                                  \
+					{                                                                                                \
+						if( !item.contains( #name ) )                                                                \
+							item[ #name ] = default_val;                                                             \
+					}                                                                                                \
+				}                                                                                                    \
+				else if( resultJson[ section.label ].is_object() && !resultJson[ section.label ].contains( #name ) ) \
+				{                                                                                                    \
+					resultJson[ section.label ][ #name ] = default_val;                                              \
+				}                                                                                                    \
+			}                                                                                                        \
+		}
+			DG_MODEL_PARAMS_LIST
+	#undef _
+
+			return resultJson;
+		}
 
 	#if defined( FRAMEWORK_PATH ) && !defined( DG_CLIENT_BUILD )
 		/// Check version from model configuration against current software version and minimum compatible software version

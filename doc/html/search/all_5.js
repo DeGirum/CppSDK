@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['h_36',['H',['../structDG_1_1ModelInfo.html#adb3914ceabaa99c26d6699feb9a1b059',1,'DG::ModelInfo']]],
-  ['hostalive_37',['HostAlive',['../namespaceDG.html#ac0697b890ca551f2b714b743707db549ac0677dea360a0a36ccfcb27f2eab50e5',1,'DG']]]
+  ['fromhostname_38',['fromHostname',['../structDG_1_1ServerAddress.html#ae0fcd2ab67485144175853fb80249ded',1,'DG::ServerAddress']]],
+  ['fulljsonget_39',['fullJsonGet',['../classDG_1_1ModelParamsReadAccess.html#a9712e82fd0176ff3c7fb3152e920abb6',1,'DG::ModelParamsReadAccess']]]
 ];

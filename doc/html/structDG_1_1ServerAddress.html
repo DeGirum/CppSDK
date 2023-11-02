@@ -70,6 +70,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structDG_1_1ServerAddress-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -77,21 +78,23 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><a class="el" href="structDG_1_1ServerAddress.html" title="ServerAddress is the server address structure. It keeps AI server TCP/IP address.">ServerAddress</a> is the server address structure. It keeps AI server TCP/IP address.  
- <a href="structDG_1_1ServerAddress.html#details">More...</a></p>
-
 <p><code>#include &lt;<a class="el" href="dg__client__structs_8h_source.html">dg_client_structs.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a1cfe8e5f81b10796cda247f248ba1b28"><td class="memItemLeft" align="right" valign="top">const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDG_1_1ServerAddress.html#a1cfe8e5f81b10796cda247f248ba1b28">is_valid</a> () const</td></tr>
 <tr class="separator:a1cfe8e5f81b10796cda247f248ba1b28"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65d276e3593491f5f9035c20f771cc48"><td class="memItemLeft" align="right" valign="top"><a id="a65d276e3593491f5f9035c20f771cc48"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDG_1_1ServerAddress.html#a65d276e3593491f5f9035c20f771cc48">ServerAddress</a> ()</td></tr>
-<tr class="memdesc:a65d276e3593491f5f9035c20f771cc48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. <br /></td></tr>
-<tr class="separator:a65d276e3593491f5f9035c20f771cc48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebbab55485fa3286a30041a2803db538"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDG_1_1ServerAddress.html#aebbab55485fa3286a30041a2803db538">ServerAddress</a> (std::string <a class="el" href="structDG_1_1ServerAddress.html#ae3bdcb1c5ac87893c2d14b8a2eeeaa0f">ip</a>, int <a class="el" href="structDG_1_1ServerAddress.html#a4320a1309cdaafd3bcdf4b0656066a09">port</a>=<a class="el" href="namespaceDG.html#a4b78062f79edbcd2ff3c49fd7d19697d">DEFAULT_PORT</a>)</td></tr>
-<tr class="separator:aebbab55485fa3286a30041a2803db538"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb78da236abe0099606b8f64379e1b3e"><td class="memItemLeft" align="right" valign="top"><a id="abb78da236abe0099606b8f64379e1b3e"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDG_1_1ServerAddress.html#abb78da236abe0099606b8f64379e1b3e">operator std::string</a> () const</td></tr>
+<tr class="memdesc:abb78da236abe0099606b8f64379e1b3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert server address to string. <br /></td></tr>
+<tr class="separator:abb78da236abe0099606b8f64379e1b3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae14eafc5099c46c034e53a91085fa66b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDG_1_1ServerAddress.html#ae14eafc5099c46c034e53a91085fa66b">ServerAddress</a> (const std::string &amp;<a class="el" href="structDG_1_1ServerAddress.html#ae3bdcb1c5ac87893c2d14b8a2eeeaa0f">ip</a>, int <a class="el" href="structDG_1_1ServerAddress.html#a4320a1309cdaafd3bcdf4b0656066a09">port</a>, <a class="el" href="namespaceDG.html#ab303c8ae900467383169dbcbaefcbaf3">ServerType</a> <a class="el" href="structDG_1_1ServerAddress.html#a393cab116acd8aa295d009095d44b0f3">server_type</a>)</td></tr>
+<tr class="separator:ae14eafc5099c46c034e53a91085fa66b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ae0fcd2ab67485144175853fb80249ded"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structDG_1_1ServerAddress.html">ServerAddress</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDG_1_1ServerAddress.html#ae0fcd2ab67485144175853fb80249ded">fromHostname</a> (const std::string &amp;hostname)</td></tr>
+<tr class="separator:ae0fcd2ab67485144175853fb80249ded"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -100,15 +103,19 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <tr class="memdesc:ae3bdcb1c5ac87893c2d14b8a2eeeaa0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">server domain name or IP address string <br /></td></tr>
 <tr class="separator:ae3bdcb1c5ac87893c2d14b8a2eeeaa0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4320a1309cdaafd3bcdf4b0656066a09"><td class="memItemLeft" align="right" valign="top"><a id="a4320a1309cdaafd3bcdf4b0656066a09"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDG_1_1ServerAddress.html#a4320a1309cdaafd3bcdf4b0656066a09">port</a></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDG_1_1ServerAddress.html#a4320a1309cdaafd3bcdf4b0656066a09">port</a> = <a class="el" href="namespaceDG.html#a4b78062f79edbcd2ff3c49fd7d19697d">DEFAULT_PORT</a></td></tr>
 <tr class="memdesc:a4320a1309cdaafd3bcdf4b0656066a09"><td class="mdescLeft">&#160;</td><td class="mdescRight">server TCP port number <br /></td></tr>
 <tr class="separator:a4320a1309cdaafd3bcdf4b0656066a09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a393cab116acd8aa295d009095d44b0f3"><td class="memItemLeft" align="right" valign="top"><a id="a393cab116acd8aa295d009095d44b0f3"></a>
+<a class="el" href="namespaceDG.html#ab303c8ae900467383169dbcbaefcbaf3">ServerType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDG_1_1ServerAddress.html#a393cab116acd8aa295d009095d44b0f3">server_type</a> = <a class="el" href="namespaceDG.html#ab303c8ae900467383169dbcbaefcbaf3a88183b946cc5f0e8c96b2e66e1c74a7e">ServerType::Unknown</a></td></tr>
+<tr class="memdesc:a393cab116acd8aa295d009095d44b0f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">server protocol type <br /></td></tr>
+<tr class="separator:a393cab116acd8aa295d009095d44b0f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="structDG_1_1ServerAddress.html" title="ServerAddress is the server address structure. It keeps AI server TCP/IP address.">ServerAddress</a> is the server address structure. It keeps AI server TCP/IP address. </p>
+<div class="textblock"><p><a class="el" href="structDG_1_1ServerAddress.html">ServerAddress</a> is the server address structure. It keeps AI server TCP/IP address, port, and server protocol type. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aebbab55485fa3286a30041a2803db538"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aebbab55485fa3286a30041a2803db538">&#9670;&nbsp;</a></span>ServerAddress()</h2>
+<a id="ae14eafc5099c46c034e53a91085fa66b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae14eafc5099c46c034e53a91085fa66b">&#9670;&nbsp;</a></span>ServerAddress()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -119,14 +126,20 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
         <tr>
           <td class="memname">DG::ServerAddress::ServerAddress </td>
           <td>(</td>
-          <td class="paramtype">std::string&#160;</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>ip</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>port</em> = <code><a class="el" href="namespaceDG.html#a4b78062f79edbcd2ff3c49fd7d19697d">DEFAULT_PORT</a></code>&#160;</td>
+          <td class="paramname"><em>port</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceDG.html#ab303c8ae900467383169dbcbaefcbaf3">ServerType</a>&#160;</td>
+          <td class="paramname"><em>server_type</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -144,6 +157,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">ip</td><td>- server domain name or IP address </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">port</td><td>- server TCP port </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">server_type</td><td>- server protocol type </td></tr>
   </table>
   </dd>
 </dl>
@@ -151,6 +165,39 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="ae0fcd2ab67485144175853fb80249ded"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0fcd2ab67485144175853fb80249ded">&#9670;&nbsp;</a></span>fromHostname()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structDG_1_1ServerAddress.html">ServerAddress</a> DG::ServerAddress::fromHostname </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>hostname</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Construct server address from hostname </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">hostname</td><td>- server domain name or IP address with optional port suffix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>server address object </dd></dl>
+
+</div>
+</div>
 <a id="a1cfe8e5f81b10796cda247f248ba1b28"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1cfe8e5f81b10796cda247f248ba1b28">&#9670;&nbsp;</a></span>is_valid()</h2>
 

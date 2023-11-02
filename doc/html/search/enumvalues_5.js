@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['yes_325',['Yes',['../structDG_1_1ModelQuery.html#a9def9bedb44f0f0856183c3f8e235ecaaa7c6732e38a4ceeff3def6e94ac29c72',1,'DG::ModelQuery']]]
+  ['protocolmismatch_338',['ProtocolMismatch',['../namespaceDG.html#ac0697b890ca551f2b714b743707db549a2e226d5a8a29a5a5c482573c88d31e01',1,'DG']]]
 ];

@@ -9,6 +9,8 @@
 /// for model inference
 ///
 
+#include <future>
+#include <asio.hpp>
 #include "dg_model_api.h"
 #include "dg_client.h"
 #include "Utilities/dg_version.h"
@@ -54,7 +56,7 @@ std::string DG::versionGet()
 //
 void DG::modelzooListGet( const std::string &server, std::vector< DG::ModelInfo > &modelzoo_list )
 {
-	DG::Client( server ).modelzooListGet( modelzoo_list );
+	DG::Client::create( server )->modelzooListGet( modelzoo_list );
 }
 
 
@@ -63,9 +65,9 @@ void DG::modelzooListGet( const std::string &server, std::vector< DG::ModelInfo 
 // [in] server is a string specifying server domain name/IP address and port.
 // Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778.
 //
-json DG::systemInfo( const std::string &server )
+DG::json DG::systemInfo( const std::string &server )
 {
-	return DG::Client( server ).systemInfo();
+	return DG::Client::create( server )->systemInfo();
 }
 
 
@@ -76,9 +78,9 @@ json DG::systemInfo( const std::string &server )
 // [in] req - management request
 // return results of management request completion (request-specific)
 //
-json DG::traceManage( const std::string &server, const json &req )
+DG::json DG::traceManage( const std::string &server, const json &req )
 {
-	return DG::Client( server ).traceManage( req );
+	return DG::Client::create( server )->traceManage( req );
 }
 
 
@@ -89,9 +91,9 @@ json DG::traceManage( const std::string &server, const json &req )
 // [in] req - management request
 // return results of management request completion (request-specific)
 //
-json DG::modelZooManage( const std::string &server, const json &req )
+DG::json DG::modelZooManage( const std::string &server, const json &req )
 {
-	return DG::Client( server ).modelZooManage( req );
+	return DG::Client::create( server )->modelZooManage( req );
 }
 
 
@@ -102,7 +104,7 @@ json DG::modelZooManage( const std::string &server, const json &req )
 //
 void DG::shutdown( const std::string &server )
 {
-	DG::Client( server ).shutdown();
+	DG::Client::create( server )->shutdown();
 }
 
 
@@ -164,7 +166,7 @@ std::string DG::errorCheck( const json &json_response )
 // return JSON object containing model label dictionary
 DG::json DG::labelDictionary( const std::string &server, const std::string &model_name )
 {
-	return DG::Client( server ).labelDictionary( model_name );
+	return DG::Client::create( server )->labelDictionary( model_name );
 }
 
 
@@ -178,7 +180,7 @@ bool DG::serverPing( const std::string &server )
 {
 	try
 	{
-		return DG::Client( server ).ping();
+		return DG::Client::create( server )->ping();
 	}
 	catch( ... )
 	{
@@ -214,10 +216,8 @@ static std::vector< std::tuple< std::string, DG::DetectionStatus > > detectServe
 					std::advance( element, i );
 
 					try
-					{
-						DG::Client client = DG::Client( *element, connection_timeout );
-
-						bool ping_result = client.ping();
+					{				
+						bool ping_result = DG::Client::create( *element, connection_timeout )->ping();
 
 						std::lock_guard< std::mutex > lock( result_mutex );
 						if( ping_result )
@@ -373,7 +373,7 @@ DG::AIModel::AIModel(
 	const ModelParamsReadAccess &model_params,
 	size_t connection_timeout_ms,
 	size_t inference_timeout_ms ) :
-	m_client( new DG::Client( server, connection_timeout_ms, inference_timeout_ms ) )
+	m_client( DG::Client::create( server, connection_timeout_ms, inference_timeout_ms ) )
 {
 	m_client->openStream( model_name, 0, model_params.jsonGet() );
 }
@@ -419,7 +419,7 @@ DG::AIModelAsync::AIModelAsync(
 	size_t frame_queue_depth,
 	size_t connection_timeout_ms,
 	size_t inference_timeout_ms ) :
-	m_client( new DG::Client( server, connection_timeout_ms, inference_timeout_ms ) )
+	m_client( DG::Client::create( server, connection_timeout_ms, inference_timeout_ms ) )
 {
 	m_client->openStream( model_name, frame_queue_depth, model_params.jsonGet() );
 	m_client->resultObserve( callback );

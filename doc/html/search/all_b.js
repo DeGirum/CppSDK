@@ -1,11 +1,10 @@
 var searchData=
 [
-  ['ok_99',['OK',['../namespaceDG.html#ac0697b890ca551f2b714b743707db549ae0aa021e21dddbd6d8cecec71e9cf564',1,'DG']]],
-  ['operator_20const_20json_20_26_100',['operator const json &amp;',['../classDG_1_1ModelParamsReadAccess.html#afd0bc2e0aa801b4ca582ac85c3f50c37',1,'DG::ModelParamsReadAccess']]],
-  ['operator_3c_101',['operator&lt;',['../namespaceDG.html#a0d29f61f1d86e8e526371196d1dfd420',1,'DG']]],
-  ['operator_3c_3c_102',['operator&lt;&lt;',['../namespaceDG.html#aade28fd564a6d38c0b9a5bc8d2fb50fb',1,'DG']]],
-  ['operator_3d_103',['operator=',['../classDG_1_1ModelParams.html#a95afa65a3956cc07014d3bba8a789aa0',1,'DG::ModelParams::operator=(ModelParams const &amp;rhs)'],['../classDG_1_1ModelParams.html#a5e1e8a860c080e639ad7c83757f053d4',1,'DG::ModelParams::operator=(ModelParams &amp;&amp;rhs)'],['../classDG_1_1BasicTensor.html#a486845aea72897d1373bf51646748935',1,'DG::BasicTensor::operator=(const BasicTensor &amp;)=delete'],['../classDG_1_1BasicTensor.html#adf0f297ecb340cd42095c2c217889cf0',1,'DG::BasicTensor::operator=(BasicTensor &amp;&amp;move)']]],
-  ['operator_3d_3d_104',['operator==',['../namespaceDG.html#a7ec1efa61f94b2bd09950d7eef0b4599',1,'DG']]],
-  ['outstandingresultscountget_105',['outstandingResultsCountGet',['../classDG_1_1AIModelAsync.html#a4262c7337d952d2543f8265791c0d535',1,'DG::AIModelAsync']]],
-  ['string_106',['string',['../classDG_1_1ModelParamsReadAccess.html#afcbcd84f6026128603233438b26f0aec',1,'DG::ModelParamsReadAccess']]]
+  ['n_99',['N',['../structDG_1_1ModelInfo.html#a62564fc5e220c98c1c40e4f1918411d4',1,'DG::ModelInfo']]],
+  ['name_100',['name',['../structDG_1_1ModelInfo.html#a26d97c4f78710a202b712af3e1b04332',1,'DG::ModelInfo::name()'],['../classDG_1_1BasicTensor.html#a99b9d4ca946716cc7907249e1bbf99d2',1,'DG::BasicTensor::name()']]],
+  ['no_101',['No',['../structDG_1_1ModelQuery.html#a9def9bedb44f0f0856183c3f8e235ecaa2300dbcb31f161ac28994ed74cb9336f',1,'DG::ModelQuery']]],
+  ['none_102',['None',['../classDG_1_1ModelParamsReadAccess.html#a590cc4f8a8b47f3303018e40e1b8e96c',1,'DG::ModelParamsReadAccess']]],
+  ['none_5fexist_103',['None_exist',['../classDG_1_1ModelParamsReadAccess.html#a320f8c72667894482050d2ed3d0343c9',1,'DG::ModelParamsReadAccess']]],
+  ['none_5fget_104',['None_get',['../classDG_1_1ModelParamsReadAccess.html#a1437ace2749b5312fa3640752c07050b',1,'DG::ModelParamsReadAccess']]],
+  ['numpytypeget_105',['numpyTypeGet',['../classDG_1_1BasicTensor.html#a2ab6948ec98fe84f56e388179dd7ffdb',1,'DG::BasicTensor::numpyTypeGet(const std::string &amp;dg_type)'],['../classDG_1_1BasicTensor.html#a98c7440a5356add2e33bec928996e98c',1,'DG::BasicTensor::numpyTypeGet() const']]]
 ];
