@@ -459,6 +459,7 @@ public:
 			data< ctype >() + linearSizeGet(),                   \
 			ret.data< T >(),                                     \
 			[]( const ctype &datum ) { return (T)( datum ); } ); \
+		break;
 
 			DG_TYPE_LIST
 #undef _
