@@ -25,10 +25,8 @@
 #define DG_CLIENT_STRUCTS_H_
 
 #include <stdlib.h>
-#include <map>
-#include <sstream>
 #include <string>
-#include <tuple>
+#include <vector>
 #include "Utilities/dg_model_parameters.h"
 
 namespace DG
@@ -75,28 +73,33 @@ struct ServerAddress
 	{}
 
 	/// Construct server address from hostname
-	/// \param[in] hostname - server domain name or IP address with optional port suffix
+	/// \param[in] hostname - server domain name or IP address with optional port suffix and protocol prefix (http:// or asio://)
 	/// \return server address object
 	static ServerAddress fromHostname( const std::string &hostname )
 	{
-		std::string ip = hostname;
+		std::string pure_hostname = hostname;
 
 		// deduce server protocol type
-		ServerType server_type;
-		const std::string http_prefix = "http://";
-		if( const auto delim = ip.find( http_prefix ); delim != std::string::npos )
+		ServerType server_type = ServerType::ASIO;
+
+		const std::vector< std::pair< std::string, ServerType > > prefixes =
+			{ { "http://", ServerType::HTTP }, { "asio://", ServerType::ASIO } };
+
+		for( const auto &prefix : prefixes )
 		{
-			server_type = ServerType::HTTP;
-			ip = ip.substr( delim + http_prefix.length() );
-		}
-		else
-			server_type = ServerType::ASIO;
+			if( const auto delim = pure_hostname.find( prefix.first ); delim != std::string::npos )
+			{
+				server_type = prefix.second;
+				pure_hostname = pure_hostname.substr( delim + prefix.first.length() );
+				break;
+			}
+		}	
 
 		// deduce TCP port
-		if( const auto delim = ip.rfind( ":" ); delim != std::string::npos )
-			return ServerAddress( ip.substr( 0, delim ), std::atoi( ip.substr( delim + 1 ).c_str() ), server_type );
+		if( const auto delim = pure_hostname.rfind( ":" ); delim != std::string::npos )
+			return ServerAddress( pure_hostname.substr( 0, delim ), std::atoi( pure_hostname.substr( delim + 1 ).c_str() ), server_type );
 
-		return ServerAddress( ip, DEFAULT_PORT, server_type );
+		return ServerAddress( pure_hostname, DEFAULT_PORT, server_type );
 	}
 
 	/// Check server address validity
