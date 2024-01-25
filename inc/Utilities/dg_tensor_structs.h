@@ -270,7 +270,6 @@ public:
 	/// \param[in] id - tensor ID
 	/// \param[in] name - tensor name
 	/// \param[in] shape - tensor shape vector, which defines dimensions of new tensor
-	/// \param[in] data_type - tensor element data type id
 	/// \param[in] quant_params - tensor quantization parameters
 	template< class CONTAINER >
 	explicit BasicTensor(
