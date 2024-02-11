@@ -172,15 +172,20 @@ private:
 	httpRequest( const std::string &path, const std::string &body = "", const std::string &content_type = "" )
 	{
 		httplib::Result result;
-		switch( req )
+		for( int retry = 0; retry < 3; retry++ )
 		{
-		case POST:
-			result = m_http_client.Post( path, body, content_type );
-			break;
-		case GET:
-		default:
-			result = m_http_client.Get( path );
-			break;
+			switch( req )
+			{
+			case POST:
+				result = m_http_client.Post( path, body, content_type );
+				break;
+			case GET:
+			default:
+				result = m_http_client.Get( path );
+				break;
+			}
+			if( result.error() == httplib::Error::Success )
+				break;
 		}
 		checkHttpResult( result, path );
 		return result;

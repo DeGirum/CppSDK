@@ -35,6 +35,7 @@ extern char *program_invocation_name;
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
+#include <random>
 #include <string>
 #include <vector>
 
@@ -75,7 +76,8 @@ public:
 	/// \param[out] path_ret - directory part of full path including trailing slash (optional, can be null)
 	/// \param[out] name_ret - file name (optional, can be null)
 	/// \param[out] ext_ret - extension w/o leading dot or "" if no dot found (optional, can be null)
-	static void path_split( const std::string &fullpath, std::string *path_ret, std::string *name_ret, std::string *ext_ret )
+	static void
+	path_split( const std::string &fullpath, std::string *path_ret, std::string *name_ret, std::string *ext_ret )
 	{
 		std::filesystem::path path( fullpath );
 
@@ -209,7 +211,7 @@ public:
 		if( !for_top_module )
 		{
 			Dl_info info;
-			if( dladdr( (void* )&module_path, &info ) )
+			if( dladdr( (void *)&module_path, &info ) )
 				fullpath = std::string( info.dli_fname );
 		}
 		if( fullpath.empty() )
@@ -224,7 +226,7 @@ public:
 		if( !for_top_module )
 		{
 			Dl_info info;
-			if( dladdr( (void* )&module_path, &info ) )
+			if( dladdr( (void *)&module_path, &info ) )
 				fullpath = std::string( info.dli_fname );
 		}
 		if( fullpath.empty() )
@@ -251,10 +253,30 @@ public:
 			std::filesystem::create_directories( dir_name );
 			std::filesystem::permissions(
 				dir_name,
-				std::filesystem::perms::owner_all | std::filesystem::perms::group_all | std::filesystem::perms::others_all );
+				std::filesystem::perms::owner_all | std::filesystem::perms::group_all |
+					std::filesystem::perms::others_all );
 			return true;
 		}
 		return false;
+	}
+
+	/// Create uniquely-named subdirectory in system temporary directory
+	/// \param[in] max_tries - maximum number of attempts to create a directory
+	/// \return path to the created directory
+	static std::filesystem::path create_temp_subdir( size_t max_tries = 10 )
+	{
+		auto tmp_dir = std::filesystem::temp_directory_path();
+		std::random_device dev;
+		std::mt19937 prng( dev() );
+		std::uniform_int_distribution< uint64_t > rand( 0 );
+		std::filesystem::path path;
+		for( auto it = 0; it < max_tries; it++ )
+		{			
+			path = tmp_dir / std::to_string( rand( prng ) );
+			if( std::filesystem::create_directory( path ) )
+				return path;
+		}
+		throw std::runtime_error( "could not find non-existing directory" );		
 	}
 
 	/// Get path to user home directory (with trailing slash).
@@ -278,12 +300,10 @@ public:
 		return path_with_slash( home_path );
 	}
 
-	/// Get path to DeGirum-specific application data directory: the directory which applications can use to write data to
-	/// (with trailing slash).
-	/// If no such directory existed before, it will be created.
-	/// For Linux it is $HOME/.local/share/DeGirum
-	/// For Windows it is %APPDATA%\DeGirum
-	/// For MacOS it is $HOME/Library/Application Support/DeGirum
+	/// Get path to DeGirum-specific application data directory: the directory which applications can use to write data
+	/// to (with trailing slash). If no such directory existed before, it will be created. For Linux it is
+	/// $HOME/.local/share/DeGirum For Windows it is %APPDATA%\DeGirum For MacOS it is $HOME/Library/Application
+	/// Support/DeGirum
 	static std::string appdata_dg_dir()
 	{
 		auto appdata_path{ std::filesystem::temp_directory_path() / "DeGirum" };  // temp path is used as a fallback
@@ -379,7 +399,8 @@ public:
 		dir_create_if_not_exist( dir );
 		for( int idx = 0; idx < 100 /*we need some limit anyway*/; idx++ )
 		{
-			const std::string try_filename_no_ext = path_prefix + ( idx == 0 ? "" : std::to_string( idx ) + "." ) + suffix_stem;
+			const std::string try_filename_no_ext = path_prefix + ( idx == 0 ? "" : std::to_string( idx ) + "." ) +
+				suffix_stem;
 			const std::string try_filename = try_filename_no_ext + suffix_ext;
 
 			if( !fexist( try_filename ) )  // file not exist: just use it
@@ -396,7 +417,7 @@ public:
 					flock( fd, LOCK_UN );
 				close( fd );
 				if( !locked )
-					continue; // cannot lock: file is most likely opened by another process, try next one
+					continue;  // cannot lock: file is most likely opened by another process, try next one
 			}
 #endif
 
