@@ -199,7 +199,7 @@ bool DG::serverPing( const std::string &server )
 static std::vector< std::tuple< std::string, DG::DetectionStatus > > detectServers( const std::set< std::string >& source )
 {
 	const static int BATCH_SIZE = 255;
-	const size_t connection_timeout = 3;
+	const size_t connection_timeout_ms = 3000;
 
 	std::mutex result_mutex;
 	std::vector< std::tuple< std::string, DG::DetectionStatus > > result;
@@ -211,13 +211,13 @@ static std::vector< std::tuple< std::string, DG::DetectionStatus > > detectServe
 	{
 		for( int i = batch; i < std::min( batch + BATCH_SIZE, (int )source.size() ); i++ )
 			ping_futures[ i ] = std::async(
-				std::launch::async, [ &result, &result_mutex, connection_timeout ]( const std::set< std::string >& source, int i ) {
+				std::launch::async, [ &result, &result_mutex, connection_timeout_ms ]( const std::set< std::string >& source, int i ) {
 					std::set< std::string >::const_iterator element = source.begin();
 					std::advance( element, i );
 
 					try
 					{				
-						bool ping_result = DG::Client::create( *element, connection_timeout )->ping();
+						bool ping_result = DG::Client::create( *element, connection_timeout_ms )->ping();
 
 						std::lock_guard< std::mutex > lock( result_mutex );
 						if( ping_result )
