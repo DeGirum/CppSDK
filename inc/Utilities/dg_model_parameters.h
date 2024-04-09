@@ -1,9 +1,9 @@
 //////////////////////////////////////////////////////////////////////
 /// \file  dg_model_parameters.h
-/// \brief DG centralized handling of Json model parameters
+/// \brief DG centralized handling of JSON model parameters
 ///
-/// This file implements classes for centralized handling of Json model parameters.
-/// Each AI model in DG framework is accompanied with Json configuration file,
+/// This file implements classes for centralized handling of JSON model parameters.
+/// Each AI model in DG framework is accompanied with JSON configuration file,
 /// which defines all model configuration parameters.
 /// Class list:
 ///    ModelParamsReadAccess - read-only model parameters accessor
@@ -11,7 +11,7 @@
 ///    ModelParams - model parameters collection with access type defined by the template parameter
 ///
 
-// Copyright DeGirum Corporation 2021
+// Copyright DeGirum Corporation 2024
 // All rights reserved
 
 //
@@ -33,12 +33,12 @@
 namespace DG
 {
 
-	/// The most current version of Json model configuration, supported by this version of software.
+	/// The most current version of JSON model configuration, supported by this version of software.
 	/// Increment it each time you change any parameter definition or add/remove any parameter
-	const int MODEL_PARAMS_CURRENT_VERSION = 8;
+	const int MODEL_PARAMS_CURRENT_VERSION = 9;
 
-	/// The minimum compatible version of Json model configuration, still supported by this version of software.
-	/// Increase it when the software is modified such a way, that it stops supporting older Json model configuration versions.
+	/// The minimum compatible version of JSON model configuration, still supported by this version of software.
+	/// Increase it when the software is modified such a way, that it stops supporting older JSON model configuration versions.
 	const int MODEL_PARAMS_MIN_COMPATIBLE_VERSION = 1;
 
 	/// Model parameters section descriptor
@@ -48,7 +48,7 @@ namespace DG
 		bool is_scalar;		//!< scalar vs vector flag: vector sections contain more than one element
 	};
 
-	/// Json file top-level sections
+	/// JSON file top-level sections
 	constexpr ModelParamsSection SECT_TOP 				= { "",					true  };	//!< top-level section
 	constexpr ModelParamsSection SECT_DEVICE 			= { "DEVICE",			true  };	//!< device parameters section
 	constexpr ModelParamsSection SECT_PRE_PROCESS		= { "PRE_PROCESS",		false };	//!< pre-processing parameters section
@@ -71,15 +71,15 @@ namespace DG
 
 	/// \brief ModelParamsReadAccess is read-only accessor to model parameters.
 	///
-	/// This class provides programmatic type-safe read access to model parameters defined in Json model configuration.
-	/// It keeps non-owning const reference to underlying Json array.
-	/// For each model parameter it provides getter method, which name matches the parameter name as it appears in Json array.
+	/// This class provides programmatic type-safe read access to model parameters defined in JSON model configuration.
+	/// It keeps non-owning const reference to underlying JSON array.
+	/// For each model parameter it provides getter method, which name matches the parameter name as it appears in JSON array.
 	class ModelParamsReadAccess
 	{
 	public:
 
-		/// Constructor. Attaches model parameter read-only accessor to Json array
-		/// \param[in] config - Json array with model configuration
+		/// Constructor. Attaches model parameter read-only accessor to JSON array
+		/// \param[in] config - JSON array with model configuration
 		ModelParamsReadAccess( const json &config ): m_cfg_ro( config )
 		{}
 
@@ -118,14 +118,14 @@ namespace DG
 
 //! @endcond
 
-		/// Access to underlying Json array
-		/// \return constant non-owning reference to Json array with model configuration
+		/// Access to underlying JSON array
+		/// \return constant non-owning reference to JSON array with model configuration
 		const json &jsonGet() const
 		{
 			return m_cfg_ro;
 		}
 
-		/// Get size of underlying Json sub-array for particular section
+		/// Get size of underlying JSON sub-array for particular section
 		/// \param[in] section - section name to access (one of SECT_xxx constants)
 		/// \return section sub-array size in elements
 		size_t sectionSizeGet( const std::string &section ) const
@@ -133,10 +133,10 @@ namespace DG
 			return section.empty() || !m_cfg_ro.contains( section ) ? 1 : m_cfg_ro[ section ].size();
 		}
 
-		/// Access to underlying Json sub-array for particular section
+		/// Access to underlying JSON sub-array for particular section
 		/// \param[in] section - section name to access (one of SECT_xxx constants)
 		/// \param[in] idx - array index inside section object
-		/// \return constant non-owning reference to Json array with particular model section configuration
+		/// \return constant non-owning reference to JSON array with particular model section configuration
 		const json &sectionGet( const std::string &section, size_t idx = 0 ) const
 		{
 			return section.empty() ? m_cfg_ro : m_cfg_ro[ section ][ idx ];
@@ -152,15 +152,15 @@ namespace DG
 			return std::hash< std::string >()( sectionGet( section, idx ).dump() );
 		}
 
-		/// Access to underlying Json array
-		/// \return constant non-owning reference to Json array with model configuration
+		/// Access to underlying JSON array
+		/// \return constant non-owning reference to JSON array with model configuration
 		operator const json&() const
 		{
 			return m_cfg_ro;
 		}
 
-		/// Access to underlying Json array as string
-		/// \return Json text with model configuration
+		/// Access to underlying JSON array as string
+		/// \return JSON text with model configuration
 		operator std::string() const
 		{
 			return m_cfg_ro.dump();
@@ -260,9 +260,9 @@ namespace DG
 
 	protected:
 
-		const json &m_cfg_ro;		//!< non-owning reference to Json array with model configuration
+		const json &m_cfg_ro;		//!< non-owning reference to JSON array with model configuration
 
-		/// Get parameter from Json array
+		/// Get parameter from JSON array
 		/// \tparam T - parameter type
 		/// \param[in] section - top section name; if empty, key is taken from topmost level
 		/// \param[in] key - key of key-value pair
@@ -304,17 +304,17 @@ namespace DG
 
 	/// \brief ModelParamsWriteAccess is read/write accessor to model parameters.
 	///
-	/// This class provides programmatic type-safe read and write access to model parameters defined in Json model configuration.
-	/// It keeps non-owning non-const reference to underlying Json array.
+	/// This class provides programmatic type-safe read and write access to model parameters defined in JSON model configuration.
+	/// It keeps non-owning non-const reference to underlying JSON array.
 	/// For each model parameter it provides both getter and setter methods.
-	/// Getter method name matches the parameter name as it appears in Json array.
+	/// Getter method name matches the parameter name as it appears in JSON array.
 	/// Setter method name is constructed from the parameter name by appending _set suffix. For example, InputImgFmt_set()
 	class ModelParamsWriteAccess: public ModelParamsReadAccess
 	{
 	public:
 
-		/// Constructor. Attaches model parameter read-write accessor to Json array
-		/// \param[in] config - Json array with model configuration
+		/// Constructor. Attaches model parameter read-write accessor to JSON array
+		/// \param[in] config - JSON array with model configuration
 		ModelParamsWriteAccess( json &config ) : ModelParamsReadAccess( config ), m_cfg_rw( config ), m_dirty( false )
 		{}
 
@@ -330,9 +330,9 @@ namespace DG
 
 //! @endcond
 
-		/// Merge given model configuration Json array with self
+		/// Merge given model configuration JSON array with self
 		/// Note: only runtime parameters will be merged
-		/// \param[in] config - model configuration Json array to be merged
+		/// \param[in] config - model configuration JSON array to be merged
 		ModelParamsWriteAccess &merge( const json &config )
 		{
 			ModelParamsReadAccess patch( config );
@@ -362,10 +362,10 @@ namespace DG
 
 	protected:
 
-		json &m_cfg_rw;		//!< non-owning reference to Json array with model configuration
+		json &m_cfg_rw;		//!< non-owning reference to JSON array with model configuration
 		bool m_dirty;		//!< 'some parameter was changed' flag
 
-		/// Set parameter to Json array
+		/// Set parameter to JSON array
 		/// \tparam T - parameter type
 		/// \param[in] section - top section name; if empty, key is placed in topmost level
 		/// \param[in] key - key of key-value pair
@@ -399,8 +399,8 @@ namespace DG
 
 	/// \brief ModelParams is model parameters collection with user-defined access rights.
 	///
-	/// This class provides programmatic type-safe access to model parameters defined in Json model configuration
-	/// while owning that Json array.
+	/// This class provides programmatic type-safe access to model parameters defined in JSON model configuration
+	/// while owning that JSON array.
 	/// Access (read or write) is defined by the Base template parameter, which is used as the base class.
 	/// \tparam Base - ModelParamsReadAccess-derived base class: it can be ModelParamsReadAccess or ModelParamsWriteAccess
 	template <class Base = ModelParamsReadAccess,
@@ -409,24 +409,24 @@ namespace DG
 	{
 	public:
 
-		/// Constructor. Creates model parameter collection by parsing Json text in character array
-		/// \param[in] json_text - Json text with model parameters. It will be parsed and stored in internal Json array.
+		/// Constructor. Creates model parameter collection by parsing JSON text in character array
+		/// \param[in] json_text - JSON text with model parameters. It will be parsed and stored in internal JSON array.
 		ModelParams( const char *json_text = "{}" ) : Base( m_cfg )
 		{
 			m_cfg = DG_JSON_PARSE( json_text );
 			DG_ERROR_TRUE( m_cfg.is_object() ) << "ModelParams must be initialized with string containing json object";
 		}
 
-		/// Constructor. Creates model parameter collection by parsing Json text in std::string
-		/// \param[in] json_text - Json text with model parameters. It will be parsed and stored in internal Json array.
+		/// Constructor. Creates model parameter collection by parsing JSON text in std::string
+		/// \param[in] json_text - JSON text with model parameters. It will be parsed and stored in internal JSON array.
 		explicit ModelParams( const std::string &json_text ) : Base( m_cfg )
 		{
 			m_cfg = DG_JSON_PARSE( json_text );
 			DG_ERROR_TRUE( m_cfg.is_object() ) << "ModelParams must be initialized with string containing json object";
 		}
 
-		/// Constructor. Creates model parameter collection from given Json array
-		/// \param[in] json_cfg - Json array with model parameters. It will be copied into internal Json array.
+		/// Constructor. Creates model parameter collection from given JSON array
+		/// \param[in] json_cfg - JSON array with model parameters. It will be copied into internal JSON array.
 		explicit ModelParams( const json &json_cfg ) : m_cfg( json_cfg ), Base( m_cfg )
 		{
 		}
@@ -454,7 +454,7 @@ namespace DG
 		}
 
 	private:
-		json m_cfg;		//!< Json array with model configuration
+		json m_cfg;		//!< JSON array with model configuration
 	};
 
 	/// ModelParamsWriter is ModelParams template instantiation with write access

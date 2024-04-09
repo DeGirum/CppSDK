@@ -14,6 +14,8 @@
 #include "dg_model_api.h"
 #include "dg_client.h"
 #include "Utilities/dg_version.h"
+#include <asio.hpp>
+#include <future>
 
 #ifndef _MSC_VER
 	#include <strings.h>

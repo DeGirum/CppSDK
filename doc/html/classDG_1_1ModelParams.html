@@ -166,7 +166,7 @@ Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_attribs_classDG_1_1ModelParamsReadAccess"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classDG_1_1ModelParamsReadAccess')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classDG_1_1ModelParamsReadAccess.html">DG::ModelParamsReadAccess</a></td></tr>
 <tr class="memitem:a4a91469267a865eeacb9fc06acb421b6 inherit pro_attribs_classDG_1_1ModelParamsReadAccess"><td class="memItemLeft" align="right" valign="top"><a id="a4a91469267a865eeacb9fc06acb421b6"></a>
 const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1ModelParamsReadAccess.html#a4a91469267a865eeacb9fc06acb421b6">m_cfg_ro</a></td></tr>
-<tr class="memdesc:a4a91469267a865eeacb9fc06acb421b6 inherit pro_attribs_classDG_1_1ModelParamsReadAccess"><td class="mdescLeft">&#160;</td><td class="mdescRight">non-owning reference to Json array with model configuration <br /></td></tr>
+<tr class="memdesc:a4a91469267a865eeacb9fc06acb421b6 inherit pro_attribs_classDG_1_1ModelParamsReadAccess"><td class="mdescLeft">&#160;</td><td class="mdescRight">non-owning reference to JSON array with model configuration <br /></td></tr>
 <tr class="separator:a4a91469267a865eeacb9fc06acb421b6 inherit pro_attribs_classDG_1_1ModelParamsReadAccess"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -174,7 +174,7 @@ const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">js
 class DG::ModelParams&lt; Base, &gt;</h3>
 
 <p><a class="el" href="classDG_1_1ModelParams.html" title="ModelParams is model parameters collection with user-defined access rights.">ModelParams</a> is model parameters collection with user-defined access rights. </p>
-<p>This class provides programmatic type-safe access to model parameters defined in Json model configuration while owning that Json array. Access (read or write) is defined by the Base template parameter, which is used as the base class. </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+<p>This class provides programmatic type-safe access to model parameters defined in JSON model configuration while owning that JSON array. Access (read or write) is defined by the Base template parameter, which is used as the base class. </p><dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Base</td><td>- ModelParamsReadAccess-derived base class: it can be <a class="el" href="classDG_1_1ModelParamsReadAccess.html" title="ModelParamsReadAccess is read-only accessor to model parameters.">ModelParamsReadAccess</a> or <a class="el" href="classDG_1_1ModelParamsWriteAccess.html" title="ModelParamsWriteAccess is read/write accessor to model parameters.">ModelParamsWriteAccess</a> </td></tr>
   </table>
@@ -206,9 +206,9 @@ template&lt;class Base  = ModelParamsReadAccess, std::enable_if_t&lt; std::is_ba
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Constructor. Creates model parameter collection by parsing Json text in character array </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Constructor. Creates model parameter collection by parsing JSON text in character array </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">json_text</td><td>- Json text with model parameters. It will be parsed and stored in internal Json array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">json_text</td><td>- JSON text with model parameters. It will be parsed and stored in internal JSON array. </td></tr>
   </table>
   </dd>
 </dl>
@@ -240,9 +240,9 @@ template&lt;class Base  = ModelParamsReadAccess, std::enable_if_t&lt; std::is_ba
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Constructor. Creates model parameter collection by parsing Json text in std::string </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Constructor. Creates model parameter collection by parsing JSON text in std::string </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">json_text</td><td>- Json text with model parameters. It will be parsed and stored in internal Json array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">json_text</td><td>- JSON text with model parameters. It will be parsed and stored in internal JSON array. </td></tr>
   </table>
   </dd>
 </dl>
@@ -274,9 +274,9 @@ template&lt;class Base  = ModelParamsReadAccess, std::enable_if_t&lt; std::is_ba
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Constructor. Creates model parameter collection from given Json array </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Constructor. Creates model parameter collection from given JSON array </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">json_cfg</td><td>- Json array with model parameters. It will be copied into internal Json array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">json_cfg</td><td>- JSON array with model parameters. It will be copied into internal JSON array. </td></tr>
   </table>
   </dd>
 </dl>
