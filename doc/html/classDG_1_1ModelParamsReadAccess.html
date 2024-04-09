@@ -139,12 +139,12 @@ Protected Member Functions</h2></td></tr>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a4a91469267a865eeacb9fc06acb421b6"><td class="memItemLeft" align="right" valign="top"><a id="a4a91469267a865eeacb9fc06acb421b6"></a>
 const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1ModelParamsReadAccess.html#a4a91469267a865eeacb9fc06acb421b6">m_cfg_ro</a></td></tr>
-<tr class="memdesc:a4a91469267a865eeacb9fc06acb421b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">non-owning reference to Json array with model configuration <br /></td></tr>
+<tr class="memdesc:a4a91469267a865eeacb9fc06acb421b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">non-owning reference to JSON array with model configuration <br /></td></tr>
 <tr class="separator:a4a91469267a865eeacb9fc06acb421b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classDG_1_1ModelParamsReadAccess.html" title="ModelParamsReadAccess is read-only accessor to model parameters.">ModelParamsReadAccess</a> is read-only accessor to model parameters. </p>
-<p>This class provides programmatic type-safe read access to model parameters defined in Json model configuration. It keeps non-owning const reference to underlying Json array. For each model parameter it provides getter method, which name matches the parameter name as it appears in Json array. </p>
+<p>This class provides programmatic type-safe read access to model parameters defined in JSON model configuration. It keeps non-owning const reference to underlying JSON array. For each model parameter it provides getter method, which name matches the parameter name as it appears in JSON array. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="abb027fe86b4a2cd59c8cdaeb3a97a3c1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abb027fe86b4a2cd59c8cdaeb3a97a3c1">&#9670;&nbsp;</a></span>ModelParamsReadAccess()</h2>
@@ -169,9 +169,9 @@ const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">js
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Constructor. Attaches model parameter read-only accessor to Json array </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Constructor. Attaches model parameter read-only accessor to JSON array </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">config</td><td>- Json array with model configuration </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">config</td><td>- JSON array with model configuration </td></tr>
   </table>
   </dd>
 </dl>
@@ -227,7 +227,7 @@ const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">js
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Access to underlying Json array </p><dl class="section return"><dt>Returns</dt><dd>constant non-owning reference to Json array with model configuration </dd></dl>
+<p>Access to underlying JSON array </p><dl class="section return"><dt>Returns</dt><dd>constant non-owning reference to JSON array with model configuration </dd></dl>
 
 </div>
 </div>
@@ -253,7 +253,7 @@ const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">js
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Access to underlying Json array </p><dl class="section return"><dt>Returns</dt><dd>constant non-owning reference to Json array with model configuration </dd></dl>
+<p>Access to underlying JSON array </p><dl class="section return"><dt>Returns</dt><dd>constant non-owning reference to JSON array with model configuration </dd></dl>
 
 </div>
 </div>
@@ -279,7 +279,7 @@ const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">js
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Access to underlying Json array as string </p><dl class="section return"><dt>Returns</dt><dd>Json text with model configuration </dd></dl>
+<p>Access to underlying JSON array as string </p><dl class="section return"><dt>Returns</dt><dd>JSON text with model configuration </dd></dl>
 
 </div>
 </div>
@@ -406,7 +406,7 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get parameter from Json array </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+<p>Get parameter from JSON array </p><dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">T</td><td>- parameter type </td></tr>
   </table>
@@ -460,14 +460,14 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Access to underlying Json sub-array for particular section </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Access to underlying JSON sub-array for particular section </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">section</td><td>- section name to access (one of SECT_xxx constants) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>- array index inside section object </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>constant non-owning reference to Json array with particular model section configuration </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>constant non-owning reference to JSON array with particular model section configuration </dd></dl>
 
 </div>
 </div>
@@ -538,7 +538,7 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get size of underlying Json sub-array for particular section </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Get size of underlying JSON sub-array for particular section </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">section</td><td>- section name to access (one of SECT_xxx constants) </td></tr>
   </table>

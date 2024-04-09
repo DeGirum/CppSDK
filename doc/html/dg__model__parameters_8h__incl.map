@@ -1,5 +1,5 @@
 <map id="dg_model_parameters.h" name="dg_model_parameters.h">
-<area shape="rect" id="node1" title="DG centralized handling of Json model parameters." alt="" coords="561,5,741,32"/>
+<area shape="rect" id="node1" title="DG centralized handling of JSON model parameters." alt="" coords="561,5,741,32"/>
 <area shape="rect" id="node2" title=" " alt="" coords="465,87,557,114"/>
 <area shape="rect" id="node3" href="$dg__json__helpers_8h.html" title="DG Core JSON helper classes and functions." alt="" coords="582,87,721,114"/>
 <area shape="rect" id="node18" title=" " alt="" coords="745,80,913,121"/>

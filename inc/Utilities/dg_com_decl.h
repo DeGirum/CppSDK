@@ -77,10 +77,10 @@
 /// Shared library export macro
 #if defined(WIN32) || defined(_WIN32)
 	#define DG_EXPORT_API __declspec(dllexport)
-#elif __APPLE__
+#elif __clang__
 	#define DG_EXPORT_API __attribute__ ((visibility("default"))) 
 #else
-	#define DG_EXPORT_API 
+	#define DG_EXPORT_API
 #endif
 
 #endif	// DG_COM_DECL_H

@@ -37,6 +37,7 @@ extern char *program_invocation_name;
 #include <fstream>
 #include <random>
 #include <string>
+#include <thread>
 #include <vector>
 
 namespace DG
@@ -97,6 +98,20 @@ public:
 			if( ext_ret->length() > 0 && ext_ret->front() == '.' )
 				*ext_ret = ext_ret->substr( 1 );
 		}
+	}
+
+	/// Touch file, updating its last write time to current time
+	/// \param[in] fname - file name to touch
+	/// \return true if file was touched, false if file does not exist
+	static bool touch( const std::string &fname )
+	{
+		if( std::filesystem::exists( fname ) )
+		{
+			std::filesystem::file_time_type file_time_now = decltype( file_time_now )::clock::now();
+			std::filesystem::last_write_time( fname, file_time_now );
+			return true;
+		}
+		return false;
 	}
 
 	/// Check if given file exist
@@ -271,12 +286,12 @@ public:
 		std::uniform_int_distribution< uint64_t > rand( 0 );
 		std::filesystem::path path;
 		for( auto it = 0; it < max_tries; it++ )
-		{			
+		{
 			path = tmp_dir / std::to_string( rand( prng ) );
 			if( std::filesystem::create_directory( path ) )
 				return path;
 		}
-		throw std::runtime_error( "could not find non-existing directory" );		
+		throw std::runtime_error( "could not find non-existing directory" );
 	}
 
 	/// Get path to user home directory (with trailing slash).
@@ -432,6 +447,42 @@ public:
 
 		// when all fails, use current directory
 		return "./" + mod_name + "." + file_suffix;
+	}
+
+	/// Get number of virtual CPU devices available in the system
+	/// By default, report half of the number of threads available.
+	/// If docker limits are present, report the available count accordingly.
+	static inline int systemVCPUCountGet()
+	{
+#ifdef __linux__
+		// lambda to read an integer from a file
+		auto readIntFromFile = []( const std::string &path ) -> int {
+			std::ifstream file( path );
+			if( !file.is_open() )
+			{
+				return -1;  // File not found or not readable, return -1 as indicator
+			}
+			int value;
+			file >> value;
+			file.close();
+			return value;
+		};
+
+		int cpuQuota = readIntFromFile( "/sys/fs/cgroup/cpu/cpu.cfs_quota_us" );
+		int cpuPeriod = ( cpuQuota > 0 ) ? readIntFromFile( "/sys/fs/cgroup/cpu/cpu.cfs_period_us" ) : 0;
+
+		if( cpuQuota > 0 && cpuPeriod > 0 )
+		{
+			// Calculate the number of CPUs based on Docker's CPU limits
+			int numCPUs = cpuQuota / cpuPeriod;
+			// If the calculated number is reasonable, return half of it as the result
+			if( numCPUs > 0 )
+			{
+				return numCPUs / 2;
+			}
+		}
+#endif
+		return std::thread::hardware_concurrency() / 2;
 	}
 };
 }  // namespace DG
