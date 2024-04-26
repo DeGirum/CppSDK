@@ -134,6 +134,7 @@ void ClientAsio::closeStream( void )
 		// send empty packet to indicate end-of-stream;
 		// we use async write to avoid long timeouts when writing to closed socket
 		main_protocol::write_async( m_stream_socket, "", 0 );
+		DG_TRC_BLOCK( AIClientAsio, closeStream : write0, DGTrace::lvlDetailed );
 		main_protocol::run_async( m_io_context, std::min( m_connection_timeout_ms, size_t{ 500 } ) );
 
 		main_protocol::socket_close( m_stream_socket );
@@ -288,7 +289,7 @@ void ClientAsio::resultObserve( callback_t callback )
 //
 void ClientAsio::dataSend( const std::vector< std::vector< char > > &data, const std::string &frame_info )
 {
-	DG_TRC_BLOCK( AIClientAsio, dataSend, DGTrace::lvlDetailed );
+	DG_TRC_BLOCK( AIClientAsio, dataSend, DGTrace::lvlDetailed, "(%zu bytes)", data.size() );
 
 	if( !m_stream_socket.is_open() )
 		DG_ERROR( "dataSend: socket was not opened", ErrIncorrectAPIUse );
