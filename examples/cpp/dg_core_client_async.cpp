@@ -86,7 +86,7 @@ int main( int argc, char **argv )
 		{
 			std::cout << "\nAvailable models:\n\n";
 			for( auto m : modelzoo_list )
-				std::cout << m.name << ", WxH: " << m.W << "x" << m.H << "\n";
+				std::cout << m.name << "\n";
 			return 0;
 		}
 

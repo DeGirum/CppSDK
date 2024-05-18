@@ -8,7 +8,6 @@
 /// DG exception type, error handling macros, global error codes
 ///
 
-
 #ifndef DG_ERROR_HANDLING_H
 #define DG_ERROR_HANDLING_H
 
@@ -42,8 +41,10 @@
 	_( ErrNotSupportedVersion, 0x00000018, "Version is not supported" )                       \
 	_( ErrCompilerBadState, 0x00000019, "Failure in compiler stage" )                         \
 	_( ErrFailedUserConstraints, 0x0000001A, "Failed to satisfy user-specified constraints" ) \
-	_( ErrFirmwareLoad, 0x0000001B, "Firmware load failed" )                                  \
-	_( ErrIncorrectAPIUse, 0x0000001C, "Incorrect API usage" )                                \
+	_( ErrFirmwareImage, 0x0000001B, "Firmware image invalid" )                               \
+	_( ErrFirmwareLoad, 0x0000001C, "Firmware load failed" )                                  \
+	_( ErrIncorrectAPIUse, 0x0000001D, "Incorrect API usage" )                                \
+	_( ErrUsbLib, 0x0000001E, "USBLIB error" )                                                \
                                                                                               \
 	_( ErrContinue, 0x00001000, "<continued>" )                                               \
 	_( ErrAssert, 0x00001001, "Execution failed" )                                            \
@@ -998,5 +999,4 @@ inline std::string DG::ErrorHandling::stackTrace( size_t skip, size_t depth )
 	return ret;
 }
 
-
-#endif	// DG_ERROR_HANDLING_H
+#endif  // DG_ERROR_HANDLING_H

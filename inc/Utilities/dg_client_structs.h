@@ -73,8 +73,8 @@ struct ServerAddress
 	{}
 
 	/// Construct server address from hostname
-	/// \param[in] hostname - server domain name or IP address with optional port suffix and protocol prefix (http:// or asio://)
-	/// \return server address object
+	/// \param[in] hostname - server domain name or IP address with optional port suffix and protocol prefix (http:// or
+	/// asio://) \return server address object
 	static ServerAddress fromHostname( const std::string &hostname )
 	{
 		std::string pure_hostname = hostname;
@@ -93,11 +93,14 @@ struct ServerAddress
 				pure_hostname = pure_hostname.substr( delim + prefix.first.length() );
 				break;
 			}
-		}	
+		}
 
 		// deduce TCP port
 		if( const auto delim = pure_hostname.rfind( ":" ); delim != std::string::npos )
-			return ServerAddress( pure_hostname.substr( 0, delim ), std::atoi( pure_hostname.substr( delim + 1 ).c_str() ), server_type );
+			return ServerAddress(
+				pure_hostname.substr( 0, delim ),
+				std::atoi( pure_hostname.substr( delim + 1 ).c_str() ),
+				server_type );
 
 		return ServerAddress( pure_hostname, DEFAULT_PORT, server_type );
 	}
@@ -123,27 +126,7 @@ struct ServerAddress
 /// ModelInfo is the model identification structure. It keeps AI model key attributes.
 typedef struct ModelInfo
 {
-	size_t id;         //!< unique model ID
-	std::string name;  //!< model string name
-	int W;             //!< input width
-	int H;             //!< input height
-	int C;             //!< input color depth
-	int N;             //!< input frame depth
-
-	std::string device_type;    //!< device type on which model runs
-	std::string runtime_agent;  //!< runtime agent type on which model runs
-	bool model_quantized;       //!< 'is model quantized' flag
-	bool model_pruned;          //!< 'is model pruned (not dense)' flag
-
-	std::string input_type;           //!< input data type: "Image", ...
-	std::string input_tensor_layout;  //!< for image inputs, image tensor layout the model expects: "NHWC", "NCHW"
-	std::string input_color_space;    //!< for image inputs, image color-space the model expects: "BGR", "RGB"
-
-	std::string
-		input_image_format;  //!< for image inputs, image format: "JPEG", "RAW" (this is user-tunable runtime parameter)
-	std::string input_raw_data_type;  //!< for "RAW" image inputs, image pixel data type: "DG_FLT", "DG_UINT8" (this is
-									  //!< user-tunable runtime parameter)
-
+	std::string name;                       //!< model string name
 	DG::ModelParamsWriter extended_params;  //!< extended model parameters
 } ModelInfo;
 
