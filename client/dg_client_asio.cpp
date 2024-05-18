@@ -155,21 +155,7 @@ void ClientAsio::modelzooListGet( std::vector< DG::ModelInfo > &modelzoo_list )
 		{
 			DG::ModelInfo mi;
 			const auto &node = response[ main_protocol::commands::MODEL_ZOO ][ i ];
-			mi.id = node[ "id" ].get< size_t >();
 			mi.name = node[ "name" ].get< std::string >();
-			mi.W = node[ "W" ].get< int >();
-			mi.H = node[ "H" ].get< int >();
-			mi.C = node[ "C" ].get< int >();
-			mi.N = node[ "N" ].get< int >();
-			mi.device_type = node[ "DeviceType" ].get< std::string >();
-			mi.runtime_agent = node[ "RuntimeAgent" ].get< std::string >();
-			mi.model_quantized = node[ "Quantized" ].get< bool >();
-			mi.model_pruned = node[ "Pruned" ].get< bool >();
-			mi.input_type = node[ "InputType" ].get< std::string >();
-			mi.input_tensor_layout = node[ "InputTensorLayout" ].get< std::string >();
-			mi.input_color_space = node[ "InputColorSpace" ].get< std::string >();
-			mi.input_image_format = node[ "InputImageFormat" ].get< std::string >();
-			mi.input_raw_data_type = node[ "InputRawDataType" ].get< std::string >();
 			mi.extended_params = DG::ModelParamsWriter( node[ "ModelParams" ].get< std::string >() );
 			modelzoo_list.emplace_back( mi );
 		}

@@ -12,23 +12,25 @@
 #define DG_FILE_UTILITIES_H_
 
 #ifdef _MSC_VER
-#include <stdlib.h>
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+	#include <stdlib.h>
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
+	#include <psapi.h>
 #else
-#include <dlfcn.h>
-#include <pwd.h>
-#include <string.h>
-#include <sys/file.h>
-#include <sys/types.h>
-#include <unistd.h>
-#ifdef __APPLE__
-#include <libgen.h>
-#include <mach-o/dyld.h>
-#else
+	#include <dlfcn.h>
+	#include <pwd.h>
+	#include <string.h>
+	#include <sys/file.h>
+	#include <sys/types.h>
+	#include <unistd.h>
+	#ifdef __APPLE__
+		#include <libgen.h>
+		#include <mach-o/dyld.h>
+		#include <mach/mach.h>
+	#else
 extern char *program_invocation_short_name;
 extern char *program_invocation_name;
-#endif
+	#endif
 #endif
 
 #include <sys/stat.h>
@@ -333,11 +335,11 @@ public:
 		{
 			std::filesystem::path home_path( home_dir() );
 			if( !home_path.empty() )
-#if defined( __linux__ )
+	#if defined( __linux__ )
 				appdata_path = home_path / ".local/share/DeGirum";
-#elif defined( __APPLE__ )
+	#elif defined( __APPLE__ )
 				appdata_path = home_path / "Library/Application Support/DeGirum";
-#endif
+	#endif
 		}
 #endif
 
@@ -375,11 +377,11 @@ public:
 			/// Lock rdbuf
 			bool lock()
 			{
-#ifndef __APPLE__
+	#ifndef __APPLE__
 				return flock( _M_file.fd(), LOCK_EX | LOCK_NB ) != 0;
-#else
+	#else
 				return true;
-#endif
+	#endif
 			}
 		};
 
@@ -449,40 +451,115 @@ public:
 		return "./" + mod_name + "." + file_suffix;
 	}
 
-	/// Get number of virtual CPU devices available in the system
+	/// Get upper limit for the number of virtual CPU devices available in the system.
 	/// By default, report half of the number of threads available.
-	/// If docker limits are present, report the available count accordingly.
-	static inline int systemVCPUCountGet()
+	/// If DG_CPU_LIMIT_CORES env.var. is defined, report it's value.
+	static inline int systemVCPULimitGet()
 	{
-#ifdef __linux__
-		// lambda to read an integer from a file
-		auto readIntFromFile = []( const std::string &path ) -> int {
-			std::ifstream file( path );
-			if( !file.is_open() )
-			{
-				return -1;  // File not found or not readable, return -1 as indicator
-			}
-			int value;
-			file >> value;
-			file.close();
-			return value;
-		};
+		const int host_cpu_limit = std::thread::hardware_concurrency() / 2;
+		const char *cpu_limit_env = getenv( "DG_CPU_LIMIT_CORES" );
+		if( cpu_limit_env != nullptr && *cpu_limit_env != '\0' )
+			return std::min( host_cpu_limit, std::max( 2, std::stoi( cpu_limit_env ) ) );
+		else
+			return host_cpu_limit;
+	}
 
-		int cpuQuota = readIntFromFile( "/sys/fs/cgroup/cpu/cpu.cfs_quota_us" );
-		int cpuPeriod = ( cpuQuota > 0 ) ? readIntFromFile( "/sys/fs/cgroup/cpu/cpu.cfs_period_us" ) : 0;
+	/// Get upper limit for the physical system memory in bytes
+	/// If DG_MEMORY_LIMIT_BYTES env.var. is defined, report it's value.
+	static inline size_t systemRAMLimitGet()
+	{
+		size_t total_memory = 0;
 
-		if( cpuQuota > 0 && cpuPeriod > 0 )
+#ifdef _WIN32
 		{
-			// Calculate the number of CPUs based on Docker's CPU limits
-			int numCPUs = cpuQuota / cpuPeriod;
-			// If the calculated number is reasonable, return half of it as the result
-			if( numCPUs > 0 )
+			MEMORYSTATUSEX status;
+			status.dwLength = sizeof( status );
+			if( GlobalMemoryStatusEx( &status ) )
+				total_memory = status.ullTotalPhys;
+			else
+				total_memory = 1 << 30;  // some reasonable default
+		}
+#elif defined( __linux__ ) || defined( __APPLE__ )
+		{
+			long pages = sysconf( _SC_PHYS_PAGES );
+			long page_size = sysconf( _SC_PAGE_SIZE );
+			total_memory = pages * page_size;
+		}
+#else
+	#error "Unsupported platform"
+#endif
+
+		const char *memory_limit = getenv( "DG_MEMORY_LIMIT_BYTES" );
+		if( memory_limit != nullptr && *memory_limit != '\0' )
+		{
+			char *endptr = 0;
+			size_t total_memory_env = size_t( std::strtoull( memory_limit, &endptr, 10 ) );
+			switch( *endptr )
 			{
-				return numCPUs / 2;
+			case 'k':
+			case 'K':
+				total_memory_env *= 1 << 10;
+				break;
+			case 'm':
+			case 'M':
+				total_memory_env *= 1 << 20;
+				break;
+			case 'g':
+			case 'G':
+				total_memory_env *= 1 << 30;
+				break;
+			}
+			total_memory = std::min( total_memory, std::max( size_t{ 1 << 30 }, total_memory_env ) );
+		}
+
+		return total_memory;
+	}
+
+	/// Get currently used memory in bytes
+	static inline size_t systemRAMUsedGet()
+	{
+		size_t current_memory = 0;
+
+#ifdef _WIN32
+
+		PROCESS_MEMORY_COUNTERS_EX counters;
+		GetProcessMemoryInfo( GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS *)&counters, sizeof( counters ) );
+		current_memory = counters.PrivateUsage;
+
+#elif defined( __linux__ )
+
+		FILE *file = fopen( "/proc/self/status", "r" );
+		char line[ 128 ];
+
+		if( file == nullptr )
+			return 0;
+
+		while( fgets( line, 128, file ) != nullptr )
+		{
+			if( strncmp( line, "VmRSS:", 6 ) == 0 )
+			{
+				int success = sscanf( line, "VmRSS: %zu", &current_memory );
+				break;
 			}
 		}
+		fclose( file );
+		current_memory *= 1024;
+
+#elif defined( __APPLE__ )
+
+		kern_return_t success;
+		mach_task_basic_info_data_t info;
+		mach_msg_type_number_t count = MACH_TASK_BASIC_INFO_COUNT;
+
+		success = task_info( mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&info, &count );
+		if( success != KERN_SUCCESS || count != MACH_TASK_BASIC_INFO_COUNT )
+			current_memory = FileHelper::systemRAMLimitGet();
+		else
+			current_memory = info.resident_size;
+
 #endif
-		return std::thread::hardware_concurrency() / 2;
+
+		return current_memory;
 	}
 };
 }  // namespace DG

@@ -280,21 +280,7 @@ void ClientHttp::modelzooListGet( std::vector< DG::ModelInfo > &modelzoo_list )
 		DG::ModelParamsWriter mparams( model.value() );
 		DG::ModelInfo mi;
 
-		mi.id = std::hash< std::string >()( model_name );
 		mi.name = model_name;
-		mi.W = mparams.InputW();
-		mi.H = mparams.InputH();
-		mi.C = mparams.InputC();
-		mi.N = mparams.InputN();
-		mi.device_type = mparams.DeviceType();
-		mi.runtime_agent = mparams.RuntimeAgent();
-		mi.model_quantized = mparams.InputQuantEn();
-		mi.model_pruned = model_name.find( "pruned" ) != std::string::npos;
-		mi.input_type = mparams.InputType();
-		mi.input_tensor_layout = mparams.InputTensorLayout();
-		mi.input_color_space = mparams.InputColorSpace();
-		mi.input_image_format = mparams.InputImgFmt();
-		mi.input_raw_data_type = mparams.InputRawDataType();
 		mi.extended_params = mparams;
 		modelzoo_list.push_back( mi );
 	}
