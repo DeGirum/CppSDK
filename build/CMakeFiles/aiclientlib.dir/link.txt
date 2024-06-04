@@ -1,2 +1,0 @@
-/usr/bin/ar qc /home/degirum/actions-runner/_work/Framework/Framework/AIModelRelease/bin/libaiclientlib.a CMakeFiles/aiclientlib.dir/client/dg_client.cpp.o CMakeFiles/aiclientlib.dir/client/dg_client_asio.cpp.o CMakeFiles/aiclientlib.dir/client/dg_client_http.cpp.o CMakeFiles/aiclientlib.dir/client/dg_model_api.cpp.o CMakeFiles/aiclientlib.dir/inc/Utilities/easywsclient.cpp.o CMakeFiles/aiclientlib.dir/inc/Utilities/dg_utility_singletons.cpp.o
-/usr/bin/ranlib /home/degirum/actions-runner/_work/Framework/Framework/AIModelRelease/bin/libaiclientlib.a

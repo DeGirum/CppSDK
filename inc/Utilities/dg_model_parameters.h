@@ -374,14 +374,24 @@ public:
 
 		//! @cond Doxygen_Suppress
 		//!
-#define _( name, section, c_type, default_val, mandatory, runtime, visible, fallback ) \
-	if( runtime && patch.name##_exist() )                                              \
-		name##_set( patch.name() );
+#define _( name, section, c_type, default_val, mandatory, runtime, visible, fallback )        \
+	if( runtime && patch.name##_exist() )                                                     \
+	{                                                                                         \
+		if( section.label[ 0 ] == 0 || section.is_scalar )                                    \
+			name##_set( patch.name() );                                                       \
+		else                                                                                  \
+		{                                                                                     \
+			auto lbl = section.label;                                                         \
+			const size_t sz = std::min( patch.sectionSizeGet( lbl ), sectionSizeGet( lbl ) ); \
+			for( size_t idx = 0; idx < sz; idx++ )                                            \
+				name##_set( patch.name##_get( idx ), idx );                                   \
+		}                                                                                     \
+	}
 		DG_MODEL_PARAMS_LIST
 #undef _
 		//! @endcond
 		return *this;
-	}
+	}  // namespace DG
 
 	/// Check if dirty: at least one of the parameters was changed
 	bool is_dirty() const
