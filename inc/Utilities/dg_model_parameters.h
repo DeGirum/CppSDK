@@ -26,6 +26,7 @@
 #ifndef DG_MODEL_PARAMETERS_H_
 #define DG_MODEL_PARAMETERS_H_
 
+#include <string>
 #include <type_traits>
 #include "dg_json_helpers.h"
 
@@ -59,7 +60,9 @@ constexpr ModelParamsSection SECT_INTERNAL = { "INTERNAL", true };          //!<
 using vec_dbl = std::vector< double >;  //!< vector of doubles
 using vec_flt = std::vector< float >;   //!< vector of floats
 using vec_int = std::vector< int >;     //!< vector of integers
+using vec_str = std::vector< std::string >;     //!< vector of strings
 using vec_sz = std::vector< size_t >;   //!< vector of size_t
+using map_str_vec = std::map<std::string, std::vector<int32_t>>;
 
 // List of all configuration parameters. Depending on the build, either full list or shorter client-side list is
 // included.

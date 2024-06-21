@@ -1,10 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////
 /// \file dg_device_types.h
-/// \brief DG device types
+/// \brief N2X device types
 ///
-/// Copyright 2021 DeGirum Corporation
+/// Copyright 2024 DeGirum Corporation
 ///
-/// This file contains declaration of DG device types enumerator
+/// This file contains declaration of N2X device types enumerator and related functions
 ///
 
 #ifndef DG_DEVICE_TYPES_H_
@@ -14,7 +14,7 @@
 
 namespace DG
 {
-	/// List of supported device types
+	/// List of supported N2X device types
 	// _( id, label, index, description )
 	#define DG_DEVICE_TYPE_LIST \
 		_( CPU,			"CPU",			0,	"processing on computer" ) \
@@ -23,11 +23,6 @@ namespace DG
 		_( BIG_FPGA,	"BIG_FPGA",		3,	"DG advanced FPGA simulator (aka 'big' FPGA)" ) \
 		_( ORCA,		"ORCA",			4,	"DG Orca-based accelerator" ) \
 		_( DEV_DUMMY,	"DUMMY",		5,	"dummy device (for unit tests)" ) \
-		_( EDGETPU,		"EDGETPU",		6,	"Google EdgeTPU" ) \
-		_( MYRIAD,		"MYRIAD",		7,	"Intel MyriadX (NCS2 and others)" ) \
-		_( GPU,			"GPU",			8,	"Nvidia Tensor RT GPU" ) \
-		_( DLA_ONLY,	"DLA_ONLY",		9,	"Nvidia Tensor RT DLA without GPU fallback" ) \
-		_( DLA_FALLBACK,"DLA_FALLBACK",	10,	"Nvidia Tensor RT DLA with GPU fallback" ) \
 		_( BIG_FPGA_1P1,"BIG_FPGA_1P1",	11,	"DG advanced FPGA simulator for ORCA1.1 (aka 'big' FPGA)" ) \
 		_( ORCA_1P1,	"ORCA1",		12,	"DG Orca 1.1 based accelerator" )
 
