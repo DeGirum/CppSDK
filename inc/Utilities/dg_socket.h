@@ -45,21 +45,21 @@ constexpr const char *TRACE_MANAGE = "trace_manage";
 constexpr const char *ZOO_MANAGE = "zoo_manage";
 }  // namespace commands
 
-/// Error handling for asio errors
+/// Error handling for asio errors (defined as macro to preserve file location info in error messages)
 /// \param[in] ec - asio error code
 /// \param[in] ignore_errors - if true, ignore errors and return 0 on error
 /// \return false if error is serious, true otherwise
-inline bool throw_exception_if_error_is_serious( asio::error_code ec, bool ignore_errors = false )
-{
-	if( ec && !( ec == asio::error::eof ) )
-	{
-		if( ignore_errors )
-			return false;
-		else
-			DG_ERROR( ec.message(), ErrSystem );
-	}
-	return true;
-}
+#define throw_exception_if_error_is_serious( ec, ignore_errors )                                           \
+	( ( ( ec ) && ( ec ) != asio::error::eof ) ? ( ( ignore_errors ) ? false                               \
+																	 : ( DG::ErrorHandling::errorAdd(      \
+																			 __FILE__,                     \
+																			 TOSTRING( __LINE__ ),         \
+																			 FUNCTION_NAME,                \
+																			 DG::ErrorType::RUNTIME_ERROR, \
+																			 DG::ErrSystem,                \
+																			 ( ec ).message() ),           \
+																		 false ) )                         \
+											   : true )
 
 /// Run executor in I/O context to handle asynchronous operations
 /// \param[in] io_context - I/O context object to run
@@ -302,7 +302,7 @@ inline std::function< bool( size_t ) > write_async( socket_t &socket, const char
 		write_context->bytes_sent += bytes_transferred;
 		// Notify waiter
 		write_context->cv.notify_all();
-		throw_exception_if_error_is_serious( ec );
+		throw_exception_if_error_is_serious( ec, false );
 	};
 
 	// Prepare buffers
@@ -346,7 +346,7 @@ inline void initiate_read( socket_t &socket, uint32_t *read_size, callback_t asy
 		asio::buffer( read_size_buffer, HEADER_SIZE ),
 		[ &socket, read_size, async_result_callback ]( const asio::error_code &error, size_t bytes_transferred ) {
 			// Handle the error
-			throw_exception_if_error_is_serious( error );
+			throw_exception_if_error_is_serious( error, false );
 
 			// Convert size to host endianness
 			*read_size = ntohl( *read_size );
@@ -370,7 +370,7 @@ inline void handle_read( socket_t &socket, std::vector< T > &response_buffer, ui
 	response_buffer.resize( read_size );
 	asio::read( socket, asio::buffer( response_buffer ), error );
 
-	throw_exception_if_error_is_serious( error );
+	throw_exception_if_error_is_serious( error, false );
 }
 
 }  // namespace main_protocol

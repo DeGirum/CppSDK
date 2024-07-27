@@ -104,9 +104,7 @@ class FileLogger
 {
 public:
 	/// Constructor
-	/// \param[in] log_fname - log filename suffix
-	FileLogger( const std::string &log_fname = "dg_log.txt" ) : m_is_initialized( false ), m_fname_suffix( log_fname )
-	{}
+	FileLogger();
 
 	/// Clear log file
 	inline bool clear();
@@ -166,7 +164,6 @@ public:
 
 private:
 	std::recursive_mutex m_mx;   //!< thread protecting mutex
-	std::string m_fname_suffix;  //!< log filename suffix
 	std::string m_fname;         //!< log filename
 	std::ofstream m_file;        //!< log file stream
 	bool m_is_initialized;       //!< log is initialized flag
@@ -272,7 +269,20 @@ private:
 
 #include "dg_file_utilities.h"
 
+//
+// Constructor
+//
+inline DG::FileLogger::FileLogger() : m_is_initialized( false )
+{
+	std::string mod_name;
+	DG::FileHelper::module_path( nullptr, &mod_name, false );
+	m_fname = "dg_log." + mod_name + ".txt";
+}
+
+
+//
 // Clear log file (implementation)
+//
 inline bool DG::FileLogger::clear()
 {
 	std::lock_guard< std::recursive_mutex > lk( m_mx );
@@ -280,7 +290,7 @@ inline bool DG::FileLogger::clear()
 	if( m_is_initialized && m_file.is_open() )
 		m_file.close();
 
-	m_fname = DG::FileHelper::notUsedFileInDirBackupAndGet( DG::FileHelper::appdata_dg_dir() + "traces/", m_fname_suffix );
+	m_fname = DG::FileHelper::notUsedFileInDirBackupAndGet( DG::FileHelper::appdata_dg_dir() + "traces/", m_fname );
 	m_file.open( m_fname, std::ios_base::out | std::ios_base::trunc );
 	m_is_initialized = true;
 	const bool ret = m_file.is_open() && m_file.good();
