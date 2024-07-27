@@ -57,7 +57,7 @@
 /// It will issue start trace point on construction and stop trace point on destruction.
 /// Note: even if the tracing is disabled, the object will be created and destroyed.
 ///
-/// All tracing information is saved into "dg_trace.txt" file (see DG_TRC_TRACE_FILE) in the current process directory.
+/// All tracing information is saved into "dg_trace.txt" file in the current process directory.
 /// If such file existed before, it is renamed to .bak
 ///
 /// All tracing macros refer to trace groups. A trace group is defined by DG_TRC_GROUP_DEF() macro.
@@ -65,11 +65,12 @@
 /// mechanism you can select the tracing level for all trace points referring to that group.
 /// How it works:
 /// Each trace point has certain tracing level as specified in "level" macro argument. If this tracing level is
-/// higher than the current tracing level of the corresponding  trace group, tracing of this trace point will be skipped.
-/// (the overhead of skipped trace is just few instructions).
+/// higher than the current tracing level of the corresponding  trace group, tracing of this trace point will be
+/// skipped. (the overhead of skipped trace is just few instructions).
 ///
-/// The trace group tracing level is specified in the tracing configuration file: "dg_trace.ini" (see DG_TRC_CONFIG_FILE).
-/// Tracing configuration file is searched in the current process directory and parsed during static objects initialization.
+/// The trace group tracing level is specified in the tracing configuration file: "dg_trace.ini".
+/// Tracing configuration file is searched in the current process directory and parsed during static objects
+/// initialization.
 ///
 /// Configuration file consists of zero or more lines like that:
 /// group = trace level
@@ -87,15 +88,18 @@
 /// trace points. The tracing level can be set for each trace group in the configuration file.
 /// A trace point will be traced only when the tracing level of that trace point is not higher than
 /// the tracing level currently set for the corresponding trace group.
-#define DG_TRC_GROUP_DEF( name )                   \
-	inline DGTrace::TraceLevel_t DG_TRC_GROUP_VAR( \
-		name ) = DGTrace::getTracingFacility().m_trace_registry.registerTraceGroup( &DG_TRC_GROUP_VAR( name ), #name );
+#define DG_TRC_GROUP_DEF( name )                            \
+	inline DGTrace::TraceLevel_t DG_TRC_GROUP_VAR( name ) = \
+		DGTrace::getTracingFacility().m_trace_registry.registerTraceGroup( &DG_TRC_GROUP_VAR( name ), #name );
 
 /// RAII-style macro to trace entry-exit points from a block
-#define DG_TRC_BLOCK( group, name, level, ... ) \
-	DGTrace::Tracer DG_CONCAT(                  \
-		__dg_trace_,                            \
-		__LINE__ )( &DGTrace::getTracingFacility(), &DG_TRC_GROUP_VAR( group ), #group "::" #name, level, ##__VA_ARGS__ )
+#define DG_TRC_BLOCK( group, name, level, ... )         \
+	DGTrace::Tracer DG_CONCAT( __dg_trace_, __LINE__ )( \
+		&DGTrace::getTracingFacility(),                 \
+		&DG_TRC_GROUP_VAR( group ),                     \
+		#group "::" #name,                              \
+		level,                                          \
+		##__VA_ARGS__ )
 
 /// Helper macros used in DG_TRC_xxx macros to reduce copy-paste
 /// Trace with static message
@@ -115,11 +119,14 @@
 	} while( 0 )
 
 /// Trace starting point of some activity
-#define DG_TRC_START( group, name, level, ... ) DG_TRC_DO( group, name, level, DGTrace::TracingFacility::TraceType::Start, ##__VA_ARGS__ )
+#define DG_TRC_START( group, name, level, ... ) \
+	DG_TRC_DO( group, name, level, DGTrace::TracingFacility::TraceType::Start, ##__VA_ARGS__ )
 /// Trace ending point of some activity
-#define DG_TRC_STOP( group, name, level, ... ) DG_TRC_DO( group, name, level, DGTrace::TracingFacility::TraceType::Stop, ##__VA_ARGS__ )
+#define DG_TRC_STOP( group, name, level, ... ) \
+	DG_TRC_DO( group, name, level, DGTrace::TracingFacility::TraceType::Stop, ##__VA_ARGS__ )
 /// Trace some point in code
-#define DG_TRC_POINT( group, name, level, ... ) DG_TRC_DO( group, name, level, DGTrace::TracingFacility::TraceType::Point, ##__VA_ARGS__ )
+#define DG_TRC_POINT( group, name, level, ... ) \
+	DG_TRC_DO( group, name, level, DGTrace::TracingFacility::TraceType::Point, ##__VA_ARGS__ )
 
 /// Trace starting point of some activity with printf-style message
 #define DG_TRC_START_MSG( group, name, level, message, ... ) \
@@ -133,7 +140,8 @@
 
 /// Trace critical information unconditionally with printf-like message
 #define DG_TRC_CRITICAL( name, msg, ... ) \
-	DGTrace::getTracingFacility().tracePrintfDo( DGTrace::TracingFacility::TraceType::Point, name, DGTrace::lvlNone, msg, ##__VA_ARGS__ )
+	DGTrace::getTracingFacility()         \
+		.tracePrintfDo( DGTrace::TracingFacility::TraceType::Point, name, DGTrace::lvlNone, msg, ##__VA_ARGS__ )
 
 /// Flush all buffered trace contents to file
 #define DG_TRC_FLUSH() DGTrace::getTracingFacility().flush()
@@ -162,13 +170,8 @@
 #include <vector>
 #include "dg_time_utilities.h"
 #ifndef _WIN32
-#define _stricmp strcasecmp
+	#define _stricmp strcasecmp
 #endif
-
-/// trace file name
-#define DG_TRC_TRACE_FILE "dg_trace.txt"
-/// trace configuration file name
-#define DG_TRC_CONFIG_FILE "dg_trace.ini"
 
 namespace DGTrace
 {
@@ -204,7 +207,6 @@ struct TraceGroupsRegistry
 	{
 		return level == lvlBasic ? "Basic" : level == lvlDetailed ? "Detailed" : level == lvlFull ? "Full" : "None";
 	}
-
 
 	/// Register trace group. Used in DG_TRACE_GROUP_DEF() macro.
 	/// Called during global variables initialization
@@ -288,7 +290,8 @@ struct TraceGroupsRegistry
 			out_stream << "Immediate flush enabled (NOTE: this option degrades performance)\n";
 
 		out_stream << "\n\nLine format:\n";
-		out_stream << "[<Timestamp, us>:<delta, us] <thread ID> [<level>] <type> <name>: <message> <-- <duration, usec>\n";
+		out_stream
+			<< "[<Timestamp, us>:<delta, us] <thread ID> [<level>] <type> <name>: <message> <-- <duration, usec>\n";
 		out_stream << "* in first position means timing of this trace point is distorted by forced file flush\n\n";
 	}
 
@@ -328,7 +331,7 @@ private:
 		// format: <group>=<trace level>
 		// case insensitive
 		// trace level: basic, detailed, full
-		std::ifstream fcfg( getTempPath() + DG_TRC_CONFIG_FILE );
+		std::ifstream fcfg( getTempPath() + "dg_trace.ini" );
 		if( !fcfg.good() )
 		{
 			m_configsCount = -1;  // meaning no config. file is present
@@ -446,16 +449,7 @@ public:
 	/// \param[in] traceBufCnt - trace buffer size in records
 	/// \param[in] stringPoolSize - string pool buffer size in bytes
 	/// \param[in] out_stream - optional output stream to print trace into (used in unit tests)
-	TracingFacility( size_t traceBufCnt = 10000, size_t stringPoolSize = 100000, std::ostream *out_stream = nullptr ) :
-		m_traceBuf( traceBufCnt ), m_stringPool( stringPoolSize ), m_isOwnStream( false ), m_outStream( out_stream ), m_poison( false ),
-		m_do_flush( false ), m_do_restart( false )
-	{
-		if( out_stream == nullptr )
-		{
-			m_outStream = &m_outFileStream;
-			m_isOwnStream = true;
-		}
-	}
+	TracingFacility( size_t traceBufCnt = 10000, size_t stringPoolSize = 100000, std::ostream *out_stream = nullptr );
 
 	/// Destructor
 	~TracingFacility()
@@ -489,7 +483,8 @@ public:
 	/// \param[in] level - tracing level
 	/// \param[in] message - static message (not in string pool)
 	/// \param[in] flags - flags inherited from caller (used when called from tracePrintfDo)
-	inline void traceDo( TraceType type, const char *name, TraceLevel_t level, const char *message = nullptr, unsigned flags = 0 )
+	inline void
+	traceDo( TraceType type, const char *name, TraceLevel_t level, const char *message = nullptr, unsigned flags = 0 )
 	{
 		// reserve position in the buffer: atomically increment write pointer
 		size_t free_pos = m_traceBuf.m_BufWP.fetch_add( 1 );
@@ -552,7 +547,8 @@ public:
 
 		if( msg_len > 0 )
 		{
-			m_stringPool.lock();  // lock string pool to have strings in pool in the same order as records in trace buffer
+			m_stringPool
+				.lock();  // lock string pool to have strings in pool in the same order as records in trace buffer
 
 			// reserve space in the pool: atomically increment write pointer
 			size_t free_pos = m_stringPool.m_BufWP.fetch_add( msg_len );
@@ -583,7 +579,7 @@ public:
 	void flush( bool do_wait = false )
 	{
 		ensureThreadRuns();
-		if( !m_thread.joinable() )
+		if( !isWorkerRunning() )
 			return;
 
 		m_do_flush = true;
@@ -773,13 +769,17 @@ private:
 		size_t count;                 //!< # of section instances
 	};
 
-	std::map< const char *, TraceStats > m_trace_stats;  //!< trace statistics map: accumulated times and counts for each stop trace point
+	std::map< const char *, TraceStats >
+		m_trace_stats;  //!< trace statistics map: accumulated times and counts for each stop trace point
 
 	/// Get current time in nanoseconds since epoch
 	static inline long long to_ns( const clock::time_point &timestamp )
 	{
 		return std::chrono::duration_cast< std::chrono::nanoseconds >( timestamp.time_since_epoch() ).count();
 	}
+
+	/// Check that worker thread is started
+	bool isWorkerRunning();
 
 	/// Check if the worker thread is started and start it, if it was not started yet
 	void ensureThreadRuns()
@@ -790,7 +790,7 @@ private:
 			ownStreamCheckOpen();  // open file stream if it is owned by facility and not opened yet
 			try
 			{
-				if( !m_thread.joinable() ) // check one more time to avoid race conditions
+				if( !m_thread.joinable() )  // check one more time to avoid race conditions
 				{
 					// start worker thread
 					m_thread = std::thread( workerThreadFunc, this );
@@ -832,7 +832,8 @@ private:
 		// printing lambda
 		// prints records from rp to wp
 		// returns indices of first not processed records in trace buffer and string pool (may be NOT wp!)
-		auto tracePrintBuf = [ & ]( size_t rp, size_t wp, size_t wp_pool, size_t rp_pool ) -> std::tuple< size_t, size_t > {
+		auto tracePrintBuf =
+			[ & ]( size_t rp, size_t wp, size_t wp_pool, size_t rp_pool ) -> std::tuple< size_t, size_t > {
 			size_t lri = rp;        // linear (not wrapped) record index
 			size_t lspp = rp_pool;  // linear (not wrapped) string pool position
 
@@ -861,14 +862,17 @@ private:
 				auto map_it = tread_map.find( rec.m_threadID );
 				if( map_it == tread_map.end() )
 					// new thread ID, not in map yet: add to map
-					std::tie( map_it, std::ignore ) = tread_map.insert( { rec.m_threadID, ThreadState( tread_map.size() ) } );
+					std::tie( map_it, std::ignore ) = tread_map.insert(
+						{ rec.m_threadID, ThreadState( tread_map.size() ) } );
 				auto &thread_state = map_it->second;
 
 				// get timestamp relative to start
 				const long long timestamp_ns = me->to_ns( rec.m_timeStamp );
 
 				// get timestamp delta in respect to previous timestamp in the SAME thread
-				const auto delta_ns = thread_state.prev_timestamp_ns >= 0 ? timestamp_ns - thread_state.prev_timestamp_ns : 0;
+				const auto delta_ns = thread_state.prev_timestamp_ns >= 0
+					? timestamp_ns - thread_state.prev_timestamp_ns
+					: 0;
 				thread_state.prev_timestamp_ns = timestamp_ns;
 
 				// process stack of traces
@@ -894,7 +898,8 @@ private:
 					{
 						auto it = me->m_trace_stats.find( rec.m_traceName );
 						if( it == me->m_trace_stats.end() )
-							me->m_trace_stats[ rec.m_traceName ] = { section_duration_ns, section_duration_ns, section_duration_ns, 1 };
+							me->m_trace_stats[ rec.m_traceName ] =
+								{ section_duration_ns, section_duration_ns, section_duration_ns, 1 };
 						else
 						{
 							it->second.total_duration_ns += section_duration_ns;
@@ -945,7 +950,11 @@ private:
 					if( printf_ret > 0 && printf_ret < sizeof sbuf - 1 && need_duration )
 					{
 						printf_ret--;  // to overwrite trailing \n
-						int printf_ret2 = snprintf( sbuf + printf_ret, sizeof sbuf - printf_ret, "  <-- %.1f usec\n", section_duration_ns * 1e-3 );
+						int printf_ret2 = snprintf(
+							sbuf + printf_ret,
+							sizeof sbuf - printf_ret,
+							"  <-- %.1f usec\n",
+							section_duration_ns * 1e-3 );
 						if( printf_ret2 > 0 )
 							printf_ret += printf_ret2;
 						else
@@ -990,16 +999,20 @@ private:
 			const size_t rp = me->m_traceBuf.m_BufRP;
 			if( wp > rp || me->m_do_restart || me->m_do_flush )
 			{
-				me->ownStreamCheckOpen();  // open file stream if it is owned by facility and not opened yet or restart it if requested
+				me->ownStreamCheckOpen();  // open file stream if it is owned by facility and not opened yet or restart
+										   // it if requested
 
 				size_t first_non_processed_trace;
 				size_t first_non_processed_string;
-				std::tie( first_non_processed_trace, first_non_processed_string ) = tracePrintBuf( rp, wp, wp_pool, rp_pool );
+				std::tie(
+					first_non_processed_trace,
+					first_non_processed_string ) = tracePrintBuf( rp, wp, wp_pool, rp_pool );
 
 				// reclaim processed records
-				me->m_stringPool.m_BufRP = first_non_processed_string;  // string pool first
-																		// (so when trace buffer is released, pool is ready)
-				me->m_traceBuf.m_BufRP = first_non_processed_trace;     // only then trace buffer
+				me->m_stringPool
+					.m_BufRP = first_non_processed_string;  // string pool first
+															// (so when trace buffer is released, pool is ready)
+				me->m_traceBuf.m_BufRP = first_non_processed_trace;  // only then trace buffer
 			}
 
 			if( me->m_poison )  // request to terminate
@@ -1022,8 +1035,8 @@ private:
 				for( const auto &v : m_trace_stats )
 				{
 					*m_outStream << v.first << " = [" << 1e-3 * v.second.min_duration_ns << " < "
-								 << ( 1e-3 * v.second.total_duration_ns ) / v.second.count << "/" << v.second.count << " < "
-								 << 1e-3 * v.second.max_duration_ns << "] usec\n";
+								 << ( 1e-3 * v.second.total_duration_ns ) / v.second.count << "/" << v.second.count
+								 << " < " << 1e-3 * v.second.max_duration_ns << "] usec\n";
 				}
 				m_trace_stats.clear();
 			}
@@ -1084,8 +1097,15 @@ public:
 	/// \param[in] name - trace name
 	/// \param[in] level - tracing level
 	/// \param[in] message - printf-like message format string
-	Tracer( TracingFacility *tracingFacility, TraceLevel_t *group, const char *name, TraceLevel_t level, const char *message = nullptr, ... ) :
-		m_tracingFacility( tracingFacility ), m_group( group ), m_name( name ), m_level( level )
+	Tracer(
+		TracingFacility *tracingFacility,
+		TraceLevel_t *group,
+		const char *name,
+		TraceLevel_t level,
+		const char *message = nullptr,
+		... ) :
+		m_tracingFacility( tracingFacility ),
+		m_group( group ), m_name( name ), m_level( level )
 	{
 		if( m_level <= *m_group )
 		{
@@ -1165,6 +1185,33 @@ inline std::string DGTrace::TraceGroupsRegistry::getTempPath()
 }
 
 //
+// Constructor
+// It reads configuration file and sets tracing level of all registered trace groups.
+// It allocates tracing buffers.
+// [in] traceBufCnt - trace buffer size in records
+// [in] stringPoolSize - string pool buffer size in bytes
+// [in] out_stream - optional output stream to print trace into (used in unit tests)
+//
+inline DGTrace::TracingFacility::TracingFacility(
+	size_t traceBufCnt,
+	size_t stringPoolSize,
+	std::ostream *out_stream ) :
+	m_traceBuf( traceBufCnt ),
+	m_stringPool( stringPoolSize ), m_isOwnStream( false ), m_outStream( out_stream ), m_poison( false ),
+	m_do_flush( false ), m_do_restart( false )
+{
+	if( out_stream == nullptr )
+	{
+		m_outStream = &m_outFileStream;
+		m_isOwnStream = true;
+
+		std::string mod_name;
+		DG::FileHelper::module_path( nullptr, &mod_name, false );
+		m_outFileName = "dg_trace." + mod_name + ".txt";
+	}
+}
+
+//
 // Open file stream if it is owned by facility and not opened yet
 //
 inline void DGTrace::TracingFacility::ownStreamCheckOpen()
@@ -1172,7 +1219,9 @@ inline void DGTrace::TracingFacility::ownStreamCheckOpen()
 	if( m_isOwnStream && ( !m_outFileStream.is_open() || m_do_restart ) )
 	{
 		// get full trace file path while preserving previous trace file content into .bak file
-		m_outFileName = DG::FileHelper::notUsedFileInDirBackupAndGet( DGTrace::TraceGroupsRegistry::getTempPath(), DG_TRC_TRACE_FILE );
+		m_outFileName = DG::FileHelper::notUsedFileInDirBackupAndGet(
+			DGTrace::TraceGroupsRegistry::getTempPath(),
+			m_outFileName );
 
 		if( m_outFileStream.is_open() )
 			ownStreamClose();
@@ -1215,6 +1264,24 @@ inline std::string DGTrace::TracingFacility::readTraceFile( size_t offset, size_
 		}
 	}
 	return "";
+}
+
+//
+// Check that worker thread is started
+//
+inline bool DGTrace::TracingFacility::isWorkerRunning()
+{
+	if( m_thread.joinable() )
+	{
+#ifdef _WIN32
+		DWORD exit_code = 0;
+		const auto ret = GetExitCodeThread( m_thread.native_handle(), &exit_code );
+		return ret && exit_code == STILL_ACTIVE;
+#else
+		return true;
+#endif
+	}
+	return false;
 }
 
 #endif  // DG_TRACING_FACILITY_H

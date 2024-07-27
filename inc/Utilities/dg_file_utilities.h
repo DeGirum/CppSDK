@@ -394,31 +394,28 @@ public:
 #endif
 	}
 
-	/// Get a path to a file with file name beginning with the current process name,
-	/// ending with provided file name suffix, located in given directory,
-	/// which is not currently opened by any other process.
+	/// Get a path to a file with given file name, located in given directory,
+	/// which is not currently opened by any other process. If such file is already
+	/// open by another process, add numeric suffix to the file name.
 	/// If such file existed before, rename it to .bak
 	/// Full filename will be in the following format:
-	/// [dir]/[executable name].[number].[file suffix]
+	/// [dir]/[file name].[number].[file extension]
 	///
 	/// \param[in] dir - directory to deal with
-	/// \param[in] file_suffix - desired file name suffix with extension
+	/// \param[in] file_name - desired file name with extension (path component, if any, is ignored)
 	/// \return full path to such file
 	/// NOTE: implementation is not protected against race conditions!
-	static std::string notUsedFileInDirBackupAndGet( const std::string &dir, const std::string &file_suffix )
+	static std::string notUsedFileInDirBackupAndGet( const std::string &dir, const std::string &file_name )
 	{
-		const std::string suffix_stem = std::filesystem::path( file_suffix ).stem().string();      // name w/o extension
-		const std::string suffix_ext = std::filesystem::path( file_suffix ).extension().string();  // extension with dot
-		std::string mod_name;
-		module_path( nullptr, &mod_name, false );
-		std::string path_prefix = path_with_slash( dir ) + mod_name + ".";
+		const std::string file_stem = std::filesystem::path( file_name ).stem().string();      // name w/o extension
+		const std::string file_ext = std::filesystem::path( file_name ).extension().string();  // extension with dot
+		const std::string path_prefix = path_with_slash( dir ) + file_stem;
 
 		dir_create_if_not_exist( dir );
 		for( int idx = 0; idx < 100 /*we need some limit anyway*/; idx++ )
 		{
-			const std::string try_filename_no_ext = path_prefix + ( idx == 0 ? "" : std::to_string( idx ) + "." ) +
-				suffix_stem;
-			const std::string try_filename = try_filename_no_ext + suffix_ext;
+			const std::string try_filename_no_ext = path_prefix + ( idx == 0 ? "" : "." + std::to_string( idx ) );
+			const std::string try_filename = try_filename_no_ext + file_ext;
 
 			if( !fexist( try_filename ) )  // file not exist: just use it
 				return try_filename;
@@ -447,8 +444,8 @@ public:
 			return try_filename;
 		}
 
-		// when all fails, use current directory
-		return "./" + mod_name + "." + file_suffix;
+		// when all fails (unlikely), just return the original file name
+		return path_prefix + file_ext;
 	}
 
 	/// Get upper limit for the number of virtual CPU devices available in the system.
