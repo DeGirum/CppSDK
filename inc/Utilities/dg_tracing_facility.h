@@ -143,6 +143,11 @@
 	DGTrace::getTracingFacility()         \
 		.tracePrintfDo( DGTrace::TracingFacility::TraceType::Point, name, DGTrace::lvlNone, msg, ##__VA_ARGS__ )
 
+/// Trace info information unconditionally with printf-like message
+#define DG_TRC_INFO( name, msg, ... ) \
+	DGTrace::getTracingFacility()     \
+		.tracePrintfDo( DGTrace::TracingFacility::TraceType::Point, name, DGTrace::lvlDetailed, msg, ##__VA_ARGS__ )
+
 /// Flush all buffered trace contents to file
 #define DG_TRC_FLUSH() DGTrace::getTracingFacility().flush()
 
@@ -301,6 +306,7 @@ struct TraceGroupsRegistry
 	// tracing facility configuration parameters
 	bool m_TraceStatisticsEnable = false;  //!< enable collection and reporting of trace statistics
 	bool m_TraceImmediateFlush = false;    //!< flush trace immediately, do not buffer
+	bool m_TraceToStdout = false;          //!< print trace to stdout
 
 private:
 	enum
@@ -358,6 +364,12 @@ private:
 				m_TraceImmediateFlush = value_str == "yes" || value_str == "true" || value_str == "1";
 				return true;
 			}
+			else if( group_str == "__TraceToStdout" )
+			{
+				m_TraceToStdout = value_str == "yes" || value_str == "true" || value_str == "1";
+				return true;
+			}
+
 			// ... add new parameters here
 			return false;
 		};
@@ -748,6 +760,8 @@ private:
 	RingBuffer< TraceRec > m_traceBuf;  //!< trace buffer
 	StringPool m_stringPool;            //!< string pool
 
+	std::chrono::nanoseconds m_clockAdjustment_ns;  //!< system clock to hires clock adjustment in ns
+
 	std::thread m_thread;                 //!< worker thread to periodically print the buffer
 	std::condition_variable m_thread_cv;  //!< condition variable to wake up worker thread
 	std::mutex m_thread_mutex;            //!< worker thread mutex
@@ -781,6 +795,10 @@ private:
 	/// Check that worker thread is started
 	bool isWorkerRunning();
 
+	/// Worker thread function: prints accumulated trace buffer contents to trace file
+	/// \param[in] me - pointer to parent TracingFacility object
+	static void workerThreadFunc( TracingFacility *me );
+
 	/// Check if the worker thread is started and start it, if it was not started yet
 	void ensureThreadRuns()
 	{
@@ -801,225 +819,6 @@ private:
 			catch( ... )  // ignore all errors
 			{}
 		}
-	}
-
-	/// Worker thread function: prints accumulated trace buffer contents to trace file
-	/// \param[in] me - pointer to parent TracingFacility object
-	static void workerThreadFunc( TracingFacility *me )
-	{
-		// Trace-related state of a single thread
-		struct ThreadState
-		{
-			char thread_label[ 3 ];         //!< printable thread label like AA (0), AB (1)
-			std::vector< TraceRec > stack;  //!< stack of start-type records belonging to this thread
-			long long prev_timestamp_ns;    //!< previous trace record time stamp (to calculate delta time)
-
-			// Constructor
-			ThreadState( size_t idx ) : prev_timestamp_ns( -1 )
-			{
-				// generate thread label:
-				// min label is "AA" = 0, max. label is "ZZ" = 675
-				const size_t alphabet_size = ( 'Z' - 'A' + 1 );
-				thread_label[ 2 ] = 0;
-				thread_label[ 1 ] = 'A' + idx % alphabet_size;
-				idx /= alphabet_size;
-				thread_label[ 0 ] = 'A' + idx % alphabet_size;
-			}
-		};
-
-		std::map< std::thread::id, ThreadState > tread_map;  // map of thread IDs to thread state objects
-
-		// printing lambda
-		// prints records from rp to wp
-		// returns indices of first not processed records in trace buffer and string pool (may be NOT wp!)
-		auto tracePrintBuf =
-			[ & ]( size_t rp, size_t wp, size_t wp_pool, size_t rp_pool ) -> std::tuple< size_t, size_t > {
-			size_t lri = rp;        // linear (not wrapped) record index
-			size_t lspp = rp_pool;  // linear (not wrapped) string pool position
-
-			for( ; lri < wp; lri++ )
-			{
-				const size_t ri = lri % me->m_traceBuf.m_BufSize;  // ri - true record index
-				auto &rec = me->m_traceBuf.m_Buf[ ri ];
-				std::string pool_string;
-				const char *message = rec.m_message;
-
-				if( rec.m_type == TraceType::Invalid )
-					// current record is in process of update from another thread:
-					// mean we reached the end of filled part, just break
-					break;
-
-				// process string pool entry
-				if( rec.m_Flags & TraceRec::InStringPool )
-				{
-					pool_string = me->m_stringPool.get( message );
-					message = pool_string.c_str();
-					// increment processed string pool position
-					lspp += pool_string.length() + 1 /*trailing zero*/;
-				}
-
-				// get printable thread index
-				auto map_it = tread_map.find( rec.m_threadID );
-				if( map_it == tread_map.end() )
-					// new thread ID, not in map yet: add to map
-					std::tie( map_it, std::ignore ) = tread_map.insert(
-						{ rec.m_threadID, ThreadState( tread_map.size() ) } );
-				auto &thread_state = map_it->second;
-
-				// get timestamp relative to start
-				const long long timestamp_ns = me->to_ns( rec.m_timeStamp );
-
-				// get timestamp delta in respect to previous timestamp in the SAME thread
-				const auto delta_ns = thread_state.prev_timestamp_ns >= 0
-					? timestamp_ns - thread_state.prev_timestamp_ns
-					: 0;
-				thread_state.prev_timestamp_ns = timestamp_ns;
-
-				// process stack of traces
-
-				int indent_level = (int)thread_state.stack.size();  // nesting level of start/stop sections
-				long long section_duration_ns = 0;                  // start/stop section duration
-
-				if( rec.m_type == TraceType::Start )
-					thread_state.stack.push_back( rec );
-				else if( rec.m_type == TraceType::Stop )
-				{
-					// remove matching start record from stack top, if any
-					if( thread_state.stack.size() > 0 && rec.match( thread_state.stack.back() ) )
-					{
-						section_duration_ns = timestamp_ns - me->to_ns( thread_state.stack.back().m_timeStamp );
-						thread_state.stack.pop_back();
-						indent_level--;
-					}
-					else
-						indent_level = -1;  // start/stop do not match: unknown indent
-
-					if( me->m_trace_registry.m_TraceStatisticsEnable && indent_level >= 0 )
-					{
-						auto it = me->m_trace_stats.find( rec.m_traceName );
-						if( it == me->m_trace_stats.end() )
-							me->m_trace_stats[ rec.m_traceName ] =
-								{ section_duration_ns, section_duration_ns, section_duration_ns, 1 };
-						else
-						{
-							it->second.total_duration_ns += section_duration_ns;
-							it->second.min_duration_ns = std::min( it->second.min_duration_ns, section_duration_ns );
-							it->second.max_duration_ns = std::max( it->second.max_duration_ns, section_duration_ns );
-							it->second.count++;
-						}
-					}
-				}
-
-				// Trace file format
-				/*
-				Timestamp       Delta     ID     Type          Message              Start-stop
-				in us           in us        Level Name                             Duration
-
-				[           1.0 :     0.0] AA [5] / Trace Start (Trace message)
-				[           2.0 :     1.0] AA [5]  / Trace 2 Start (Trace message)
-				[           5.0 :     3.0] AA [5] - Trace Point (Trace message)
-				[          10.0 :     5.0] AA [5]  \ Trace 2 Stop (Trace message) <-- 8 us
-				[          11.0 :     1.0] AA [5] \ Trace Stop (Trace message)
-				*/
-
-				if( me->m_outStream->good() )
-				{
-					char sbuf[ DG_LOG_TRACE_BUF_SIZE ];
-
-					const bool need_message = message != nullptr;
-					const bool need_duration = rec.m_type == TraceType::Stop && indent_level >= 0;
-
-					long long timestamp_s = timestamp_ns / 1000000000;
-					int printf_ret = snprintf(
-						sbuf,
-						sizeof sbuf,
-						"%c%6lld.%08.1f :%10.1f] %2s [%1u] %s%*s %s%s%s\n",
-						( rec.m_Flags & TraceRec::TimingDistorted ) ? '*' : '[',
-						timestamp_s,
-						( timestamp_ns - timestamp_s * 1e9 ) * 1e-3,
-						delta_ns * 1e-3,
-						thread_state.thread_label,
-						rec.m_level,
-						indent_level < 0 ? "?" : "",
-						indent_level < 0 ? 1 : indent_level + 1,
-						rec.m_type == TraceType::Start ? "/" : ( rec.m_type == TraceType::Stop ? "\\" : "-" ),
-						rec.m_traceName,
-						need_message ? ": " : "",
-						need_message ? message : "" );
-
-					if( printf_ret > 0 && printf_ret < sizeof sbuf - 1 && need_duration )
-					{
-						printf_ret--;  // to overwrite trailing \n
-						int printf_ret2 = snprintf(
-							sbuf + printf_ret,
-							sizeof sbuf - printf_ret,
-							"  <-- %.1f usec\n",
-							section_duration_ns * 1e-3 );
-						if( printf_ret2 > 0 )
-							printf_ret += printf_ret2;
-						else
-							sbuf[ printf_ret++ ] = '\n';
-					}
-
-					if( printf_ret > 0 )
-						// note: '<<' stream operators are VERY slow even in release build;
-						// using them for printing to stream degrades performance ten-fold
-						me->m_outStream->write( sbuf, std::min( sizeof( sbuf ) - 1, (size_t)printf_ret ) );
-				}
-
-				rec.m_type = TraceType::Invalid;  // clear record
-			}
-			if( me->m_do_flush )
-			{
-				if( me->m_outStream->good() )
-					me->m_outStream->flush();
-				me->m_do_flush = false;
-			}
-			return std::make_tuple( lri, lspp );
-		};
-
-		std::unique_lock< std::mutex > lk( me->m_thread_mutex );
-		me->m_thread_cv.notify_one();  // notify ensureThreadRuns() that the thread is started
-
-		for( ;; )
-		{
-			// sleep on CV
-			if( !me->m_poison )
-				auto wait_ret = me->m_thread_cv.wait_for( lk, std::chrono::milliseconds( 1000 ) );
-			// here we own m_thread_mutex
-
-			//
-			// process records in buffer, if any
-			//
-
-			// cache shared vars:
-			const size_t wp_pool = me->m_stringPool.m_BufWP;  // string pool first (it is OK to release not whole pool)
-			const size_t rp_pool = me->m_stringPool.m_BufRP;
-			const size_t wp = me->m_traceBuf.m_BufWP;  // then trace buffer
-			const size_t rp = me->m_traceBuf.m_BufRP;
-			if( wp > rp || me->m_do_restart || me->m_do_flush )
-			{
-				me->ownStreamCheckOpen();  // open file stream if it is owned by facility and not opened yet or restart
-										   // it if requested
-
-				size_t first_non_processed_trace;
-				size_t first_non_processed_string;
-				std::tie(
-					first_non_processed_trace,
-					first_non_processed_string ) = tracePrintBuf( rp, wp, wp_pool, rp_pool );
-
-				// reclaim processed records
-				me->m_stringPool
-					.m_BufRP = first_non_processed_string;  // string pool first
-															// (so when trace buffer is released, pool is ready)
-				me->m_traceBuf.m_BufRP = first_non_processed_trace;  // only then trace buffer
-			}
-
-			if( me->m_poison )  // request to terminate
-				break;
-		}
-
-		me->ownStreamClose();  // close file stream if it is owned by facility and not closed yet
 	}
 
 	/// Print statistics into stream
@@ -1209,6 +1008,11 @@ inline DGTrace::TracingFacility::TracingFacility(
 		DG::FileHelper::module_path( nullptr, &mod_name, false );
 		m_outFileName = "dg_trace." + mod_name + ".txt";
 	}
+
+	// remember system clock to hires clock adjustment
+	m_clockAdjustment_ns = std::chrono::duration_cast< std::chrono::nanoseconds >(
+							   std::chrono::system_clock::now().time_since_epoch() ) -
+		std::chrono::duration_cast< std::chrono::nanoseconds >( clock::now().time_since_epoch() );
 }
 
 //
@@ -1282,6 +1086,284 @@ inline bool DGTrace::TracingFacility::isWorkerRunning()
 #endif
 	}
 	return false;
+}
+
+//
+// Worker thread function: prints accumulated trace buffer contents to trace file
+// [in] me - pointer to parent TracingFacility object
+//
+inline void DGTrace::TracingFacility::workerThreadFunc( TracingFacility *me )
+{
+	// Trace-related state of a single thread
+	struct ThreadState
+	{
+		char thread_label[ 3 ];         //!< printable thread label like AA (0), AB (1)
+		std::vector< TraceRec > stack;  //!< stack of start-type records belonging to this thread
+		long long prev_timestamp_ns;    //!< previous trace record time stamp (to calculate delta time)
+
+		// Constructor
+		ThreadState( size_t idx ) : prev_timestamp_ns( -1 )
+		{
+			// generate thread label:
+			// min label is "AA" = 0, max. label is "ZZ" = 675
+			const size_t alphabet_size = ( 'Z' - 'A' + 1 );
+			thread_label[ 2 ] = 0;
+			thread_label[ 1 ] = 'A' + idx % alphabet_size;
+			idx /= alphabet_size;
+			thread_label[ 0 ] = 'A' + idx % alphabet_size;
+		}
+	};
+
+	std::map< std::thread::id, ThreadState > tread_map;  // map of thread IDs to thread state objects
+
+	// printing lambda
+	// prints records from rp to wp
+	// returns indices of first not processed records in trace buffer and string pool (may be NOT wp!)
+	auto tracePrintBuf = [ & ]( size_t rp, size_t wp, size_t wp_pool, size_t rp_pool ) -> std::tuple< size_t, size_t > {
+		size_t lri = rp;        // linear (not wrapped) record index
+		size_t lspp = rp_pool;  // linear (not wrapped) string pool position
+
+		for( ; lri < wp; lri++ )
+		{
+			const size_t ri = lri % me->m_traceBuf.m_BufSize;  // ri - true record index
+			auto &rec = me->m_traceBuf.m_Buf[ ri ];
+			std::string pool_string;
+			const char *message = rec.m_message;
+
+			if( rec.m_type == TraceType::Invalid )
+				// current record is in process of update from another thread:
+				// mean we reached the end of filled part, just break
+				break;
+
+			// process string pool entry
+			if( rec.m_Flags & TraceRec::InStringPool )
+			{
+				pool_string = me->m_stringPool.get( message );
+				message = pool_string.c_str();
+				// increment processed string pool position
+				lspp += pool_string.length() + 1 /*trailing zero*/;
+			}
+
+			// get printable thread index
+			auto map_it = tread_map.find( rec.m_threadID );
+			if( map_it == tread_map.end() )
+				// new thread ID, not in map yet: add to map
+				std::tie( map_it, std::ignore ) = tread_map.insert(
+					{ rec.m_threadID, ThreadState( tread_map.size() ) } );
+			auto &thread_state = map_it->second;
+
+			// get timestamp relative to start
+			const long long timestamp_ns = me->to_ns( rec.m_timeStamp );
+
+			// get timestamp delta in respect to previous timestamp in the SAME thread
+			const auto delta_ns = thread_state.prev_timestamp_ns >= 0 ? timestamp_ns - thread_state.prev_timestamp_ns
+																	  : 0;
+			thread_state.prev_timestamp_ns = timestamp_ns;
+
+			// process stack of traces
+
+			int indent_level = (int)thread_state.stack.size();  // nesting level of start/stop sections
+			long long section_duration_ns = 0;                  // start/stop section duration
+
+			if( rec.m_type == TraceType::Start )
+				thread_state.stack.push_back( rec );
+			else if( rec.m_type == TraceType::Stop )
+			{
+				// remove matching start record from stack top, if any
+				if( thread_state.stack.size() > 0 && rec.match( thread_state.stack.back() ) )
+				{
+					section_duration_ns = timestamp_ns - me->to_ns( thread_state.stack.back().m_timeStamp );
+					thread_state.stack.pop_back();
+					indent_level--;
+				}
+				else
+					indent_level = -1;  // start/stop do not match: unknown indent
+
+				if( me->m_trace_registry.m_TraceStatisticsEnable && indent_level >= 0 )
+				{
+					auto it = me->m_trace_stats.find( rec.m_traceName );
+					if( it == me->m_trace_stats.end() )
+						me->m_trace_stats[ rec.m_traceName ] =
+							{ section_duration_ns, section_duration_ns, section_duration_ns, 1 };
+					else
+					{
+						it->second.total_duration_ns += section_duration_ns;
+						it->second.min_duration_ns = std::min( it->second.min_duration_ns, section_duration_ns );
+						it->second.max_duration_ns = std::max( it->second.max_duration_ns, section_duration_ns );
+						it->second.count++;
+					}
+				}
+			}
+
+			// Trace file format
+			/*
+			Timestamp       Delta     ID     Type          Message              Start-stop
+			in us           in us        Level Name                             Duration
+
+			[           1.0 :     0.0] AA [5] / Trace Start (Trace message)
+			[           2.0 :     1.0] AA [5]  / Trace 2 Start (Trace message)
+			[           5.0 :     3.0] AA [5] - Trace Point (Trace message)
+			[          10.0 :     5.0] AA [5]  \ Trace 2 Stop (Trace message) <-- 8 us
+			[          11.0 :     1.0] AA [5] \ Trace Stop (Trace message)
+			*/
+
+			if( me->m_outStream->good() )
+			{
+				char sbuf[ DG_LOG_TRACE_BUF_SIZE ];
+
+				const bool need_message = message != nullptr;
+				const bool need_duration = rec.m_type == TraceType::Stop && indent_level >= 0;
+
+				long long timestamp_s = timestamp_ns / 1000000000;
+				int printf_ret = snprintf(
+					sbuf,
+					sizeof sbuf,
+					"%c%6lld.%08.1f :%10.1f] %2s [%1u] %s%*s %s%s%s\n",
+					( rec.m_Flags & TraceRec::TimingDistorted ) ? '*' : '[',
+					timestamp_s,
+					( timestamp_ns - timestamp_s * 1e9 ) * 1e-3,
+					delta_ns * 1e-3,
+					thread_state.thread_label,
+					rec.m_level,
+					indent_level < 0 ? "?" : "",
+					indent_level < 0 ? 1 : indent_level + 1,
+					rec.m_type == TraceType::Start ? "/" : ( rec.m_type == TraceType::Stop ? "\\" : "-" ),
+					rec.m_traceName,
+					need_message ? ": " : "",
+					need_message ? message : "" );
+
+				if( printf_ret > 0 && printf_ret < sizeof sbuf - 1 && need_duration )
+				{
+					printf_ret--;  // to overwrite trailing \n
+					int printf_ret2 = snprintf(
+						sbuf + printf_ret,
+						sizeof sbuf - printf_ret,
+						"  <-- %.1f usec\n",
+						section_duration_ns * 1e-3 );
+					if( printf_ret2 > 0 )
+						printf_ret += printf_ret2;
+					else
+						sbuf[ printf_ret++ ] = '\n';
+				}
+
+				if( printf_ret > 0 )
+					// note: '<<' stream operators are VERY slow even in release build;
+					// using them for printing to stream degrades performance ten-fold
+					me->m_outStream->write( sbuf, std::min( sizeof( sbuf ) - 1, (size_t)printf_ret ) );
+			}
+
+			if( me->m_trace_registry.m_TraceToStdout )
+			{
+				char sbuf[ DG_LOG_TRACE_BUF_SIZE ];
+
+				int printf_ret = snprintf(
+					sbuf,
+					sizeof sbuf,
+					"{"
+					"\"@timestamp\":\"%s\","
+					"\"level\":\"%s\","
+					"\"thread\":\"%s\","
+					"\"message\":\"%s\",",
+					DG::TimeHelper::stringTimeRFC3339( rec.m_timeStamp + me->m_clockAdjustment_ns, true ).c_str(),
+					rec.m_level == lvlFull ? "DEBUG" : ( rec.m_level >= lvlBasic ? "INFO" : "ERROR" ),
+					thread_state.thread_label,
+					rec.m_traceName );
+
+				if( rec.m_type == TraceType::Stop )
+					printf_ret += snprintf(
+						sbuf + printf_ret,
+						sizeof sbuf - printf_ret,
+						"\"duration_us\":%.1f,",
+						section_duration_ns * 1e-3 );
+
+				// up to here we assume that sbuf size is always enough to fit all fields printed so far
+
+				const size_t margin = 32;  // upper estimate of additional chars to be added (should be enough to fit
+										   // `"details":"...too long"}`)
+				if( printf_ret >= sizeof sbuf - margin )
+				{
+					// truncate message
+					sbuf[ printf_ret < sizeof sbuf ? printf_ret - 1 : sizeof sbuf - 2 ] = '}';
+				}
+				else
+				{
+					const char *body = ( message != nullptr && *message ) ? message : "{}";
+					const auto body_len = strlen( body );
+					const char *body_quote = ( body[ 0 ] == '{' && body[ body_len - 1 ] == '}' ) ? "" : "\"";
+					if( body_len + printf_ret > sizeof sbuf - margin )
+					{
+						body = "...too long";  // too long body
+						body_quote = "\"";
+					}
+
+					printf_ret += snprintf(
+						sbuf + printf_ret,
+						sizeof sbuf - printf_ret,
+						"\"%s\":%s%s%s}",
+						*body_quote ? "details" : "body",
+						body_quote,
+						body,
+						body_quote );
+				}
+
+				const size_t sbuf_cnt = std::min( sizeof( sbuf ) - 1, (size_t)printf_ret );
+				std::replace( sbuf, sbuf + sbuf_cnt, '\n', ' ' );
+				sbuf[ sbuf_cnt ] = '\n';
+				std::cout.write( sbuf, sbuf_cnt + 1 );
+			}
+
+			rec.m_type = TraceType::Invalid;  // clear record
+		}
+		if( me->m_do_flush )
+		{
+			if( me->m_outStream->good() )
+				me->m_outStream->flush();
+			me->m_do_flush = false;
+		}
+		return std::make_tuple( lri, lspp );
+	};
+
+	std::unique_lock< std::mutex > lk( me->m_thread_mutex );
+	me->m_thread_cv.notify_one();  // notify ensureThreadRuns() that the thread is started
+
+	for( ;; )
+	{
+		// sleep on CV
+		if( !me->m_poison )
+			auto wait_ret = me->m_thread_cv.wait_for( lk, std::chrono::milliseconds( 1000 ) );
+		// here we own m_thread_mutex
+
+		//
+		// process records in buffer, if any
+		//
+
+		// cache shared vars:
+		const size_t wp_pool = me->m_stringPool.m_BufWP;  // string pool first (it is OK to release not whole pool)
+		const size_t rp_pool = me->m_stringPool.m_BufRP;
+		const size_t wp = me->m_traceBuf.m_BufWP;  // then trace buffer
+		const size_t rp = me->m_traceBuf.m_BufRP;
+		if( wp > rp || me->m_do_restart || me->m_do_flush )
+		{
+			me->ownStreamCheckOpen();  // open file stream if it is owned by facility and not opened yet or restart
+									   // it if requested
+
+			size_t first_non_processed_trace;
+			size_t first_non_processed_string;
+			std::tie(
+				first_non_processed_trace,
+				first_non_processed_string ) = tracePrintBuf( rp, wp, wp_pool, rp_pool );
+
+			// reclaim processed records
+			me->m_stringPool.m_BufRP = first_non_processed_string;  // string pool first
+																	// (so when trace buffer is released, pool is ready)
+			me->m_traceBuf.m_BufRP = first_non_processed_trace;     // only then trace buffer
+		}
+
+		if( me->m_poison )  // request to terminate
+			break;
+	}
+
+	me->ownStreamClose();  // close file stream if it is owned by facility and not closed yet
 }
 
 #endif  // DG_TRACING_FACILITY_H

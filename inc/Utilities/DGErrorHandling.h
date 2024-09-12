@@ -183,23 +183,12 @@ namespace DG
 class DGException: public std::exception
 {
 public:
-
 	/// Constructor
 	/// \param[in] message - error message string
-	/// \param[in] inclSysMsg - true to append system error message string taken from errno
-	DGException( const std::string &message, bool inclSysMsg = false ): m_err_msg( message )
-	{
-		if( inclSysMsg )
-		{
-		#ifdef _MSC_VER
-			char buf[ 256 ];
-			strerror_s( buf, sizeof buf, errno );
-		#else
-			const char *buf = std::strerror( errno );
-		#endif
-			m_err_msg += " : " + std::string( buf );
-		}
-	}
+	/// \param[in] error_type - error type
+	DGException( const std::string &message, DG::ErrorType error_type = DG::ErrorType::RUNTIME_ERROR ) :
+		m_err_msg( message ), m_error_type( error_type )
+	{}
 
 	/// Destructor
 	virtual ~DGException()
@@ -211,8 +200,15 @@ public:
 		return m_err_msg.c_str();
 	}
 
+	/// Get error type
+	DG::ErrorType error_type() const
+	{
+		return m_error_type;
+	}
+
 private:
-	std::string m_err_msg;	//!< error message accessible by what()
+	std::string m_err_msg;       //!< error message accessible by what()
+	DG::ErrorType m_error_type;  //!< error type
 };
 
 
@@ -841,15 +837,18 @@ inline std::string DG::ErrorHandling::location2str( const char *file, const char
 inline void DG::ErrorHandling::errorAdd( const char *file, const char *line, const char *func,
 	DG::ErrorType type, DGErrorID err_code, const std::string& msg, const std::string& comment )
 {
-	const char *type_str;
+	const char *type_str = "";
 	switch( type )
 	{
 		#define _( id, label, desc ) case ErrorType::id: type_str = label; break;
 		DG_ERROR_TYPE_LIST
 		#undef _
 	}
-	std::string full_msg = std::string( type_str ) + code2str( err_code ) + "\n" + msg + "\n" +
-		location2str( file, line, func ) + "\n";
+	const std::string location_str = location2str( file, line, func );
+	const char *code_str = code2str( err_code );
+
+	std::string full_msg = std::string( type_str ) + code_str + "\n" + msg + "\n" +
+		location_str + "\n";
 
 	if( !comment.empty() )
 		full_msg = comment + "...\n" + full_msg;
@@ -859,7 +858,7 @@ inline void DG::ErrorHandling::errorAdd( const char *file, const char *line, con
 		get_error_collection().add( ErrorRecord( full_msg, type, err_code ) );
 
 	// trace it
-	DG_TRC_CRITICAL( type_str, (msg + " | "  + location2str( file, line, func ) ).c_str() );
+	DG_TRC_CRITICAL( code_str, "%s (%s)", msg.c_str(), location_str.c_str() );
 	DG_LOG_PRINTS( DG::TimeHelper::curStringTime() + full_msg );
 
 	#ifndef NDEBUG
@@ -871,7 +870,7 @@ inline void DG::ErrorHandling::errorAdd( const char *file, const char *line, con
 	#endif
 
 	// throw exception
-	throw DGException( full_msg );
+	throw DGException( full_msg, type );
 }
 
 
@@ -926,7 +925,7 @@ inline void DG::ErrorHandling::assertHandle( const char *file, const char *line,
 		const std::string msg = std::string( "Assertion failed: '" ) + expr_str + "'. " + location2str( file, line, func );
 
 		// trace it
-		DG_TRC_CRITICAL( "Assertion", msg.c_str() );
+		DG_TRC_CRITICAL( "Assertion failed", msg.c_str() );
 		DG_LOG_PRINTS( DG::TimeHelper::curStringTime() + msg + "\n\n" );
 
 		// print it
