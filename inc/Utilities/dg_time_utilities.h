@@ -65,13 +65,36 @@ public:
 		return cur_time_str;
 	}
 
+	/// Get time as RFC3339-style string (2021-09-07T19:40:35Z)
+	/// \param[in] timestamp - time to convert
+	/// \param[in] add_microseconds - add microseconds to the string
+	template< class time_point >
+	static std::string stringTimeRFC3339( time_point timestamp, bool add_microseconds = false )
+	{
+		const uint64_t us_since_epoch =
+			std::chrono::duration_cast< std::chrono::microseconds >( timestamp.time_since_epoch() ).count();
+		const auto seconds = us_since_epoch / 1000000;
+		const int microseconds = (int)( us_since_epoch % 1000000 );
+		const auto time = std::chrono::system_clock::to_time_t(
+			std::chrono::system_clock::time_point( std::chrono::seconds( seconds ) ) );
+
+		char cur_time_str[ 64 ];
+		if( add_microseconds )
+		{
+			char time_part[ 32 ];
+			std::strftime( time_part, sizeof time_part, "%FT%T", std::gmtime( &time ) );
+			std::snprintf( cur_time_str, sizeof cur_time_str, "%s.%06dZ", time_part, microseconds );
+		}
+		else
+			std::strftime( cur_time_str, sizeof cur_time_str, "%FT%TZ", std::gmtime( &time ) );
+
+		return cur_time_str;
+	}
+
 	/// Get current time as RFC3339-style string (2021-09-07T19:40:35Z)
 	static std::string curStringTimeRFC3339()
 	{
-		const std::time_t cur_time{ std::time( nullptr ) };
-		char cur_time_str[ 64 ];
-		std::strftime( cur_time_str, sizeof cur_time_str, "%FT%TZ", std::gmtime( &cur_time ) );
-		return cur_time_str;
+		return stringTimeRFC3339( std::chrono::system_clock::now() );
 	}
 
 	/// Class to measure elapsed time
