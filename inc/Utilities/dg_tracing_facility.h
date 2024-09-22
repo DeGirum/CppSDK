@@ -498,6 +498,8 @@ public:
 	inline void
 	traceDo( TraceType type, const char *name, TraceLevel_t level, const char *message = nullptr, unsigned flags = 0 )
 	{
+		ensureThreadRuns();
+
 		// reserve position in the buffer: atomically increment write pointer
 		size_t free_pos = m_traceBuf.m_BufWP.fetch_add( 1 );
 		bool timing_is_distorted = false;
@@ -505,8 +507,6 @@ public:
 		// wait until reserved position is freed
 		while( free_pos - m_traceBuf.m_BufRP >= m_traceBuf.m_BufSize - 1 )
 		{
-			ensureThreadRuns();
-
 			// signal worker thread to print the buffer and yield
 			m_thread_cv.notify_one();
 			std::this_thread::yield();
@@ -1314,6 +1314,10 @@ inline void DGTrace::TracingFacility::workerThreadFunc( TracingFacility *me )
 
 			rec.m_type = TraceType::Invalid;  // clear record
 		}
+
+		if( me->m_trace_registry.m_TraceToStdout )
+			std::cout.flush();
+
 		if( me->m_do_flush )
 		{
 			if( me->m_outStream->good() )
