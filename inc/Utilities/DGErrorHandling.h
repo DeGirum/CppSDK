@@ -48,6 +48,7 @@
                                                                                               \
 	_( ErrContinue, 0x00001000, "<continued>" )                                               \
 	_( ErrAssert, 0x00001001, "Execution failed" )                                            \
+	_( ErrSimulated, 0x00001002, "Simulated error (for tests)" )                              \
 	_( ErrSystem, 0x00010000, "OS error" )
 
 /// List of all error types
