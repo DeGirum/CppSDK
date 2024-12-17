@@ -45,7 +45,20 @@ void DG::modelzooListGet( const std::string &server, std::vector< DG::ModelInfo 
 // [in] server is a string specifying server domain name/IP address and port.
 // Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778.
 //
-DG::json DG::systemInfo( const std::string &server ) { return DG::Client::create( server )->systemInfo(); }
+DG::json DG::systemInfo( const std::string &server )
+{
+	return DG::Client::create( server )->systemInfo();
+}
+
+//
+// Return device control info and status of device power control
+// [in] server is a string specifying server domain name/IP address and port.
+// Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778.
+//
+DG::json DG::devCtrl( const std::string &server, const json &req )
+{
+	return DG::Client::create( server )->devCtrl( req );
+}
 
 //
 // AI server tracing facility management
@@ -76,7 +89,10 @@ DG::json DG::modelZooManage( const std::string &server, const json &req )
 // [in] server is a string specifying server domain name/IP address and port.
 // Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778.
 //
-void DG::shutdown( const std::string &server ) { DG::Client::create( server )->shutdown(); }
+void DG::shutdown( const std::string &server )
+{
+	DG::Client::create( server )->shutdown();
+}
 
 //
 // Find a model by name on AI server.
@@ -107,7 +123,7 @@ DG::ModelInfo DG::modelFind( const std::string &server, const ModelQuery &query 
 				( ( query.model_quantized == ModelQuery::Yes ) != mparams.InputQuantEn() ) )
 				continue;
 			if( query.model_pruned != ModelQuery::Dont_care &&
-				( ( query.model_pruned == ModelQuery::Yes ) != (m.name.find( "pruned" ) != std::string::npos) ) )
+				( ( query.model_pruned == ModelQuery::Yes ) != ( m.name.find( "pruned" ) != std::string::npos ) ) )
 				continue;
 			return m;
 		}
@@ -360,7 +376,8 @@ DG::AIModel::AIModel(
 //
 // Destructor
 //
-DG::AIModel::~AIModel() {}
+DG::AIModel::~AIModel()
+{}
 
 //
 // Run the inference on provided byte array.
@@ -403,14 +420,20 @@ DG::AIModelAsync::AIModelAsync(
 // Destructor
 // Will wait until all outstanding results are received
 //
-DG::AIModelAsync::~AIModelAsync() { m_client->dataEnd(); }
+DG::AIModelAsync::~AIModelAsync()
+{
+	m_client->dataEnd();
+}
 
 //
 // Set user callback
 // [in] callback is user callback functional, which will be called asynchronously from the main
 // execution thread as soon as prediction result is ready.
 //
-void DG::AIModelAsync::setCallback( callback_t callback ) { m_client->resultObserve( callback ); }
+void DG::AIModelAsync::setCallback( callback_t callback )
+{
+	m_client->resultObserve( callback );
+}
 
 //
 // Start the inference on given data vector.
@@ -439,10 +462,16 @@ void DG::AIModelAsync::waitCompletion()
 //
 // Get # of outstanding inference results scheduled so far
 //
-int DG::AIModelAsync::outstandingResultsCountGet() const { return m_client->outstandingResultsCountGet(); }
+int DG::AIModelAsync::outstandingResultsCountGet() const
+{
+	return m_client->outstandingResultsCountGet();
+}
 
 //
 // If ever during consecutive calls to predict() methods server reported run-time error, then
 // this method will return error message string, otherwise it returns empty string.
 //
-std::string DG::AIModelAsync::lastError() const { return m_client->lastError(); }
+std::string DG::AIModelAsync::lastError() const
+{
+	return m_client->lastError();
+}

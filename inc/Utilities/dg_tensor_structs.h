@@ -341,10 +341,10 @@ public:
 	{
 		switch( data_type )
 		{
-#define _( type_id, ctype, width )                                                \
-	case type_id:                                                                 \
-		alloc< ctype >( id, name, shape, quant_params, (ctype *)ext_lin_buffer ); \
-		break;
+#define _( type_id, ctype, width )                                            \
+case type_id:                                                                 \
+	alloc< ctype >( id, name, shape, quant_params, (ctype *)ext_lin_buffer ); \
+	break;
 			DG_TYPE_LIST
 #undef _
 		default:
@@ -451,14 +451,12 @@ public:
 		DG::BasicTensor ret( id(), name(), shape(), DGTypeOf< T >::value, quantParams() );
 		switch( dataTypeGet() )
 		{
-#define _( type_id, ctype, width )                               \
-	case type_id:                                                \
-		std::transform(                                          \
-			data< ctype >(),                                     \
-			data< ctype >() + linearSizeGet(),                   \
-			ret.data< T >(),                                     \
-			[]( const ctype &datum ) { return (T)( datum ); } ); \
-		break;
+#define _( type_id, ctype, width )                                                                                  \
+case type_id:                                                                                                       \
+	std::transform( data< ctype >(), data< ctype >() + linearSizeGet(), ret.data< T >(), []( const ctype &datum ) { \
+		return (T)( datum );                                                                                        \
+	} );                                                                                                            \
+	break;
 
 			DG_TYPE_LIST
 #undef _
@@ -476,8 +474,8 @@ public:
 		switch( to_type )
 		{
 #define _( type_id, ctype, width ) \
-	case type_id:                  \
-		return convert< ctype >();
+case type_id:                      \
+	return convert< ctype >();
 
 			DG_TYPE_LIST
 #undef _
@@ -491,7 +489,7 @@ public:
 	void dealloc()
 	{
 		if( m_linear_buffer != nullptr && !m_external )
-			delete[](char *)m_linear_buffer;
+			delete[]( char * ) m_linear_buffer;
 		m_name.clear();
 		m_shape.clear();
 		m_quant_params = quant_params_t();
@@ -533,6 +531,49 @@ public:
 				std::accumulate( m_shape.begin() + new_dim, m_shape.end(), (size_t)1, std::multiplies< size_t >() );
 			m_shape.resize( new_dim );
 		}
+	}
+
+	/// Reshape tensor of multiple dimensions to a smaller number of dimensions by combining specified dimensions.
+	/// E.g. reshapeCombineDims({0, 1, 2}) will combine first 3 dimensions into one.
+	void reshapeCombineDims( const std::vector< size_t > dims_to_combine )
+	{
+		// Check if dims_to_combine has at least 2 values
+		if( dims_to_combine.size() < 2 )
+			DG_ERROR( "reshapeCombineDims: dims_to_combine needs at least 2 dimensions to combine", ErrBadParameter );
+
+		// Check if dims_to_combine has consecutive values
+		for( size_t i = 1; i < dims_to_combine.size(); i++ )
+		{
+			if( dims_to_combine[ i ] != dims_to_combine[ i - 1 ] + 1 )
+				DG_ERROR(
+					"reshapeCombineDims: dims_to_combine are not consecutive. Failed at index " + std::to_string( i ),
+					ErrBadParameter );
+		}
+
+		// Check if the last value of dims_to_combine exceeds number of dimensions
+		if( dims_to_combine.back() >= m_shape.size() )
+			DG_ERROR( "reshapeCombineDims: dims_to_combine value exceeds tensor dimensions", ErrBadParameter );
+
+		// Create new shape
+		size_t new_dim = m_shape.size() - dims_to_combine.size() + 1;
+		shape_t new_shape;
+		new_shape.reserve( new_dim );
+
+		// Copy dimensions before the first dims_to_combine
+		for( size_t i = 0; i < dims_to_combine[ 0 ]; i++ )
+			new_shape.push_back( m_shape[ i ] );
+
+		// Combine specified dimensions
+		size_t combined_dim = m_shape[ dims_to_combine[ 0 ] ];
+		for( size_t i = dims_to_combine[ 0 ] + 1; i <= dims_to_combine.back(); i++ )
+			combined_dim *= m_shape[ i ];
+		new_shape.push_back( combined_dim );
+
+		// Copy remaining dimensions
+		for( size_t i = dims_to_combine.back() + 1; i < m_shape.size(); i++ )
+			new_shape.push_back( m_shape[ i ] );
+
+		m_shape = new_shape;
 	}
 
 	/// Quantize tensor according to current quantization settings from type T_IN to type T_OUT
@@ -585,7 +626,7 @@ public:
 		}
 
 		if( !m_external )
-			delete[](char *)m_linear_buffer;
+			delete[]( char * ) m_linear_buffer;
 		m_external = false;
 		m_linear_buffer = out;
 		m_el_size = sizeof( T_OUT );
@@ -625,8 +666,8 @@ public:
 	template< typename T >
 	T *data()
 	{
-		if( m_type == nullptr || std::is_array_v< T > || std::is_pointer_v< T > || std::is_reference_v< T > || std::is_const_v< T > ||
-			typeid( T ) != *m_type )
+		if( m_type == nullptr || std::is_array_v< T > || std::is_pointer_v< T > || std::is_reference_v< T > ||
+			std::is_const_v< T > || typeid( T ) != *m_type )
 		{
 			return nullptr;
 		}

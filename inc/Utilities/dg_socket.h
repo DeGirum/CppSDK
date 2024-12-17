@@ -43,6 +43,7 @@ constexpr const char *LABEL_DICT = "label_dictionary";
 constexpr const char *SYSTEM_INFO = "system_info";
 constexpr const char *TRACE_MANAGE = "trace_manage";
 constexpr const char *ZOO_MANAGE = "zoo_manage";
+constexpr const char *DEV_CTRL = "dev_ctrl";
 }  // namespace commands
 
 /// Error handling for asio errors (defined as macro to preserve file location info in error messages)

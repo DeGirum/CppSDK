@@ -191,7 +191,7 @@ AI Client C++ API Description</h1>
 <li><a class="el" href="namespaceDG.html#ae467210f5bf315ec3c8e64ebf8f28dd4">systemInfo()</a> function to obtain AI server system information including information about connected AI devices</li>
 <li><a class="el" href="namespaceDG.html#ae6fb2ad5460b7160220feb74635845a1">modelFind()</a> function to find AI model in that local Model Zoo matching particular model attributes</li>
 <li><a class="el" href="namespaceDG.html#acac45c44fa4c75613f425b56561c2e84">labelDictionary()</a> function to query the model class label dictionary</li>
-<li><a class="el" href="namespaceDG.html#a9929b406008257b1ff51b5470aa094af">errorCheck()</a> function to check given AI server Json response for run-time errors</li>
+<li><a class="el" href="namespaceDG.html#a9929b406008257b1ff51b5470aa094af">errorCheck()</a> function to check given AI server JSON response for run-time errors</li>
 <li><a class="el" href="classDG_1_1AIModel.html" title="AIModel is DeGirum AI client API class for simple non-pipelined sequential inference.">DG::AIModel</a> class to connect to AI server and to perform AI model inference in a simple non-pipelined sequential manner (see <a class="el" href="index.html#ssec_AIModel">AIModel: Synchronous Sequential AI Inferencing API</a>)</li>
 <li><a class="el" href="classDG_1_1AIModelAsync.html" title="AIModelAsync is DeGirum AI client API class for efficient pipelined asynchronous inference.">DG::AIModelAsync</a> class to connect to AI server and to perform AI model inference in efficient pipelined asynchronous manner using mechanism of callbacks (see <a class="el" href="index.html#ssec_AIModelAsync">AIModelAsync: Asynchronous Pipelined AI Inferencing API</a>)</li>
 <li>the family of ModelParams classes to handle model parameters (see <a class="el" href="index.html#ssec_params">Model Parameters Management</a>)</li>
@@ -213,21 +213,7 @@ Listing and Searching Models in Local Model Zoo</h2>
 </ol>
 <p>Either way you obtain the instance of <a class="el" href="structDG_1_1ModelInfo.html" title="ModelInfo is the model identification structure. It keeps AI model key attributes.">DG::ModelInfo</a> structure, which contains all necessary model identification information, including:</p><ul>
 <li><a class="el" href="structDG_1_1ModelInfo.html#a26d97c4f78710a202b712af3e1b04332" title="model string name">DG::ModelInfo::name</a> - model string name</li>
-<li>DG::ModelInfo::id - unique model ID</li>
-<li>DG::ModelInfo::W - input frame width</li>
-<li>DG::ModelInfo::H - input frame height</li>
-<li>DG::ModelInfo::C - input color depth</li>
-<li>DG::ModelInfo::N - input frame depth</li>
-<li>DG::ModelInfo::device_type - device type on which model runs</li>
-<li>DG::ModelInfo::runtime_agent - runtime agent type on which model runs</li>
-<li>DG::ModelInfo::model_quantized - 'is model quantized' flag</li>
-<li>DG::ModelInfo::model_pruned - 'is model pruned (not dense)' flag</li>
-<li>DG::ModelInfo::input_type - input data type: "Image", ...</li>
-<li>DG::ModelInfo::input_tensor_layout - for image inputs, image tensor layout the model expects: "NHWC", "NCHW"</li>
-<li>DG::ModelInfo::input_color_space - for image inputs, image color-space the model expects: "BGR", "RGB"</li>
-<li>DG::ModelInfo::input_image_format - for image inputs, image format: "JPEG", "RAW" (this is user-tunable runtime parameter)</li>
-<li>DG::ModelInfo::input_raw_data_type - for "RAW" image inputs, image pixel data type: "DG_FLT", "DG_UINT8" (this is user-tunable runtime parameter)</li>
-<li><a class="el" href="structDG_1_1ModelInfo.html#a540d9fa4d6af0a6b9f7fb49c0e087e91" title="extended model parameters">DG::ModelInfo::extended_params</a> - extended model parameters (all parameter as listed in model Json configuration file)</li>
+<li><a class="el" href="structDG_1_1ModelInfo.html#a540d9fa4d6af0a6b9f7fb49c0e087e91" title="extended model parameters">DG::ModelInfo::extended_params</a> - extended model parameters (all parameter as listed in model JSON configuration file)</li>
 </ul>
 <p>Then you pass model name <a class="el" href="structDG_1_1ModelInfo.html#a26d97c4f78710a202b712af3e1b04332" title="model string name">DG::ModelInfo::name</a> to constructors of classes used for AI inference: <a class="el" href="classDG_1_1AIModel.html" title="AIModel is DeGirum AI client API class for simple non-pipelined sequential inference.">DG::AIModel</a> or <a class="el" href="classDG_1_1AIModelAsync.html" title="AIModelAsync is DeGirum AI client API class for efficient pipelined asynchronous inference.">DG::AIModelAsync</a>.</p>
 <p>The <a class="el" href="namespaceDG.html#a482a6ce0ec392df3b6f26db70b9b941e">modelzooListGet()</a> function returns an array of ModelInfo structures listing all models found in the local model zoo. It is then your responsibility to iterate over all elements of this array to find the model you want to use.</p>
@@ -295,12 +281,12 @@ AIModel: Synchronous Sequential AI Inferencing API</h2>
 </pre><p>Once constructed, it can be used to perform sequential AI inference by invoking <a class="el" href="classDG_1_1AIModel.html#ad7a35ec0ba3e9e4fa2312718ba959c86">DG::AIModel::predict()</a> method. Predict method accepts the input frame data in various formats (see section <a class="el" href="index.html#ssec_format">Format of Data Frames for Image Processing Models</a> for more details) and returns the inference results, which are described in the section <a class="el" href="index.html#ssec_inference_results">Format of Inference Results</a>. This method is blocking method, i.e. it returns the execution only when the inference of an input frame is complete. Working with blocking methods simplifies the programming, but loses some run-time efficiency because (unlike for <a class="el" href="classDG_1_1AIModelAsync.html" title="AIModelAsync is DeGirum AI client API class for efficient pipelined asynchronous inference.">DG::AIModelAsync</a> class) some actions like sending data to AI server, frame pre-processing, result post-processing, and receiving results from AI server are not pipelined between frames.</p>
 <h2><a class="anchor" id="ssec_inference_results"></a>
 Format of Inference Results</h2>
-<p>The predict() method of <a class="el" href="classDG_1_1AIModel.html" title="AIModel is DeGirum AI client API class for simple non-pipelined sequential inference.">DG::AIModel</a> class returns Json array with inference results. The internal structure of this Json array greatly depends on the AI model type: it is different for classification models, detection models, and so on. But in general, that Json array is an array of identical Json objects, and each Json object contains inference results for one detected entity.</p>
-<p>The following tables describe Json array format for some model types.</p>
-<p>For classification model types each classified object is represented by the following Json object:</p>
+<p>The predict() method of <a class="el" href="classDG_1_1AIModel.html" title="AIModel is DeGirum AI client API class for simple non-pipelined sequential inference.">DG::AIModel</a> class returns JSON array with inference results. The internal structure of this JSON array greatly depends on the AI model type: it is different for classification models, detection models, and so on. But in general, that JSON array is an array of identical JSON objects, and each JSON object contains inference results for one detected entity.</p>
+<p>The following tables describe JSON array format for some model types.</p>
+<p>For classification model types each classified object is represented by the following JSON object:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Json Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
+<th class="markdownTableHeadNone">JSON Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">"label" </td><td class="markdownTableBodyNone">Classified object class label </td><td class="markdownTableBodyNone">string  </td></tr>
 <tr class="markdownTableRowEven">
@@ -308,10 +294,10 @@ Format of Inference Results</h2>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">"score" </td><td class="markdownTableBodyNone">Probability of classified object </td><td class="markdownTableBodyNone">floating point  </td></tr>
 </table>
-<p>For detection model types each detected object is represented by the following Json object:</p>
+<p>For detection model types each detected object is represented by the following JSON object:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Json Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
+<th class="markdownTableHeadNone">JSON Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">"label" </td><td class="markdownTableBodyNone">Detected object class label </td><td class="markdownTableBodyNone">string  </td></tr>
 <tr class="markdownTableRowEven">
@@ -319,23 +305,23 @@ Format of Inference Results</h2>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">"score" </td><td class="markdownTableBodyNone">Probability of detected object </td><td class="markdownTableBodyNone">floating point  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">"bbox" </td><td class="markdownTableBodyNone">Detected object rectangle </td><td class="markdownTableBodyNone">four-element Json array [xmin, ymin, xmax, ymax]  </td></tr>
+<td class="markdownTableBodyNone">"bbox" </td><td class="markdownTableBodyNone">Detected object rectangle </td><td class="markdownTableBodyNone">four-element JSON array [xmin, ymin, xmax, ymax]  </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">"landmarks" </td><td class="markdownTableBodyNone">Landmark points (optional) </td><td class="markdownTableBodyNone">Json array of two-element arrays [[x1, y1], [x2, y2], ...]  </td></tr>
+<td class="markdownTableBodyNone">"landmarks" </td><td class="markdownTableBodyNone">Landmark points (optional) </td><td class="markdownTableBodyNone">JSON array of two-element arrays [[x1, y1], [x2, y2], ...]  </td></tr>
 </table>
-<p>For pose detection types each detected object is represented by the following Json object:</p>
+<p>For pose detection types each detected object is represented by the following JSON object:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Json Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
+<th class="markdownTableHeadNone">JSON Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">"score" </td><td class="markdownTableBodyNone">Probability of detected pose </td><td class="markdownTableBodyNone">floating point  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">"landmarks" </td><td class="markdownTableBodyNone">Pose description landmarks </td><td class="markdownTableBodyNone">array of landmark Json objects  </td></tr>
+<td class="markdownTableBodyNone">"landmarks" </td><td class="markdownTableBodyNone">Pose description landmarks </td><td class="markdownTableBodyNone">array of landmark JSON objects  </td></tr>
 </table>
-<p>The following is the structure of pose description landmark Json object:</p>
+<p>The following is the structure of pose description landmark JSON object:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Json Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
+<th class="markdownTableHeadNone">JSON Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">"label" </td><td class="markdownTableBodyNone">Classified object class label </td><td class="markdownTableBodyNone">string  </td></tr>
 <tr class="markdownTableRowEven">
@@ -343,40 +329,40 @@ Format of Inference Results</h2>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">"score" </td><td class="markdownTableBodyNone">Probability of classified landmark </td><td class="markdownTableBodyNone">floating point  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">"landmark" </td><td class="markdownTableBodyNone">landmark point </td><td class="markdownTableBodyNone">two-element Json array [x, y]  </td></tr>
+<td class="markdownTableBodyNone">"landmark" </td><td class="markdownTableBodyNone">landmark point </td><td class="markdownTableBodyNone">two-element JSON array [x, y]  </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">"connect" </td><td class="markdownTableBodyNone">list of adjacent landmarks indices </td><td class="markdownTableBodyNone">Json array of integers  </td></tr>
+<td class="markdownTableBodyNone">"connect" </td><td class="markdownTableBodyNone">list of adjacent landmarks indices </td><td class="markdownTableBodyNone">JSON array of integers  </td></tr>
 </table>
-<p>For hand detection types each detected object is represented by the following Json object:</p>
+<p>For hand detection types each detected object is represented by the following JSON object:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Json Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
+<th class="markdownTableHeadNone">JSON Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">"score" </td><td class="markdownTableBodyNone">Probability of detected hand </td><td class="markdownTableBodyNone">floating point  </td></tr>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">"handedness" </td><td class="markdownTableBodyNone">Probability of right hand </td><td class="markdownTableBodyNone">floating point  </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">"landmarks" </td><td class="markdownTableBodyNone">hand description landmarks </td><td class="markdownTableBodyNone">array of landmark Json objects  </td></tr>
+<td class="markdownTableBodyNone">"landmarks" </td><td class="markdownTableBodyNone">hand description landmarks </td><td class="markdownTableBodyNone">array of landmark JSON objects  </td></tr>
 </table>
-<p>The following is the structure of hand description landmark Json object:</p>
+<p>The following is the structure of hand description landmark JSON object:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Json Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
+<th class="markdownTableHeadNone">JSON Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">"label" </td><td class="markdownTableBodyNone">Classified object class label </td><td class="markdownTableBodyNone">string  </td></tr>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">"category_id" </td><td class="markdownTableBodyNone">Classified object class index </td><td class="markdownTableBodyNone">integer  </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">"landmark" </td><td class="markdownTableBodyNone">landmark point </td><td class="markdownTableBodyNone">three-element Json array [x, y, z]  </td></tr>
+<td class="markdownTableBodyNone">"landmark" </td><td class="markdownTableBodyNone">landmark point </td><td class="markdownTableBodyNone">three-element JSON array [x, y, z]  </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">"world_landmark" </td><td class="markdownTableBodyNone">metric world landmark point </td><td class="markdownTableBodyNone">three-element Json array [x, y, z]  </td></tr>
+<td class="markdownTableBodyNone">"world_landmark" </td><td class="markdownTableBodyNone">metric world landmark point </td><td class="markdownTableBodyNone">three-element JSON array [x, y, z]  </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">"connect" </td><td class="markdownTableBodyNone">list of adjacent landmarks indices </td><td class="markdownTableBodyNone">Json array of integers  </td></tr>
+<td class="markdownTableBodyNone">"connect" </td><td class="markdownTableBodyNone">list of adjacent landmarks indices </td><td class="markdownTableBodyNone">JSON array of integers  </td></tr>
 </table>
-<p>When you specify post-processing type as "None" (see section <a class="el" href="index.html#ssec_params">Model Parameters Management</a>) then the inference result Json array contains network output tensors. Each element of that array corresponds to one tensor. Each tensor is represented by the following Json object:</p>
+<p>When you specify post-processing type as "None" (see section <a class="el" href="index.html#ssec_params">Model Parameters Management</a>) then the inference result JSON array contains network output tensors. Each element of that array corresponds to one tensor. Each tensor is represented by the following JSON object:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Json Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
+<th class="markdownTableHeadNone">JSON Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">"id" </td><td class="markdownTableBodyNone">Tensor numeric ID as specified in network </td><td class="markdownTableBodyNone">integer  </td></tr>
 <tr class="markdownTableRowEven">
@@ -399,10 +385,10 @@ Format of Inference Results</h2>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">DG_UINT8 </td><td class="markdownTableBodyNone">8-bit unsigned integer  </td></tr>
 </table>
-<p>The following is the structure of quantization Json object:</p>
+<p>The following is the structure of quantization JSON object:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Json Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
+<th class="markdownTableHeadNone">JSON Field Name </th><th class="markdownTableHeadNone">Description </th><th class="markdownTableHeadNone">Data Type  </th></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">"axis" </td><td class="markdownTableBodyNone">Quantization axis or -1 for global quantization </td><td class="markdownTableBodyNone">integer  </td></tr>
 <tr class="markdownTableRowEven">
@@ -410,7 +396,7 @@ Format of Inference Results</h2>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">"zero" </td><td class="markdownTableBodyNone">Quantization zero offset </td><td class="markdownTableBodyNone">integer array  </td></tr>
 </table>
-<p>For convenient handling of tensors the <a class="el" href="classDG_1_1BasicTensor.html">DG::BasicTensor</a> class is provided. You can convert Json array containing a tensor into <a class="el" href="classDG_1_1BasicTensor.html">DG::BasicTensor</a> object by using <a class="el" href="classDG_1_1JsonHelper.html#a989825a70022be842aab01060b828e15">DG::JsonHelper::tensorDeserialize()</a> static method: </p><pre class="fragment">    for( const auto &amp;json_tensor: inference_result )
+<p>For convenient handling of tensors the <a class="el" href="classDG_1_1BasicTensor.html">DG::BasicTensor</a> class is provided. You can convert JSON array containing a tensor into <a class="el" href="classDG_1_1BasicTensor.html">DG::BasicTensor</a> object by using <a class="el" href="classDG_1_1JsonHelper.html#a989825a70022be842aab01060b828e15">DG::JsonHelper::tensorDeserialize()</a> static method: </p><pre class="fragment">    for( const auto &amp;json_tensor: inference_result )
     {
         DG::BasicTensor basic_tensor( DG::JsonHelper::tensorDeserialize( json_tensor ) );
         auto shape = basic_tensor.shape();              // get tensor shape
@@ -418,7 +404,7 @@ Format of Inference Results</h2>
         if( element_type == DG_UINT8 )                  // get pointer to tensor linear buffer
             const uint8_t *data = basic_tensor.data&lt; uint8_t &gt;();
     }
-</pre><p>There is a special case of Json array returned by AI server in case when runtime error happens during inference. In this case the runtime error info object is returned. It is described in details in the <a class="el" href="index.html#ssec_errors">Error Handling</a> section.</p>
+</pre><p>There is a special case of JSON array returned by AI server in case when runtime error happens during inference. In this case the runtime error info object is returned. It is described in details in the <a class="el" href="index.html#ssec_errors">Error Handling</a> section.</p>
 <h2><a class="anchor" id="ssec_AIModelAsync"></a>
 AIModelAsync: Asynchronous Pipelined AI Inferencing API</h2>
 <p>The <a class="el" href="classDG_1_1AIModelAsync.html" title="AIModelAsync is DeGirum AI client API class for efficient pipelined asynchronous inference.">DG::AIModelAsync</a> class is used to perform AI model inference on AI server in efficient pipelined asynchronous manner using the mechanism of callbacks.</p>
@@ -427,7 +413,7 @@ AIModelAsync: Asynchronous Pipelined AI Inferencing API</h2>
 <p>You specify the AI server address as a string as described in the section <a class="el" href="index.html#ssec_server_addressing">AI Server Connection and Addressing</a>.</p>
 <p>You specify the model name as described in the section <a class="el" href="index.html#ssec_zoo_search">Listing and Searching Models in Local Model Zoo</a>.</p>
 <p>You should define the callback function somewhere in your code in the following form: </p><pre class="fragment">    void MyAiCallback( const json &amp;result, const std::string &amp;info ){}
-</pre><p>Then you pass your callback name (in this example it is MyAiCallback) as one of <a class="el" href="classDG_1_1AIModelAsync.html" title="AIModelAsync is DeGirum AI client API class for efficient pipelined asynchronous inference.">DG::AIModelAsync</a> constructor arguments. The callback function has two arguments: the inference result and the frame info string. The inference result is Json array, described in the section <a class="el" href="index.html#ssec_inference_results">Format of Inference Results</a>. The frame info string is the string passed to predict() method along with the frame data. More on that below.</p>
+</pre><p>Then you pass your callback name (in this example it is MyAiCallback) as one of <a class="el" href="classDG_1_1AIModelAsync.html" title="AIModelAsync is DeGirum AI client API class for efficient pipelined asynchronous inference.">DG::AIModelAsync</a> constructor arguments. The callback function has two arguments: the inference result and the frame info string. The inference result is JSON array, described in the section <a class="el" href="index.html#ssec_inference_results">Format of Inference Results</a>. The frame info string is the string passed to predict() method along with the frame data. More on that below.</p>
 <p>If you want to modify some of the model parameters (see more on that in the section <a class="el" href="index.html#ssec_params">Model Parameters Management</a>), you define the instance of <a class="el" href="classDG_1_1ModelParamsWriteAccess.html" title="ModelParamsWriteAccess is read/write accessor to model parameters.">DG::ModelParamsWriteAccess</a> derived class, change model parameters you want to adjust by invoking setter methods, and pass this instance as one of <a class="el" href="classDG_1_1AIModelAsync.html" title="AIModelAsync is DeGirum AI client API class for efficient pipelined asynchronous inference.">DG::AIModelAsync</a> constructor arguments.</p>
 <p>For example, you want to change the input frame image type to JPEG. You can pass the following expression to <a class="el" href="classDG_1_1AIModelAsync.html" title="AIModelAsync is DeGirum AI client API class for efficient pipelined asynchronous inference.">DG::AIModelAsync</a> constructor: </p><pre class="fragment">    DG::ModelParamsWriter().InputImgFmt_set( "JPEG" )
 </pre><p>Once constructed, it can be used to perform asynchronous AI inference by invoking <a class="el" href="classDG_1_1AIModelAsync.html#a1b12692b190b36e7e0e366f0bb59fdef">DG::AIModelAsync::predict()</a> method. The predict method accept the input frame data in various formats (see section <a class="el" href="index.html#ssec_format">Format of Data Frames for Image Processing Models</a> for more details) and initiates the inference on the AI server. The method is a non-blocking method, i.e. it returns execution immediately after posting the frame data to the AI server. This allows calling this method in a loop without waiting for the inference results, achieving the maximum AI server utilization.</p>
@@ -440,7 +426,7 @@ AIModelAsync: Asynchronous Pipelined AI Inferencing API</h2>
 <p><em>Note: in case of server runtime error, all frames posted after the error was detected, will not be processed.</em></p>
 <h2><a class="anchor" id="ssec_params"></a>
 Model Parameters Management</h2>
-<p>Each AI model in the model zoo comes with the model parameters file in Json format. This Json file defines all model parameters such as model name, model input dimensions, pre-processing parameters, post-processing parameters, etc. Some of the model parameters are fixed and cannot be altered without breaking the model behavior, and some of the model parameters can be changed to adjust the model behavior. Later parameters are called model <em>runtime parameters</em> and can be adjusted when constructing instances of model inference classes <a class="el" href="classDG_1_1AIModel.html" title="AIModel is DeGirum AI client API class for simple non-pipelined sequential inference.">DG::AIModel</a> and <a class="el" href="classDG_1_1AIModelAsync.html" title="AIModelAsync is DeGirum AI client API class for efficient pipelined asynchronous inference.">DG::AIModelAsync</a>.</p>
+<p>Each AI model in the model zoo comes with the model parameters file in JSON format. This JSON file defines all model parameters such as model name, model input dimensions, pre-processing parameters, post-processing parameters, etc. Some of the model parameters are fixed and cannot be altered without breaking the model behavior, and some of the model parameters can be changed to adjust the model behavior. Later parameters are called model <em>runtime parameters</em> and can be adjusted when constructing instances of model inference classes <a class="el" href="classDG_1_1AIModel.html" title="AIModel is DeGirum AI client API class for simple non-pipelined sequential inference.">DG::AIModel</a> and <a class="el" href="classDG_1_1AIModelAsync.html" title="AIModelAsync is DeGirum AI client API class for efficient pipelined asynchronous inference.">DG::AIModelAsync</a>.</p>
 <p>To work with model parameters the following classes are provided:</p>
 <ul>
 <li><a class="el" href="classDG_1_1ModelParamsReadAccess.html" title="ModelParamsReadAccess is read-only accessor to model parameters.">DG::ModelParamsReadAccess</a></li>
@@ -448,9 +434,9 @@ Model Parameters Management</h2>
 <li><a class="el" href="classDG_1_1ModelParams.html" title="ModelParams is model parameters collection with user-defined access rights.">DG::ModelParams</a></li>
 <li><a class="el" href="namespaceDG.html#a1386bac643ff32870b2bbedc788585d6" title="ModelParamsWriter is ModelParams template instantiation with write access.">DG::ModelParamsWriter</a></li>
 </ul>
-<p><a class="el" href="classDG_1_1ModelParamsReadAccess.html" title="ModelParamsReadAccess is read-only accessor to model parameters.">DG::ModelParamsReadAccess</a> class provides programmatic type-safe read access to model parameters defined in Json model configuration. It keeps non-owning const reference to underlying Json array. For each model parameter it provides getter method, which name matches the parameter name as it appears in Json array.</p>
-<p><a class="el" href="classDG_1_1ModelParamsWriteAccess.html" title="ModelParamsWriteAccess is read/write accessor to model parameters.">DG::ModelParamsWriteAccess</a> inherits <a class="el" href="classDG_1_1ModelParamsReadAccess.html" title="ModelParamsReadAccess is read-only accessor to model parameters.">DG::ModelParamsReadAccess</a> and provides programmatic type-safe read <em>and write</em> access to model parameters defined in Json model configuration. It keeps non-owning non-const reference to underlying Json array. For each model parameter it provides both getter and setter methods. Getter method name matches the parameter name as it appears in Json array. Setter method name is constructed from the parameter name by appending <code>_set</code> suffix. For example, <code>InputImgFmt_set()</code> Setter methods return reference to self, so they can be called in a daisy-chain manner, for example: </p><pre class="fragment">    params.InputImgFmt_set( "RAW" ).InputImgRawDataType_set( "DG_UINT8" );
-</pre><p><a class="el" href="classDG_1_1ModelParams.html" title="ModelParams is model parameters collection with user-defined access rights.">DG::ModelParams</a> class provides programmatic type-safe access to model parameters defined in Json model configuration while <em>owning</em> that Json array. Access (read or write) is defined by the template parameter, which is used as the base class. You can use any <a class="el" href="classDG_1_1ModelParamsReadAccess.html" title="ModelParamsReadAccess is read-only accessor to model parameters.">DG::ModelParamsReadAccess</a>-derived base class: it can be <a class="el" href="classDG_1_1ModelParamsReadAccess.html" title="ModelParamsReadAccess is read-only accessor to model parameters.">DG::ModelParamsReadAccess</a> or <a class="el" href="classDG_1_1ModelParamsWriteAccess.html" title="ModelParamsWriteAccess is read/write accessor to model parameters.">DG::ModelParamsWriteAccess</a>.</p>
+<p><a class="el" href="classDG_1_1ModelParamsReadAccess.html" title="ModelParamsReadAccess is read-only accessor to model parameters.">DG::ModelParamsReadAccess</a> class provides programmatic type-safe read access to model parameters defined in JSON model configuration. It keeps non-owning const reference to underlying JSON array. For each model parameter it provides getter method, which name matches the parameter name as it appears in JSON array.</p>
+<p><a class="el" href="classDG_1_1ModelParamsWriteAccess.html" title="ModelParamsWriteAccess is read/write accessor to model parameters.">DG::ModelParamsWriteAccess</a> inherits <a class="el" href="classDG_1_1ModelParamsReadAccess.html" title="ModelParamsReadAccess is read-only accessor to model parameters.">DG::ModelParamsReadAccess</a> and provides programmatic type-safe read <em>and write</em> access to model parameters defined in JSON model configuration. It keeps non-owning non-const reference to underlying JSON array. For each model parameter it provides both getter and setter methods. Getter method name matches the parameter name as it appears in JSON array. Setter method name is constructed from the parameter name by appending <code>_set</code> suffix. For example, <code>InputImgFmt_set()</code> Setter methods return reference to self, so they can be called in a daisy-chain manner, for example: </p><pre class="fragment">    params.InputImgFmt_set( "RAW" ).InputImgRawDataType_set( "DG_UINT8" );
+</pre><p><a class="el" href="classDG_1_1ModelParams.html" title="ModelParams is model parameters collection with user-defined access rights.">DG::ModelParams</a> class provides programmatic type-safe access to model parameters defined in JSON model configuration while <em>owning</em> that JSON array. Access (read or write) is defined by the template parameter, which is used as the base class. You can use any <a class="el" href="classDG_1_1ModelParamsReadAccess.html" title="ModelParamsReadAccess is read-only accessor to model parameters.">DG::ModelParamsReadAccess</a>-derived base class: it can be <a class="el" href="classDG_1_1ModelParamsReadAccess.html" title="ModelParamsReadAccess is read-only accessor to model parameters.">DG::ModelParamsReadAccess</a> or <a class="el" href="classDG_1_1ModelParamsWriteAccess.html" title="ModelParamsWriteAccess is read/write accessor to model parameters.">DG::ModelParamsWriteAccess</a>.</p>
 <p>And finally <a class="el" href="namespaceDG.html#a1386bac643ff32870b2bbedc788585d6" title="ModelParamsWriter is ModelParams template instantiation with write access.">DG::ModelParamsWriter</a> is <a class="el" href="classDG_1_1ModelParams.html" title="ModelParams is model parameters collection with user-defined access rights.">DG::ModelParams</a> template instantiation with write access. Instances of this class you typically use to pass adjusted runtime model parameters to constructors of inference classes.</p>
 <p>The following table summarizes all runtime parameters which are accessible to the client code:</p>
 <table class="markdownTable">
@@ -495,7 +481,7 @@ Model Parameters Management</h2>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><code>UseRegularNMS</code> </td><td class="markdownTableBodyNone">bool </td><td class="markdownTableBodyNone">R/W </td><td class="markdownTableBodyNone">Use regular (per-class) NMS algorithm as opposed to global (class-ignoring) NMS algorithm for detection models </td><td class="markdownTableBodyNone">true/false </td><td class="markdownTableBodyNone">true  </td></tr>
 </table>
-<p>If you do not specify a runtime parameter, then the value for this parameter will be taken from the model Json configuration file from the local model zoo. If the model Json configuration file also does not specify this parameter, then the default value will be used.</p>
+<p>If you do not specify a runtime parameter, then the value for this parameter will be taken from the model JSON configuration file from the local model zoo. If the model JSON configuration file also does not specify this parameter, then the default value will be used.</p>
 <p>The following table lists currently available post-processor types.</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -529,8 +515,8 @@ Model Parameters Management</h2>
 <p>DG::ModelParamsReadAccess::InputColorSpace defines the colorspace (pixel order) which the AI model expects (was trained to). In case when the input image format is "RAW", you should provide raw image frame with correct pixel order corresponding to the input colorspace parameter value. In case when the input image format is "JPEG", the pre-processor will perform the conversion to the proper pixel order when decoding the JPEG image. Usually you do not change this parameter, otherwise the model performance will degrade.</p>
 <h2><a class="anchor" id="ssec_format"></a>
 Format of Data Frames for Image Processing Models</h2>
-<p>The AI Client package supports two formats of the input data frames for image processing models: JPEG images and binary bitmaps, where binary format is used by default and typically set in Json model configuration files for all DeGirum models.</p>
-<p>In any case the HxW dimension of the input data frame must match the input dimension of the AI model used for the inference. The input dimensions of the AI model are stored in the <a class="el" href="structDG_1_1ModelInfo.html" title="ModelInfo is the model identification structure. It keeps AI model key attributes.">DG::ModelInfo</a> data structure fields DG::ModelInfo::W and DG::ModelInfo::H, returned by either <a class="el" href="namespaceDG.html#a482a6ce0ec392df3b6f26db70b9b941e">modelzooListGet()</a> or <a class="el" href="namespaceDG.html#ae6fb2ad5460b7160220feb74635845a1">modelFind()</a> functions (see section <a class="el" href="index.html#ssec_zoo_search">Listing and Searching Models in Local Model Zoo</a>).</p>
+<p>The AI Client package supports two formats of the input data frames for image processing models: JPEG images and binary bitmaps, where binary format is used by default and typically set in JSON model configuration files for all DeGirum models.</p>
+<p>In any case the HxW dimension of the input data frame must match the input dimension of the AI model used for the inference. The input dimensions of the AI model are stored in the <a class="el" href="structDG_1_1ModelInfo.html" title="ModelInfo is the model identification structure. It keeps AI model key attributes.">DG::ModelInfo</a> data structure members <code>DG::ModelInfo::extended_params.InputW()</code> and <code>DG::ModelInfo::extended_params::InputH()</code>, returned by either <a class="el" href="namespaceDG.html#a482a6ce0ec392df3b6f26db70b9b941e">modelzooListGet()</a> or <a class="el" href="namespaceDG.html#ae6fb2ad5460b7160220feb74635845a1">modelFind()</a> functions (see section <a class="el" href="index.html#ssec_zoo_search">Listing and Searching Models in Local Model Zoo</a>).</p>
 <p>The frame data in the binary bitmap format should be arranged as HWC three-dimensional dense array, meaning that color dimension 'C' is the fastest dimension, while the vertical dimension 'H' is the slowest. The color order is dependent on how the model was originally trained. The pixel data type can be either 8-bit unsigned integer number or 32-bit floating point number.</p>
 <p>You specify input frame type when you construct instances of model inference classes <a class="el" href="classDG_1_1AIModel.html" title="AIModel is DeGirum AI client API class for simple non-pipelined sequential inference.">DG::AIModel</a> and <a class="el" href="classDG_1_1AIModelAsync.html" title="AIModelAsync is DeGirum AI client API class for efficient pipelined asynchronous inference.">DG::AIModelAsync</a>, passing instance of ModelParams class as the constructor parameter (see more details in the section <a class="el" href="index.html#ssec_params">Model Parameters Management</a>).</p>
 <p>To specify JPEG frame type you need to set InputImgFmt parameter to "JPEG".</p>
@@ -540,7 +526,7 @@ Format of Data Frames for Image Processing Models</h2>
         DG::ModelParamsWriter.InputImgFmt_set( "RAW" ).InputImgRawDataType_set( "DG_UINT8" ) );
 </pre><h2><a class="anchor" id="ssec_errors"></a>
 Error Handling</h2>
-<p>There are two mechanisms of error handling employed in AI Client package: using standard library exceptions and using specially formatted Json inference results.</p>
+<p>There are two mechanisms of error handling employed in AI Client package: using standard library exceptions and using specially formatted JSON inference results.</p>
 <p>All runtime errors <em>except errors happened during inference</em>, are handled by throwing standard library exceptions - objects of std::exception type. To handle such errors the recommended practice is to place all the code which interacts with the AI Client library into one try/catch block, and then catch exceptions of std::exception type: </p><pre class="fragment">    try
     {
         ...
@@ -549,17 +535,17 @@ Error Handling</h2>
     {
         std::cout &lt;&lt; e.what();  // handle exception 
     }
-</pre><p>Errors which happened during the inference are handled special way. Instead of throwing an exception, the special Json runtime error info object is returned by <a class="el" href="classDG_1_1AIModel.html#ad7a35ec0ba3e9e4fa2312718ba959c86">DG::AIModel::predict()</a> method in case you use synchronous API, and that Json object is passed as an argument into your callback in case you use asynchronous API.</p>
-<p>The Json runtime error info object has the following structure:</p>
+</pre><p>Errors which happened during the inference are handled special way. Instead of throwing an exception, the special JSON runtime error info object is returned by <a class="el" href="classDG_1_1AIModel.html#ad7a35ec0ba3e9e4fa2312718ba959c86">DG::AIModel::predict()</a> method in case you use synchronous API, and that JSON object is passed as an argument into your callback in case you use asynchronous API.</p>
+<p>The JSON runtime error info object has the following structure:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Json Field Name </th><th class="markdownTableHeadNone">Description  </th></tr>
+<th class="markdownTableHeadNone">JSON Field Name </th><th class="markdownTableHeadNone">Description  </th></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">"success" </td><td class="markdownTableBodyNone">Boolean field containing "false" in case of error  </td></tr>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">"msg" </td><td class="markdownTableBodyNone">Error message string  </td></tr>
 </table>
-<p>If you want to check that the inference result actually defines runtime error, you use <a class="el" href="namespaceDG.html#a9929b406008257b1ff51b5470aa094af">errorCheck()</a> function. If the AI server Json response contains the run-time error, then this function will return the error message string, otherwise it returns an empty string. The following code demonstrates the typical use case for synchronous API: </p><pre class="fragment">    json result;
+<p>If you want to check that the inference result actually defines runtime error, you use <a class="el" href="namespaceDG.html#a9929b406008257b1ff51b5470aa094af">errorCheck()</a> function. If the AI server JSON response contains the run-time error, then this function will return the error message string, otherwise it returns an empty string. The following code demonstrates the typical use case for synchronous API: </p><pre class="fragment">    json result;
     model.predict( frame, result );
     auto possible_error = DG::errorCheck( result );
     if( !possible_error.empty() )

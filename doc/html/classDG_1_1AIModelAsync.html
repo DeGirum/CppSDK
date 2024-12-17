@@ -268,9 +268,9 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Start the inference on given byte data vector. The byte vector contains the frame data, which depends on selected frame format. It can be either JPEG or bitmap depending on the model parameters. In case of errors throws std::exception. This is non-blocking call meaning that it returns execution immediately after posting the frame data to the AI server. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Start the inference on given byte data vector. The byte vector contains the frame data, which depends on selected frame format. It can be either JPEG or bitmap depending on the model parameters. In case of errors throws std::exception. This is non-blocking call meaning that it returns execution immediately after posting the frame data to the AI server.</p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>is a vector of input data for each model input where each data element is a vector of bytes. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>is a vector of input data for each model input where each data element is a vector of bytes.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">frame_info</td><td>is optional frame information string to be passed to the client callback along with the frame result. You can pass arbitrary information as frame info. This simplifies matching results to frames in the client callback. </td></tr>
   </table>
   </dd>
