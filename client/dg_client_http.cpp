@@ -188,10 +188,9 @@ ClientHttp::ClientHttp(
 	const ServerAddress &server_address,
 	size_t connection_timeout_ms,
 	size_t inference_timeout_ms ) :
-	m_server_address( server_address ),
-	m_connection_timeout_ms( connection_timeout_ms ), m_inference_timeout_ms( inference_timeout_ms ),
-	m_ws_client( nullptr ), m_async_result_callback( nullptr ), m_frame_queue_depth( 0 ),
-	m_http_client( server_address )
+	m_server_address( server_address ), m_connection_timeout_ms( connection_timeout_ms ),
+	m_inference_timeout_ms( inference_timeout_ms ), m_ws_client( nullptr ), m_async_result_callback( nullptr ),
+	m_frame_queue_depth( 0 ), m_http_client( server_address )
 {
 	DG_TRC_BLOCK( AIClientHttp, constructor, DGTrace::lvlBasic );
 
@@ -294,6 +293,17 @@ json ClientHttp::systemInfo()
 	DG_TRC_BLOCK( AIClientHttp, systemInfo, DGTrace::lvlBasic );
 	auto result = httpRequest< GET >( "/v1/system_info" );
 	return DG_JSON_PARSE( result->body );
+}
+
+/// Orca  device control for tooling
+/// \param[in] req - management request
+/// \return results of management request completion (request-specific)
+json ClientHttp::devCtrl( const json &req )
+{
+	DG_TRC_BLOCK( AIClientHttp, devCtrl, DGTrace::lvlBasic );
+	json resp{};
+	resp[ "result" ] = "not implemented";
+	return resp;
 }
 
 //

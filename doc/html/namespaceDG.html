@@ -172,6 +172,8 @@ Functions</h2></td></tr>
 <tr class="separator:a9d5fa71c19da848135fa8755d1c5fe7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe2b11e552463c96aafb936b6cdd8da7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::tuple&lt; std::string, <a class="el" href="namespaceDG.html#ac0697b890ca551f2b714b743707db549">DetectionStatus</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDG.html#afe2b11e552463c96aafb936b6cdd8da7">detectSubnetServers</a> (const std::string &amp;root_ip, const std::string &amp;subnet_mask)</td></tr>
 <tr class="separator:afe2b11e552463c96aafb936b6cdd8da7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ac9420f8bb857af0210a5143d9e4a15"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDG.html#a1ac9420f8bb857af0210a5143d9e4a15">devCtrl</a> (const std::string &amp;server, const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> &amp;req)</td></tr>
+<tr class="separator:a1ac9420f8bb857af0210a5143d9e4a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9929b406008257b1ff51b5470aa094af"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceDG.html#a9929b406008257b1ff51b5470aa094af">errorCheck</a> (const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> &amp;json_response)</td></tr>
 <tr class="separator:a9929b406008257b1ff51b5470aa094af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9744e0c4c628a3e463dbab49714ab8d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
@@ -377,8 +379,8 @@ constexpr <a class="el" href="structDG_1_1ModelParamsSection.html">ModelParamsSe
 </div><div class="memdoc">
 <p>Detect all ORCA servers with hostnames generated from a prefix and a range </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">prefix</td><td>is a string prefix, formatted as "nnnn[:port]". This will be used to generate two sets of hostnames, one with the pattern "nnnn#", and one "nnnn###". For example, the prefix "farm", range_start 1, range_end 2 and numeral_width 3 will scan the hosts "farm1", "farm001", "farm2", "farm002". Setting numeral_width to 0 disables pattern generation, and will just scan the prefix. The port part is optional. If included, all servers will be scanned on the port. If omitted, the default port 8778 will be used. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">range_start</td><td>is the lowest numeral to be applied to the pattern </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">prefix</td><td>is a string prefix, formatted as "nnnn[:port]". This will be used to generate two sets of hostnames, one with the pattern "nnnn#", and one "nnnn###". For example, the prefix "farm", range_start 1, range_end 2 and numeral_width 3 will scan the hosts "farm1", "farm001", "farm2", "farm002". Setting numeral_width to 0 disables pattern generation, and will just scan the prefix. The port part is optional. If included, all servers will be scanned on the port. If omitted, the default port 8778 will be used.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">range_start</td><td>is the lowest numeral to be applied to the pattern</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">range_end</td><td>is the highest numeral to be applied to the pattern, inclusive </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">numeral_width</td><td>is the width of the numeral in the padded set. This is optional, set to 3 by default. Set to 0 to disable pattern generation. </td></tr>
   </table>
@@ -421,6 +423,42 @@ constexpr <a class="el" href="structDG_1_1ModelParamsSection.html">ModelParamsSe
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Vector of pairs containing IPs of ORCA servers on the network and their statuses </dd></dl>
+
+</div>
+</div>
+<a id="a1ac9420f8bb857af0210a5143d9e4a15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ac9420f8bb857af0210a5143d9e4a15">&#9670;&nbsp;</a></span>devCtrl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> DG::devCtrl </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>server</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>req</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Device control facility </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">server</td><td>is a string specifying server domain name/IP address and port. Format: "domain_name:port" or "xxx.xxx.xxx.xxx:port". If port is omitted, the default port is 8778. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">req</td><td>- management request </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>results of execution of requests </dd></dl>
 
 </div>
 </div>

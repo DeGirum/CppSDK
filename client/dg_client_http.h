@@ -48,6 +48,11 @@ public:
 	/// Return host system information dictionary
 	json systemInfo() override;
 
+	/// Orca device control for dgo tools
+	/// \param[in] req - management request
+	/// \return results of management request completion (request-specific)
+	json devCtrl( const json &req ) override;
+
 	/// AI server tracing facility management
 	/// \param[in] req - management request
 	/// \return results of management request completion (request-specific)

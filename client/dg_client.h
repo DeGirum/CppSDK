@@ -50,6 +50,11 @@ public:
 	/// Return host system information dictionary
 	virtual json systemInfo() = 0;
 
+	/// Orca device control
+	/// \param[in] req - management request
+	/// \return results of management request completion (request-specific)
+	virtual json devCtrl( const json &req ) = 0;
+
 	/// AI server tracing facility management
 	/// \param[in] req - management request
 	/// \return results of management request completion (request-specific)

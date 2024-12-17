@@ -27,10 +27,10 @@ ClientAsio::ClientAsio(
 	const ServerAddress &server_address,
 	size_t connection_timeout_ms,
 	size_t inference_timeout_ms ) :
-	m_server_address( server_address ),
-	m_command_socket( m_io_context ), m_stream_socket( m_io_context ), m_async_result_callback( nullptr ),
-	m_io_context(), m_async_outstanding_results( 0 ), m_async_stop( false ), m_read_size( 0 ), m_frame_queue_depth( 0 ),
-	m_connection_timeout_ms( connection_timeout_ms ), m_inference_timeout_ms( inference_timeout_ms )
+	m_server_address( server_address ), m_command_socket( m_io_context ), m_stream_socket( m_io_context ),
+	m_async_result_callback( nullptr ), m_io_context(), m_async_outstanding_results( 0 ), m_async_stop( false ),
+	m_read_size( 0 ), m_frame_queue_depth( 0 ), m_connection_timeout_ms( connection_timeout_ms ),
+	m_inference_timeout_ms( inference_timeout_ms )
 {
 	DG_TRC_BLOCK( AIClientAsio, constructor, DGTrace::lvlBasic );
 
@@ -171,6 +171,20 @@ json ClientAsio::systemInfo()
 
 	if( transmitCommand( "systemInfo", request, response ) )
 		return response[ main_protocol::commands::SYSTEM_INFO ];
+	return {};
+}
+
+/// Orca device control for tooling
+/// \param[in] req - management request
+/// \return results of management request
+json ClientAsio::devCtrl( const json &req )
+{
+	DG_TRC_BLOCK( AIClientAsio, orcaDevCtrl, DGTrace::lvlBasic );
+	const json request = json( { { "op", main_protocol::commands::DEV_CTRL }, { "args", req } } );
+	json response;
+
+	if( transmitCommand( "devCtrl", request, response ) )
+		return response[ main_protocol::commands::DEV_CTRL ];
 	return {};
 }
 
