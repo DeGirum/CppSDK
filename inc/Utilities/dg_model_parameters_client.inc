@@ -50,10 +50,11 @@
 	_( ImageBackend,				SECT_PRE_PROCESS,		std::string,				"auto",			false,	false,	true,	None	) \
 	\
 	_( OutputPostprocessType,		SECT_POST_PROCESS,		std::string,				"None",			false,	true,	true,	None	) \
-	_( OutputConfThreshold,			SECT_POST_PROCESS,		double,						0.1,			false,	true,	true,	None	) \
+	_( OutputConfThreshold,			SECT_POST_PROCESS,		double,						0.3,			false,	true,	true,	None	) \
 	_( OutputNMSThreshold,			SECT_POST_PROCESS,		double,						0.6,			false,	true,	true,	None	) \
 	_( OutputTopK,					SECT_POST_PROCESS,		size_t,						0,				false,	true,	true,	None	) \
-	_( MaxDetections,				SECT_POST_PROCESS,		int,						20,				false,	true,	true,	None	) \
+	_( MaxDetections,				SECT_POST_PROCESS,		int,						100,			false,	true,	true,	None	) \
 	_( MaxDetectionsPerClass,		SECT_POST_PROCESS,		int,						100,			false,	true,	true,	None	) \
-	_( MaxClassesPerDetection,		SECT_POST_PROCESS,		int,						30,				false,	true,	true,	None	) \
-	_( UseRegularNMS,				SECT_POST_PROCESS,		bool,						true,			false,	true,	true,	None	)
+	_( MaxClassesPerDetection,		SECT_POST_PROCESS,		int,						1,				false,	true,	true,	None	) \
+	_( UseRegularNMS,				SECT_POST_PROCESS,		bool,						true,			false,	true,	true,	None	) \
+	_( SigmoidOnCLS,				SECT_POST_PROCESS,		bool,						false,			false,	true,	true,	None	)

@@ -35,7 +35,7 @@ namespace DG
 
 /// The most current version of JSON model configuration, supported by this version of software.
 /// Increment it each time you change any parameter definition or add/remove any parameter
-const int MODEL_PARAMS_CURRENT_VERSION = 9;
+const int MODEL_PARAMS_CURRENT_VERSION = 10;
 
 /// The minimum compatible version of JSON model configuration, still supported by this version of software.
 /// Increase it when the software is modified such a way, that it stops supporting older JSON model configuration
@@ -57,12 +57,12 @@ constexpr ModelParamsSection SECT_MODEL_PARAMETERS = { "MODEL_PARAMETERS", true 
 constexpr ModelParamsSection SECT_POST_PROCESS = { "POST_PROCESS", true };  //!< post-processing parameters section
 constexpr ModelParamsSection SECT_INTERNAL = { "INTERNAL", true };          //!< internal parameters section
 
-using vec_dbl = std::vector< double >;  //!< vector of doubles
-using vec_flt = std::vector< float >;   //!< vector of floats
-using vec_int = std::vector< int >;     //!< vector of integers
-using vec_str = std::vector< std::string >;     //!< vector of strings
-using vec_sz = std::vector< size_t >;   //!< vector of size_t
-using map_str_vec = std::map<std::string, std::vector<int32_t>>;
+using vec_dbl = std::vector< double >;       //!< vector of doubles
+using vec_flt = std::vector< float >;        //!< vector of floats
+using vec_int = std::vector< int >;          //!< vector of integers
+using vec_str = std::vector< std::string >;  //!< vector of strings
+using vec_sz = std::vector< size_t >;        //!< vector of size_t
+using map_str_vec = std::map< std::string, std::vector< int32_t > >;
 
 // List of all configuration parameters. Depending on the build, either full list or shorter client-side list is
 // included.
@@ -336,6 +336,61 @@ protected:
 		if( !exists && fallback != &ModelParamsReadAccess::None_exist )
 			return ( ( *this ).*fallback )( idx );
 		return exists;
+	}
+
+public:
+
+	/// Helper method: get model input shape
+	/// \param[in] cfg_idx - input index
+	/// \param[in] expected_size - expected size of the shape vector, 0 if not checked
+	/// \return model input shape vector
+	std::vector< size_t > modelShapeGet( size_t inp_idx, size_t expected_size )
+	{
+		if( InputShape_exist( inp_idx ) && InputShape_get( inp_idx ).size() > 0 )
+		{
+			// InputShape has priority over InputN, InputH, InputW, InputC
+			auto shape = InputShape_get( inp_idx );
+			if( expected_size != 0 && shape.size() != expected_size )
+				DG_ERROR(
+					DG_FORMAT(
+						"The input shape parameter InputShape for input #"
+						<< inp_idx << " must have " << expected_size << " elements, while it has " << shape.size() ),
+					ErrBadParameter );
+			return shape;
+		}
+		else
+		{
+			if( expected_size != 0 )
+			{
+				// when expected_size is set, we use it to fill the shape vector
+				// and put N/H/W/C values in the right places
+				std::vector< size_t > shape( expected_size, 1 );
+				if( InputN_get( inp_idx ) > 0 && expected_size >= 1 )
+					shape[ 0 ] = InputN_get( inp_idx );
+				if( InputH_get( inp_idx ) > 0 && expected_size >= 2 )
+					shape[ 1 ] = InputH_get( inp_idx );
+				if( InputW_get( inp_idx ) > 0 && expected_size >= 3 )
+					shape[ 2 ] = InputW_get( inp_idx );
+				if( InputC_get( inp_idx ) > 0 && expected_size >= 4 )
+					shape[ 3 ] = InputC_get( inp_idx );
+				return shape;
+			}
+			else
+			{
+				// when expected_size is not set, we fill the shape vector
+				// with all the values that are defined
+				std::vector< size_t > shape;
+				if( InputN_exist( inp_idx ) && InputN_get( inp_idx ) > 0 )
+					shape.push_back( (size_t)InputN_get( inp_idx ) );
+				if( InputH_exist( inp_idx ) && InputH_get( inp_idx ) > 0 )
+					shape.push_back( (size_t)InputH_get( inp_idx ) );
+				if( InputW_exist( inp_idx ) && InputW_get( inp_idx ) > 0 )
+					shape.push_back( (size_t)InputW_get( inp_idx ) );
+				if( InputC_exist( inp_idx ) && InputC_get( inp_idx ) > 0 )
+					shape.push_back( (size_t)InputC_get( inp_idx ) );
+				return shape;
+			}
+		}
 	}
 };
 
