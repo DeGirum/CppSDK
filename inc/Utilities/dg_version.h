@@ -21,16 +21,16 @@
 	#define DG_VERSION_MINOR 14
 #endif
 #ifndef DG_VERSION_REVISION
-	#define DG_VERSION_REVISION 2
+	#define DG_VERSION_REVISION 3
 #endif
 #ifndef DG_GIT_REV
-	#define DG_GIT_REV 	"e497f80"
+	#define DG_GIT_REV 	"0911c74"
 #endif
 #ifndef DG_GIT_TAG
 	#define DG_GIT_TAG 	""
 #endif
 #ifndef DG_GIT_BRANCH
-	#define DG_GIT_BRANCH 	"0.14.2"
+	#define DG_GIT_BRANCH 	"0.14.3"
 #endif
 
 #endif // DG_GLOBAL_VERSION_H

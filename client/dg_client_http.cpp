@@ -188,9 +188,10 @@ ClientHttp::ClientHttp(
 	const ServerAddress &server_address,
 	size_t connection_timeout_ms,
 	size_t inference_timeout_ms ) :
-	m_server_address( server_address ), m_connection_timeout_ms( connection_timeout_ms ),
-	m_inference_timeout_ms( inference_timeout_ms ), m_ws_client( nullptr ), m_async_result_callback( nullptr ),
-	m_frame_queue_depth( 0 ), m_http_client( server_address )
+	m_server_address( server_address ),
+	m_connection_timeout_ms( connection_timeout_ms ), m_inference_timeout_ms( inference_timeout_ms ),
+	m_ws_client( nullptr ), m_async_result_callback( nullptr ), m_frame_queue_depth( 0 ),
+	m_http_client( server_address )
 {
 	DG_TRC_BLOCK( AIClientHttp, constructor, DGTrace::lvlBasic );
 
@@ -423,9 +424,10 @@ void ClientHttp::resultObserve( callback_t callback )
 		const json result = DG::JsonHelper::jsonDeserialize( raw_data );
 		const std::string err_msg = DG::JsonHelper::errorCheck( result, "", false );
 
-		std::unique_lock< std::mutex > lock( m_state );               // acquire runtime state lock
-		std::string frame_info = m_state.m_frame_info_queue.front();  // get frame info
-		const bool was_error = !m_state.m_last_error.empty();         // check if there was an error before
+		std::unique_lock< std::mutex > lock( m_state );                   // acquire runtime state lock
+		const bool has_frame_info = !m_state.m_frame_info_queue.empty();  // check if there is frame info
+		std::string frame_info = has_frame_info ? m_state.m_frame_info_queue.front() : "";  // get frame info
+		const bool was_error = !m_state.m_last_error.empty();  // check if there was an error before
 
 		// save last error
 		if( !err_msg.empty() )
@@ -448,7 +450,8 @@ void ClientHttp::resultObserve( callback_t callback )
 
 		// remove frame info from queue and notify result receiving thread;
 		// do it after invoking user callback
-		m_state.m_frame_info_queue.pop();
+		if( has_frame_info )
+			m_state.m_frame_info_queue.pop();
 		m_waiter.notify_all();
 	};
 

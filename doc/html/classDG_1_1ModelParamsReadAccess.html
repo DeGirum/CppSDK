@@ -102,6 +102,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:afec208ca905d9ccf726afef0312ad1eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb027fe86b4a2cd59c8cdaeb3a97a3c1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1ModelParamsReadAccess.html#abb027fe86b4a2cd59c8cdaeb3a97a3c1">ModelParamsReadAccess</a> (const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> &amp;config)</td></tr>
 <tr class="separator:abb027fe86b4a2cd59c8cdaeb3a97a3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af836d4b00e8906f767fdb278b1f3d774"><td class="memItemLeft" align="right" valign="top">std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1ModelParamsReadAccess.html#af836d4b00e8906f767fdb278b1f3d774">modelShapeGet</a> (size_t inp_idx, size_t expected_size)</td></tr>
+<tr class="separator:af836d4b00e8906f767fdb278b1f3d774"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a590cc4f8a8b47f3303018e40e1b8e96c"><td class="memTemplParams" colspan="2"><a id="a590cc4f8a8b47f3303018e40e1b8e96c"></a>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a590cc4f8a8b47f3303018e40e1b8e96c"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classDG_1_1ModelParamsReadAccess.html#a590cc4f8a8b47f3303018e40e1b8e96c">None</a> (size_t idx=0) const</td></tr>
@@ -228,6 +230,50 @@ const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">js
 </table>
 </div><div class="memdoc">
 <p>Access to underlying JSON array </p><dl class="section return"><dt>Returns</dt><dd>constant non-owning reference to JSON array with model configuration </dd></dl>
+
+</div>
+</div>
+<a id="af836d4b00e8906f767fdb278b1f3d774"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af836d4b00e8906f767fdb278b1f3d774">&#9670;&nbsp;</a></span>modelShapeGet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; size_t &gt; DG::ModelParamsReadAccess::modelShapeGet </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>inp_idx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>expected_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Helper method: get model input shape </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">cfg_idx</td><td>- input index </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">expected_size</td><td>- expected size of the shape vector, 0 if not checked </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>model input shape vector </dd></dl>
 
 </div>
 </div>

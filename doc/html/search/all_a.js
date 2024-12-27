@@ -23,6 +23,7 @@ var searchData=
   ['modelparamswriteaccess_88',['ModelParamsWriteAccess',['../classDG_1_1ModelParamsWriteAccess.html',1,'DG::ModelParamsWriteAccess'],['../classDG_1_1ModelParamsWriteAccess.html#a1c5f4cf64d0c6fac259c790a9e68092d',1,'DG::ModelParamsWriteAccess::ModelParamsWriteAccess()']]],
   ['modelparamswriter_89',['ModelParamsWriter',['../namespaceDG.html#a1386bac643ff32870b2bbedc788585d6',1,'DG']]],
   ['modelquery_90',['ModelQuery',['../structDG_1_1ModelQuery.html',1,'DG']]],
-  ['modelzoolistget_91',['modelzooListGet',['../namespaceDG.html#a482a6ce0ec392df3b6f26db70b9b941e',1,'DG']]],
-  ['modelzoomanage_92',['modelZooManage',['../namespaceDG.html#a8b45c5201f10959906c1fee9cc10b2c5',1,'DG']]]
+  ['modelshapeget_91',['modelShapeGet',['../classDG_1_1ModelParamsReadAccess.html#af836d4b00e8906f767fdb278b1f3d774',1,'DG::ModelParamsReadAccess']]],
+  ['modelzoolistget_92',['modelzooListGet',['../namespaceDG.html#a482a6ce0ec392df3b6f26db70b9b941e',1,'DG']]],
+  ['modelzoomanage_93',['modelZooManage',['../namespaceDG.html#a8b45c5201f10959906c1fee9cc10b2c5',1,'DG']]]
 ];
