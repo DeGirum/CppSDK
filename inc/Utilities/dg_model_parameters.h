@@ -341,7 +341,7 @@ protected:
 public:
 
 	/// Helper method: get model input shape
-	/// \param[in] cfg_idx - input index
+	/// \param[in] inp_idx - input index
 	/// \param[in] expected_size - expected size of the shape vector, 0 if not checked
 	/// \return model input shape vector
 	std::vector< size_t > modelShapeGet( size_t inp_idx, size_t expected_size )

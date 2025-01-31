@@ -576,6 +576,26 @@ case type_id:                      \
 		m_shape = new_shape;
 	}
 
+	/// Reinterpret shape tensor to 3d to be used for YOLO detection/pose/segnentation models
+	/// The last dimension is interpreted as channels, and all other dimensions are flattened
+	/// 1xHxWxC -> 1x(H*W)xC
+	/// HxWx1xC -> 1x(H*W)xC
+	void reinterpretShapeForYolo()
+	{
+		// Flatten all dimensions except the last one
+		if( m_shape.size() >= 2 )
+		{
+			size_t combined_dim = 1;
+			for( size_t i = 0; i < m_shape.size() - 1; i++ )
+			{
+				combined_dim *= m_shape[ i ];
+			}
+
+			// Ensure the final shape is 1 x combined_dim x last_dim
+			m_shape = { 1, combined_dim, m_shape.back() };
+		}
+	}
+
 	/// Quantize tensor according to current quantization settings from type T_IN to type T_OUT
 	/// New linear buffer will be internally allocated to receive quantized data.
 	template< typename T_IN, typename T_OUT >

@@ -245,7 +245,7 @@ namespace DG
 				const int axis = q[ "axis" ].get< int >();
 				const std::vector< double > scales = q[ "scale" ].get< std::vector< double > >();
 				const std::vector< int64_t > zeros = q[ "zero" ].get< std::vector< int64_t > >();
-				const DGType type = Sting2DGType( j[ "type" ].get< std::string >().c_str() );
+				const DGType type = String2DGType( j[ "type" ].get< std::string >().c_str() );
 				
 				size_t q_size = std::min( scales.size(), zeros.size() );
 				std::vector< BasicTensor::quant_params_t::scale_t > qparams( q_size );
