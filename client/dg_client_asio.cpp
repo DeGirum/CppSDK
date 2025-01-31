@@ -259,7 +259,7 @@ void ClientAsio::predict( std::vector< std::vector< char > > &data, json &output
 
 	m_last_error = DG::JsonHelper::errorCheck( output, {}, false );
 	if( !m_last_error.empty() )
-		throw DGException( m_last_error );
+		throw DGException( m_last_error, ErrOperationFailed );
 }
 
 //

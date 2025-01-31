@@ -570,7 +570,7 @@ void ClientHttp::predict( std::vector< std::vector< char > > &data, json &output
 	dataEnd();
 
 	if( !m_state.m_last_error.empty() )
-		throw DGException( m_state.m_last_error );
+		throw DGException( m_state.m_last_error, ErrOperationFailed );
 }
 
 }  // namespace DG

@@ -132,7 +132,7 @@ namespace DG
 	}
 
 	/// Derive type ID from type string representation
-	inline DGType Sting2DGType( const char *sType )
+	inline DGType String2DGType( const char *sType )
 	{
 		#define _( id, type, width ) if( strcmp( sType, #id ) == 0 ) return id;
 		DG_TYPE_LIST

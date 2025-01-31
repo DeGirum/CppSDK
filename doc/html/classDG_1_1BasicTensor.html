@@ -215,6 +215,8 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 const <a class="el" href="structDG_1_1BasicTensor_1_1quant__params__t.html">quant_params_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#a94e8fe543e4673809deb2333d825e004">quantParams</a> () const</td></tr>
 <tr class="memdesc:a94e8fe543e4673809deb2333d825e004"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get quantization parameters. <br /></td></tr>
 <tr class="separator:a94e8fe543e4673809deb2333d825e004"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae294e4ede7a89f8cbe8b7d97e570d416"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#ae294e4ede7a89f8cbe8b7d97e570d416">reinterpretShapeForYolo</a> ()</td></tr>
+<tr class="separator:ae294e4ede7a89f8cbe8b7d97e570d416"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3789541a33f0e20cfa722d7210e44fab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#a3789541a33f0e20cfa722d7210e44fab">reshapeCombineDims</a> (const std::vector&lt; size_t &gt; dims_to_combine)</td></tr>
 <tr class="separator:a3789541a33f0e20cfa722d7210e44fab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb448882842a5268d460e84e273076ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#afb448882842a5268d460e84e273076ff">reshapeTo</a> (size_t dim)</td></tr>
@@ -1106,6 +1108,32 @@ template&lt;typename T_IN , typename T_OUT &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Quantize tensor according to current quantization settings from type T_IN to type T_OUT New linear buffer will be internally allocated to receive quantized data. </p>
+
+</div>
+</div>
+<a id="ae294e4ede7a89f8cbe8b7d97e570d416"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae294e4ede7a89f8cbe8b7d97e570d416">&#9670;&nbsp;</a></span>reinterpretShapeForYolo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DG::BasicTensor::reinterpretShapeForYolo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Reinterpret shape tensor to 3d to be used for YOLO detection/pose/segnentation models The last dimension is interpreted as channels, and all other dimensions are flattened 1xHxWxC -&gt; 1x(H*W)xC HxWx1xC -&gt; 1x(H*W)xC </p>
 
 </div>
 </div>
