@@ -316,7 +316,7 @@ void ClientAsio::dataSend( const std::vector< std::vector< char > > &data, const
 					return m_async_outstanding_results < m_frame_queue_depth || m_async_stop;
 				} ) )
 			{
-				DG_ERROR(
+				DG_CRITICAL_ERROR(
 					DG_FORMAT(
 						"Timeout " << m_inference_timeout_ms << " ms waiting for space in queue on AI server '"
 								   << m_command_socket.remote_endpoint().address().to_string() << ":"
@@ -360,9 +360,19 @@ void ClientAsio::dataSend( const std::vector< std::vector< char > > &data, const
 				while( !m_async_stop || m_async_outstanding_results > 0 )
 				{
 					// Run ASIO executor until result is received or server disconnects or timeout happens
-					const size_t completed_tasks = main_protocol::run_async( m_io_context, m_inference_timeout_ms );
+					size_t completed_tasks = 0;
+					try
+					{
+						completed_tasks = main_protocol::run_async( m_io_context, m_inference_timeout_ms );
+					}
+					catch( std::exception &e )
+					{
+						// raise critical error in case of any communication error
+						DG_CRITICAL_ERROR( e.what(), ErrOperationFailed );
+					}
+
 					if( completed_tasks == 0 )
-						DG_ERROR(
+						DG_CRITICAL_ERROR(
 							DG_FORMAT(
 								"Timeout " << m_inference_timeout_ms << " ms waiting for response from AI server '"
 										   << m_stream_socket.remote_endpoint().address().to_string() << ":"

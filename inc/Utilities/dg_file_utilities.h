@@ -2,7 +2,7 @@
 /// \file  dg_file_utilities.h
 /// \brief DG file handling utility functions
 ///
-/// Copyright 2021 DeGirum Corporation
+/// Copyright 2025 DeGirum Corporation
 ///
 /// This file contains implementation of various helper functions
 /// for file handling
@@ -38,6 +38,7 @@ extern char *program_invocation_name;
 #include <filesystem>
 #include <fstream>
 #include <random>
+#include <regex>
 #include <string>
 #include <thread>
 #include <vector>
@@ -346,6 +347,32 @@ public:
 		const std::string ret = appdata_path.generic_string();
 		dir_create_if_not_exist( ret );
 		return path_with_slash( ret );
+	}
+
+	/// Count files matching given wildcard pattern in given directory
+	/// \param[in] path - directory path
+	/// \param[in] wildcard - typical filesystem wildcard pattern to match containing '*' and '?' characters
+	/// \return number of files matching the pattern
+	static int count_files_matching_wildcard( const std::string &path, const std::string &wildcard )
+	{
+		int count = 0;
+
+		// Convert the wildcard pattern into a regular expression
+		std::string regex_pattern = "^" + std::regex_replace( wildcard, std::regex( "\\*" ), ".*" );
+		regex_pattern = std::regex_replace( regex_pattern, std::regex( "\\?" ), "." );
+		std::regex pattern( regex_pattern );
+
+		// Iterate recursively over the directory
+		for( const auto &entry : std::filesystem::recursive_directory_iterator( path ) )
+		{
+			if( entry.is_regular_file() )
+			{
+				// Check if the file name matches the pattern
+				if( std::regex_match( entry.path().filename().string(), pattern ) )
+					count++;
+			}
+		}
+		return count;
 	}
 
 	/// Set current working directory to current executable location directory
