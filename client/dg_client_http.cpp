@@ -114,7 +114,7 @@ public:
 		m_ews_client->send( data );  // buffer data
 
 		if( !DG::pollingWaitFor( poller, timeout_ms ) )
-			DG_ERROR(
+			DG_CRITICAL_ERROR(
 				DG_FORMAT( "Timeout " << timeout_ms << " ms communicating with WebSocket server at " << m_url ),
 				ErrTimeout );
 		return received_msg;
@@ -188,10 +188,9 @@ ClientHttp::ClientHttp(
 	const ServerAddress &server_address,
 	size_t connection_timeout_ms,
 	size_t inference_timeout_ms ) :
-	m_server_address( server_address ),
-	m_connection_timeout_ms( connection_timeout_ms ), m_inference_timeout_ms( inference_timeout_ms ),
-	m_ws_client( nullptr ), m_async_result_callback( nullptr ), m_frame_queue_depth( 0 ),
-	m_http_client( server_address )
+	m_server_address( server_address ), m_connection_timeout_ms( connection_timeout_ms ),
+	m_inference_timeout_ms( inference_timeout_ms ), m_ws_client( nullptr ), m_async_result_callback( nullptr ),
+	m_frame_queue_depth( 0 ), m_http_client( server_address )
 {
 	DG_TRC_BLOCK( AIClientHttp, constructor, DGTrace::lvlBasic );
 
@@ -227,7 +226,7 @@ void ClientHttp::checkHttpResult( const httplib::Result &result, const std::stri
 			"Error sending HTTP request '" << path << "' to " << std::string( m_server_address ) << ": " );
 	};
 	if( result.error() != httplib::Error::Success )
-		DG_ERROR( DG_FORMAT( prefix() + httplib::to_string( result.error() ) ), ErrOperationFailed );
+		DG_CRITICAL_ERROR( DG_FORMAT( prefix() + httplib::to_string( result.error() ) ), ErrOperationFailed );
 	else if( result->status >= 300 || result->status < 200 )
 		DG_ERROR(
 			DG_FORMAT( prefix() << result->reason << "(" << result->status << ") " << result->body ),
@@ -483,7 +482,7 @@ bool ClientHttp::waitFor( size_t outstanding_frames, std::unique_lock< std::mute
 					return m_state.m_frame_info_queue.size() < cur_size || !m_state.m_last_error.empty();
 				} ) )
 			{
-				DG_ERROR(
+				DG_CRITICAL_ERROR(
 					DG_FORMAT(
 						"Timeout " << m_inference_timeout_ms << " ms waiting for inference completion on AI server '"
 								   << std::string( m_server_address ) << " (current queue size is " << cur_size

@@ -596,6 +596,16 @@ case type_id:                      \
 		}
 	}
 
+	/// Reshape tensor for YOLOv5 detection models, removing anchor dimension from box/probabilities dimension
+	/// and associating with grid dimension (i.e. from 3rd dimension to 2nd dimension). If the 3rd dimension
+	/// is equal to last_dim, the tensor shape is modified as mentioned above.
+	/// E.g. 1 x (80 x 80) x (3 x 85) -> 1 x (80 x 80 x 3) x 85
+	void reshapeForYoloV5( size_t last_dim, size_t num_anchors_per_head )
+	{
+		if ( m_shape[ 2 ] == last_dim )
+			m_shape = { 1, m_shape[ 1 ] * num_anchors_per_head, size_t( m_shape[ 2 ] / num_anchors_per_head ) };
+	}
+
 	/// Quantize tensor according to current quantization settings from type T_IN to type T_OUT
 	/// New linear buffer will be internally allocated to receive quantized data.
 	template< typename T_IN, typename T_OUT >

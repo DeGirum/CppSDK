@@ -326,7 +326,7 @@ public:
 		}
 
 		if( !error.empty() )
-			DG_ERROR( error, ErrOperationFailed );
+			DG_CRITICAL_ERROR( error, ErrOperationFailed );
 
 		return socket_ready;
 	}
@@ -490,7 +490,7 @@ public:
 			rxbuf_.erase( rxbuf_.begin(), rxbuf_.begin() + ws.header_size + (size_t)ws.N );
 		}
 		if( !error.empty() )
-			DG_ERROR( error, ErrOperationFailed );
+			DG_CRITICAL_ERROR( error, ErrOperationFailed );
 	}
 
 	void sendPing()
@@ -618,12 +618,12 @@ easywsclient::WebSocket::pointer from_url( const std::string &url, bool useMask,
 	char path[ 512 ];
 	if( url.size() >= 512 )
 	{
-		DG_ERROR( "WebSocket: URL size limit exceeded", ErrBadParameter );
+		DG_CRITICAL_ERROR( "WebSocket: URL size limit exceeded", ErrBadParameter );
 		return NULL;
 	}
 	if( origin.size() >= 200 )
 	{
-		DG_ERROR( "WebSocket: origin size limit exceeded", ErrBadParameter );
+		DG_CRITICAL_ERROR( "WebSocket: origin size limit exceeded", ErrBadParameter );
 		return NULL;
 	}
 
@@ -644,14 +644,14 @@ easywsclient::WebSocket::pointer from_url( const std::string &url, bool useMask,
 	}
 	else
 	{
-		DG_ERROR( "WebSocket: could not parse WebSocket url: " + url, ErrBadParameter );
+		DG_CRITICAL_ERROR( "WebSocket: could not parse WebSocket url: " + url, ErrBadParameter );
 		return NULL;
 	}
 
 	socket_t sockfd = hostname_connect( host, port );
 	if( sockfd == INVALID_SOCKET )
 	{
-		DG_ERROR( DG_FORMAT( "WebSocket: unable to connect to " << host << ":" << port ), ErrOperationFailed );
+		DG_CRITICAL_ERROR( DG_FORMAT( "WebSocket: unable to connect to " << host << ":" << port ), ErrOperationFailed );
 		return NULL;
 	}
 	{
@@ -699,12 +699,12 @@ easywsclient::WebSocket::pointer from_url( const std::string &url, bool useMask,
 		line[ i ] = 0;
 		if( i == 1023 )
 		{
-			DG_ERROR( DG_FORMAT( "WebSocket: got invalid status line connecting to " << url ), ErrOperationFailed );
+			DG_CRITICAL_ERROR( DG_FORMAT( "WebSocket: got invalid status line connecting to " << url ), ErrOperationFailed );
 			return NULL;
 		}
 		if( sscanf( line, "HTTP/1.1 %d", &status ) != 1 || status != 101 )
 		{
-			DG_ERROR( DG_FORMAT( "WebSocket: got bad status connecting to " << url ), ErrOperationFailed );
+			DG_CRITICAL_ERROR( DG_FORMAT( "WebSocket: got bad status connecting to " << url ), ErrOperationFailed );
 			return NULL;
 		}
 
