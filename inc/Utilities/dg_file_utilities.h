@@ -365,7 +365,7 @@ public:
 		// Iterate recursively over the directory
 		for( const auto &entry : std::filesystem::recursive_directory_iterator( path ) )
 		{
-			if( entry.is_regular_file() )
+			if( !entry.is_directory() )
 			{
 				// Check if the file name matches the pattern
 				if( std::regex_match( entry.path().filename().string(), pattern ) )

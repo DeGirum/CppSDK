@@ -489,7 +489,7 @@ case type_id:                      \
 	void dealloc()
 	{
 		if( m_linear_buffer != nullptr && !m_external )
-			delete[]( char * ) m_linear_buffer;
+			delete[](char *)m_linear_buffer;
 		m_name.clear();
 		m_shape.clear();
 		m_quant_params = quant_params_t();
@@ -596,14 +596,14 @@ case type_id:                      \
 		}
 	}
 
-	/// Reshape tensor for YOLOv5 detection models, removing anchor dimension from box/probabilities dimension
-	/// and associating with grid dimension (i.e. from 3rd dimension to 2nd dimension). If the 3rd dimension
-	/// is equal to last_dim, the tensor shape is modified as mentioned above.
-	/// E.g. 1 x (80 x 80) x (3 x 85) -> 1 x (80 x 80 x 3) x 85
-	void reshapeForYoloV5( size_t last_dim, size_t num_anchors_per_head )
+	/// If the 3rd dimension is equal to last_dim, reshape tensor by scaling up 2nd dimension by scale
+	/// and scaling down 3rd dimension by scale.
+	/// E.g. If last_dim = 255 and scale = 3, then shape (1 x 6400 x 255) would be reshaped as
+	/// 1 x 6400 x 255 -> 1 x 19200 x 85
+	void reinterpretShapeScaled( size_t last_dim, float32_t scale )
 	{
-		if ( m_shape[ 2 ] == last_dim )
-			m_shape = { 1, m_shape[ 1 ] * num_anchors_per_head, size_t( m_shape[ 2 ] / num_anchors_per_head ) };
+		if( m_shape[ 2 ] == last_dim )
+			m_shape = { 1, size_t( m_shape[ 1 ] * scale ), size_t( m_shape[ 2 ] / scale ) };
 	}
 
 	/// Quantize tensor according to current quantization settings from type T_IN to type T_OUT
@@ -656,7 +656,7 @@ case type_id:                      \
 		}
 
 		if( !m_external )
-			delete[]( char * ) m_linear_buffer;
+			delete[](char *)m_linear_buffer;
 		m_external = false;
 		m_linear_buffer = out;
 		m_el_size = sizeof( T_OUT );

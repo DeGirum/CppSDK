@@ -217,10 +217,10 @@ const <a class="el" href="structDG_1_1BasicTensor_1_1quant__params__t.html">quan
 <tr class="separator:a94e8fe543e4673809deb2333d825e004"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae294e4ede7a89f8cbe8b7d97e570d416"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#ae294e4ede7a89f8cbe8b7d97e570d416">reinterpretShapeForYolo</a> ()</td></tr>
 <tr class="separator:ae294e4ede7a89f8cbe8b7d97e570d416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cbe4376bee6e7de0cc48ff92e442939"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#a7cbe4376bee6e7de0cc48ff92e442939">reinterpretShapeScaled</a> (size_t last_dim, float32_t scale)</td></tr>
+<tr class="separator:a7cbe4376bee6e7de0cc48ff92e442939"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3789541a33f0e20cfa722d7210e44fab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#a3789541a33f0e20cfa722d7210e44fab">reshapeCombineDims</a> (const std::vector&lt; size_t &gt; dims_to_combine)</td></tr>
 <tr class="separator:a3789541a33f0e20cfa722d7210e44fab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff157d9f747aa21ce68a9d6e4a10ffa0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#aff157d9f747aa21ce68a9d6e4a10ffa0">reshapeForYoloV5</a> (size_t last_dim, size_t num_anchors_per_head)</td></tr>
-<tr class="separator:aff157d9f747aa21ce68a9d6e4a10ffa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb448882842a5268d460e84e273076ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1BasicTensor.html#afb448882842a5268d460e84e273076ff">reshapeTo</a> (size_t dim)</td></tr>
 <tr class="separator:afb448882842a5268d460e84e273076ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c4d06d383fe9d77a93338a25607373e"><td class="memItemLeft" align="right" valign="top"><a id="a0c4d06d383fe9d77a93338a25607373e"></a>
@@ -1139,6 +1139,43 @@ template&lt;typename T_IN , typename T_OUT &gt; </div>
 
 </div>
 </div>
+<a id="a7cbe4376bee6e7de0cc48ff92e442939"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cbe4376bee6e7de0cc48ff92e442939">&#9670;&nbsp;</a></span>reinterpretShapeScaled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DG::BasicTensor::reinterpretShapeScaled </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>last_dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float32_t&#160;</td>
+          <td class="paramname"><em>scale</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>If the 3rd dimension is equal to last_dim, reshape tensor by scaling up 2nd dimension by scale and scaling down 3rd dimension by scale. E.g. If last_dim = 255 and scale = 3, then shape (1 x 6400 x 255) would be reshaped as 1 x 6400 x 255 -&gt; 1 x 19200 x 85 </p>
+
+</div>
+</div>
 <a id="a3789541a33f0e20cfa722d7210e44fab"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3789541a33f0e20cfa722d7210e44fab">&#9670;&nbsp;</a></span>reshapeCombineDims()</h2>
 
@@ -1163,43 +1200,6 @@ template&lt;typename T_IN , typename T_OUT &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Reshape tensor of multiple dimensions to a smaller number of dimensions by combining specified dimensions. E.g. reshapeCombineDims({0, 1, 2}) will combine first 3 dimensions into one. </p>
-
-</div>
-</div>
-<a id="aff157d9f747aa21ce68a9d6e4a10ffa0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aff157d9f747aa21ce68a9d6e4a10ffa0">&#9670;&nbsp;</a></span>reshapeForYoloV5()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void DG::BasicTensor::reshapeForYoloV5 </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>last_dim</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>num_anchors_per_head</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Reshape tensor for YOLOv5 detection models, removing anchor dimension from box/probabilities dimension and associating with grid dimension (i.e. from 3rd dimension to 2nd dimension). If the 3rd dimension is equal to last_dim, the tensor shape is modified as mentioned above. E.g. 1 x (80 x 80) x (3 x 85) -&gt; 1 x (80 x 80 x 3) x 85 </p>
 
 </div>
 </div>
