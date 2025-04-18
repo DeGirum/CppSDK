@@ -83,4 +83,17 @@
 	#define DG_EXPORT_API
 #endif
 
+
+/// Thread naming macro: sets thread name visible under debugger
+#ifdef _WIN32
+	#define DG_THREAD_NAME( name ) SetThreadDescription( GetCurrentThread(), L##name )
+#elif defined( __linux__ )
+	#define DG_THREAD_NAME( name ) pthread_setname_np( pthread_self(), name )
+#elif defined( __APPLE__ )
+	#define DG_THREAD_NAME( name ) pthread_setname_np( name )
+#else
+	#define DG_THREAD_NAME( name )
+#endif
+
+
 #endif	// DG_COM_DECL_H

@@ -1110,7 +1110,7 @@ inline std::string DG::ErrorHandling::stackTrace( size_t skip, size_t depth )
 	std::string ret;
 
 #if defined( _MSC_VER )
-	std::mutex mx;                       // thread protection mutex
+	static std::mutex mx;                // thread protection mutex
 	static BOOL symInitialized = FALSE;  // SymInitialize() was called
 
 	std::lock_guard< std::mutex > lk( mx );

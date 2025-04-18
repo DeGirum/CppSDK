@@ -209,7 +209,7 @@ public:
 		{                                                                                                        \
 			if( !resultJson.contains( section.label ) )                                                          \
 				resultJson[ section.label ] = json::array();                                                     \
-                                                                                                                 \
+																												 \
 			if( resultJson[ section.label ].is_array() )                                                         \
 			{                                                                                                    \
 				for( size_t idx = 0; idx < resultJson[ section.label ].size(); idx++ )                           \
@@ -236,7 +236,7 @@ public:
 	/// \param[in] do_throw - when true, exception will be thrown in case of version mismatch,
 	/// otherwise error message string will be returned
 	/// \return error message string, if version mismatch is detected
-	std::string versionCheck( bool do_throw )
+	std::string versionCheck( bool do_throw ) const
 	{
 		const std::string model_name = ModelPath_exist() ? std::filesystem::path( ModelPath() ).stem().string()
 														 : "unknown";
@@ -339,6 +339,12 @@ protected:
 	}
 
 public:
+
+	/// Helper method: get model input size
+	size_t modelInputSizeGet() const
+	{
+		return sectionSizeGet( SECT_PRE_PROCESS.label );
+	}
 
 	/// Helper method: get model input shape
 	/// \param[in] inp_idx - input index
@@ -529,6 +535,11 @@ public:
 	/// Constructor. Creates model parameter collection from given JSON array
 	/// \param[in] json_cfg - JSON array with model parameters. It will be copied into internal JSON array.
 	explicit ModelParams( const json &json_cfg ) : m_cfg( json_cfg ), Base( m_cfg )
+	{}
+
+	/// Constructor with move semantic. Creates model parameter collection from given JSON array
+	/// \param[in] json_cfg - JSON array with model parameters. It will be moved into internal JSON array.
+	explicit ModelParams( json &&json_cfg ) : m_cfg( std::move( json_cfg ) ), Base( m_cfg )
 	{}
 
 	/// Copy constructor
