@@ -2,7 +2,7 @@
 /// \file  dg_tracing_facility.h
 /// \brief DG tracing facility
 ///
-/// Copyright 2021 DeGirum Corporation
+/// Copyright 2025 DeGirum Corporation
 ///
 /// This file contains declarations of tracing facility functionality.
 /// Tracing facility is intended to be used for frequent events, when
@@ -484,7 +484,7 @@ public:
 			if( m_traceBuf.m_BufWP > m_traceBuf.m_BufRP )
 			{
 				m_poison = true;
-				workerThreadFunc( this );
+				workerThreadFunc();
 			}
 		}
 	}
@@ -768,6 +768,7 @@ private:
 	std::atomic_bool m_poison;            //!< poison pill: flag to worker thread to exit
 	std::atomic_bool m_do_flush;          //!< flush flag
 	std::atomic_bool m_do_restart;        //!< restart flag
+	size_t m_file_size_max;               //!< max. trace file size in bytes
 
 	std::ostream *m_outStream;      //!< pointer to active output stream object to print trace into
 	std::ofstream m_outFileStream;  //!< file stream object to print trace into
@@ -796,11 +797,10 @@ private:
 	bool isWorkerRunning();
 
 	/// Worker thread function: prints accumulated trace buffer contents to trace file
-	/// \param[in] me - pointer to parent TracingFacility object
-	static void workerThreadFunc( TracingFacility *me );
+	virtual void workerThreadFunc();
 
 	/// Check if the worker thread is started and start it, if it was not started yet
-	void ensureThreadRuns()
+	virtual void ensureThreadRuns()
 	{
 		if( !m_thread.joinable() )
 		{
@@ -811,7 +811,7 @@ private:
 				if( !m_thread.joinable() )  // check one more time to avoid race conditions
 				{
 					// start worker thread
-					m_thread = std::thread( workerThreadFunc, this );
+					m_thread = std::thread( [ this ]() { workerThreadFunc(); } );
 					// wait for start
 					m_thread_cv.wait_for( lk, std::chrono::milliseconds( 1000 ) );
 				}
@@ -902,9 +902,7 @@ public:
 		const char *name,
 		TraceLevel_t level,
 		const char *message = nullptr,
-		... ) :
-		m_tracingFacility( tracingFacility ),
-		m_group( group ), m_name( name ), m_level( level )
+		... ) : m_tracingFacility( tracingFacility ), m_group( group ), m_name( name ), m_level( level )
 	{
 		if( m_level <= *m_group )
 		{
@@ -995,9 +993,8 @@ inline DGTrace::TracingFacility::TracingFacility(
 	size_t traceBufCnt,
 	size_t stringPoolSize,
 	std::ostream *out_stream ) :
-	m_traceBuf( traceBufCnt ),
-	m_stringPool( stringPoolSize ), m_isOwnStream( false ), m_outStream( out_stream ), m_poison( false ),
-	m_do_flush( false ), m_do_restart( false )
+	m_traceBuf( traceBufCnt ), m_stringPool( stringPoolSize ), m_isOwnStream( false ), m_outStream( out_stream ),
+	m_poison( false ), m_do_flush( false ), m_do_restart( false )
 {
 	if( out_stream == nullptr )
 	{
@@ -1013,6 +1010,11 @@ inline DGTrace::TracingFacility::TracingFacility(
 	m_clockAdjustment_ns = std::chrono::duration_cast< std::chrono::nanoseconds >(
 							   std::chrono::system_clock::now().time_since_epoch() ) -
 		std::chrono::duration_cast< std::chrono::nanoseconds >( clock::now().time_since_epoch() );
+
+	const auto available = DG::FileHelper::space_available( TraceGroupsRegistry::getTempPath() );
+	m_file_size_max = 100 << 20;  // 100MB
+	if( available != size_t( -1 ) )
+		m_file_size_max = std::min( m_file_size_max, std::max( available / 10, size_t{ 8 * DG_LOG_TRACE_BUF_SIZE } ) );
 }
 
 //
@@ -1092,8 +1094,10 @@ inline bool DGTrace::TracingFacility::isWorkerRunning()
 // Worker thread function: prints accumulated trace buffer contents to trace file
 // [in] me - pointer to parent TracingFacility object
 //
-inline void DGTrace::TracingFacility::workerThreadFunc( TracingFacility *me )
+inline void DGTrace::TracingFacility::workerThreadFunc()
 {
+	DG_THREAD_NAME( "DGTracingFacility" );
+
 	// Trace-related state of a single thread
 	struct ThreadState
 	{
@@ -1115,6 +1119,7 @@ inline void DGTrace::TracingFacility::workerThreadFunc( TracingFacility *me )
 	};
 
 	std::map< std::thread::id, ThreadState > tread_map;  // map of thread IDs to thread state objects
+	size_t printed_size = 0;                             // size of printed data so far
 
 	// printing lambda
 	// prints records from rp to wp
@@ -1125,8 +1130,8 @@ inline void DGTrace::TracingFacility::workerThreadFunc( TracingFacility *me )
 
 		for( ; lri < wp; lri++ )
 		{
-			const size_t ri = lri % me->m_traceBuf.m_BufSize;  // ri - true record index
-			auto &rec = me->m_traceBuf.m_Buf[ ri ];
+			const size_t ri = lri % m_traceBuf.m_BufSize;  // ri - true record index
+			auto &rec = m_traceBuf.m_Buf[ ri ];
 			std::string pool_string;
 			const char *message = rec.m_message;
 
@@ -1138,7 +1143,7 @@ inline void DGTrace::TracingFacility::workerThreadFunc( TracingFacility *me )
 			// process string pool entry
 			if( rec.m_Flags & TraceRec::InStringPool )
 			{
-				pool_string = me->m_stringPool.get( message );
+				pool_string = m_stringPool.get( message );
 				message = pool_string.c_str();
 				// increment processed string pool position
 				lspp += pool_string.length() + 1 /*trailing zero*/;
@@ -1153,7 +1158,7 @@ inline void DGTrace::TracingFacility::workerThreadFunc( TracingFacility *me )
 			auto &thread_state = map_it->second;
 
 			// get timestamp relative to start
-			const long long timestamp_ns = me->to_ns( rec.m_timeStamp );
+			const long long timestamp_ns = to_ns( rec.m_timeStamp );
 
 			// get timestamp delta in respect to previous timestamp in the SAME thread
 			const auto delta_ns = thread_state.prev_timestamp_ns >= 0 ? timestamp_ns - thread_state.prev_timestamp_ns
@@ -1172,18 +1177,18 @@ inline void DGTrace::TracingFacility::workerThreadFunc( TracingFacility *me )
 				// remove matching start record from stack top, if any
 				if( thread_state.stack.size() > 0 && rec.match( thread_state.stack.back() ) )
 				{
-					section_duration_ns = timestamp_ns - me->to_ns( thread_state.stack.back().m_timeStamp );
+					section_duration_ns = timestamp_ns - to_ns( thread_state.stack.back().m_timeStamp );
 					thread_state.stack.pop_back();
 					indent_level--;
 				}
 				else
 					indent_level = -1;  // start/stop do not match: unknown indent
 
-				if( me->m_trace_registry.m_TraceStatisticsEnable && indent_level >= 0 )
+				if( m_trace_registry.m_TraceStatisticsEnable && indent_level >= 0 )
 				{
-					auto it = me->m_trace_stats.find( rec.m_traceName );
-					if( it == me->m_trace_stats.end() )
-						me->m_trace_stats[ rec.m_traceName ] =
+					auto it = m_trace_stats.find( rec.m_traceName );
+					if( it == m_trace_stats.end() )
+						m_trace_stats[ rec.m_traceName ] =
 							{ section_duration_ns, section_duration_ns, section_duration_ns, 1 };
 					else
 					{
@@ -1207,7 +1212,7 @@ inline void DGTrace::TracingFacility::workerThreadFunc( TracingFacility *me )
 			[          11.0 :     1.0] AA [5] \ Trace Stop (Trace message)
 			*/
 
-			if( me->m_outStream->good() )
+			if( m_outStream->good() )
 			{
 				char sbuf[ DG_LOG_TRACE_BUF_SIZE ];
 
@@ -1247,12 +1252,16 @@ inline void DGTrace::TracingFacility::workerThreadFunc( TracingFacility *me )
 				}
 
 				if( printf_ret > 0 )
+				{
+					printf_ret = std::min( sizeof( sbuf ) - 1, (size_t)printf_ret );
 					// note: '<<' stream operators are VERY slow even in release build;
 					// using them for printing to stream degrades performance ten-fold
-					me->m_outStream->write( sbuf, std::min( sizeof( sbuf ) - 1, (size_t)printf_ret ) );
+					m_outStream->write( sbuf, printf_ret );
+					printed_size += printf_ret;
+				}
 			}
 
-			if( me->m_trace_registry.m_TraceToStdout )
+			if( m_trace_registry.m_TraceToStdout )
 			{
 				char sbuf[ DG_LOG_TRACE_BUF_SIZE ];
 
@@ -1264,7 +1273,7 @@ inline void DGTrace::TracingFacility::workerThreadFunc( TracingFacility *me )
 					"\"level\":\"%s\","
 					"\"thread\":\"%s\","
 					"\"message\":\"%s\",",
-					DG::TimeHelper::stringTimeRFC3339( rec.m_timeStamp + me->m_clockAdjustment_ns, true ).c_str(),
+					DG::TimeHelper::stringTimeRFC3339( rec.m_timeStamp + m_clockAdjustment_ns, true ).c_str(),
 					rec.m_level == lvlFull ? "DEBUG" : ( rec.m_level >= lvlBasic ? "INFO" : "ERROR" ),
 					thread_state.thread_label,
 					rec.m_traceName );
@@ -1315,26 +1324,26 @@ inline void DGTrace::TracingFacility::workerThreadFunc( TracingFacility *me )
 			rec.m_type = TraceType::Invalid;  // clear record
 		}
 
-		if( me->m_trace_registry.m_TraceToStdout )
+		if( m_trace_registry.m_TraceToStdout )
 			std::cout.flush();
 
-		if( me->m_do_flush )
+		if( m_do_flush )
 		{
-			if( me->m_outStream->good() )
-				me->m_outStream->flush();
-			me->m_do_flush = false;
+			if( m_outStream->good() )
+				m_outStream->flush();
+			m_do_flush = false;
 		}
 		return std::make_tuple( lri, lspp );
 	};
 
-	std::unique_lock< std::mutex > lk( me->m_thread_mutex );
-	me->m_thread_cv.notify_one();  // notify ensureThreadRuns() that the thread is started
+	std::unique_lock< std::mutex > lk( m_thread_mutex );
+	m_thread_cv.notify_one();  // notify ensureThreadRuns() that the thread is started
 
 	for( ;; )
 	{
 		// sleep on CV
-		if( !me->m_poison )
-			auto wait_ret = me->m_thread_cv.wait_for( lk, std::chrono::milliseconds( 1000 ) );
+		if( !m_poison )
+			auto wait_ret = m_thread_cv.wait_for( lk, std::chrono::milliseconds( 1000 ) );
 		// here we own m_thread_mutex
 
 		//
@@ -1342,14 +1351,14 @@ inline void DGTrace::TracingFacility::workerThreadFunc( TracingFacility *me )
 		//
 
 		// cache shared vars:
-		const size_t wp_pool = me->m_stringPool.m_BufWP;  // string pool first (it is OK to release not whole pool)
-		const size_t rp_pool = me->m_stringPool.m_BufRP;
-		const size_t wp = me->m_traceBuf.m_BufWP;  // then trace buffer
-		const size_t rp = me->m_traceBuf.m_BufRP;
-		if( wp > rp || me->m_do_restart || me->m_do_flush )
+		const size_t wp_pool = m_stringPool.m_BufWP;  // string pool first (it is OK to release not whole pool)
+		const size_t rp_pool = m_stringPool.m_BufRP;
+		const size_t wp = m_traceBuf.m_BufWP;  // then trace buffer
+		const size_t rp = m_traceBuf.m_BufRP;
+		if( wp > rp || m_do_restart || m_do_flush )
 		{
-			me->ownStreamCheckOpen();  // open file stream if it is owned by facility and not opened yet or restart
-									   // it if requested
+			ownStreamCheckOpen();  // open file stream if it is owned by facility and not opened yet or restart
+								   // it if requested
 
 			size_t first_non_processed_trace;
 			size_t first_non_processed_string;
@@ -1357,17 +1366,24 @@ inline void DGTrace::TracingFacility::workerThreadFunc( TracingFacility *me )
 				first_non_processed_trace,
 				first_non_processed_string ) = tracePrintBuf( rp, wp, wp_pool, rp_pool );
 
+			if( printed_size > m_file_size_max )
+			{
+				// file size limit reached: do restart
+				m_do_restart = true;
+				printed_size = 0;
+			}
+
 			// reclaim processed records
-			me->m_stringPool.m_BufRP = first_non_processed_string;  // string pool first
-																	// (so when trace buffer is released, pool is ready)
-			me->m_traceBuf.m_BufRP = first_non_processed_trace;     // only then trace buffer
+			m_stringPool.m_BufRP = first_non_processed_string;  // string pool first
+																// (so when trace buffer is released, pool is ready)
+			m_traceBuf.m_BufRP = first_non_processed_trace;     // only then trace buffer
 		}
 
-		if( me->m_poison )  // request to terminate
+		if( m_poison )  // request to terminate
 			break;
 	}
 
-	me->ownStreamClose();  // close file stream if it is owned by facility and not closed yet
+	ownStreamClose();  // close file stream if it is owned by facility and not closed yet
 }
 
 #endif  // DG_TRACING_FACILITY_H

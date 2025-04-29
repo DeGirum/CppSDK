@@ -107,6 +107,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa42929543b289da22ae8559a55b1e797"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c742bbf7c4f9a1c4ff4a8db43c7f64d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1ModelParams.html#a3c742bbf7c4f9a1c4ff4a8db43c7f64d">ModelParams</a> (const std::string &amp;json_text)</td></tr>
 <tr class="separator:a3c742bbf7c4f9a1c4ff4a8db43c7f64d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b95474971c40db8379dd161e726eada"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1ModelParams.html#a2b95474971c40db8379dd161e726eada">ModelParams</a> (<a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> &amp;&amp;json_cfg)</td></tr>
+<tr class="separator:a2b95474971c40db8379dd161e726eada"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09195eb5d463ac9b682c623704d38f92"><td class="memItemLeft" align="right" valign="top"><a id="a09195eb5d463ac9b682c623704d38f92"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1ModelParams.html#a09195eb5d463ac9b682c623704d38f92">ModelParams</a> (<a class="el" href="classDG_1_1ModelParams.html">ModelParams</a> &amp;&amp;rhs)</td></tr>
 <tr class="memdesc:a09195eb5d463ac9b682c623704d38f92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move constructor. <br /></td></tr>
@@ -128,6 +130,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9712e82fd0176ff3c7fb3152e920abb6 inherit pub_methods_classDG_1_1ModelParamsReadAccess"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afec208ca905d9ccf726afef0312ad1eb inherit pub_methods_classDG_1_1ModelParamsReadAccess"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1ModelParamsReadAccess.html#afec208ca905d9ccf726afef0312ad1eb">jsonGet</a> () const</td></tr>
 <tr class="separator:afec208ca905d9ccf726afef0312ad1eb inherit pub_methods_classDG_1_1ModelParamsReadAccess"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab64fa9f9499b6759e9dfbb938afc1281 inherit pub_methods_classDG_1_1ModelParamsReadAccess"><td class="memItemLeft" align="right" valign="top"><a id="ab64fa9f9499b6759e9dfbb938afc1281"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1ModelParamsReadAccess.html#ab64fa9f9499b6759e9dfbb938afc1281">modelInputSizeGet</a> () const</td></tr>
+<tr class="memdesc:ab64fa9f9499b6759e9dfbb938afc1281 inherit pub_methods_classDG_1_1ModelParamsReadAccess"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper method: get model input size. <br /></td></tr>
+<tr class="separator:ab64fa9f9499b6759e9dfbb938afc1281 inherit pub_methods_classDG_1_1ModelParamsReadAccess"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb027fe86b4a2cd59c8cdaeb3a97a3c1 inherit pub_methods_classDG_1_1ModelParamsReadAccess"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1ModelParamsReadAccess.html#abb027fe86b4a2cd59c8cdaeb3a97a3c1">ModelParamsReadAccess</a> (const <a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> &amp;config)</td></tr>
 <tr class="separator:abb027fe86b4a2cd59c8cdaeb3a97a3c1 inherit pub_methods_classDG_1_1ModelParamsReadAccess"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af836d4b00e8906f767fdb278b1f3d774 inherit pub_methods_classDG_1_1ModelParamsReadAccess"><td class="memItemLeft" align="right" valign="top">std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDG_1_1ModelParamsReadAccess.html#af836d4b00e8906f767fdb278b1f3d774">modelShapeGet</a> (size_t inp_idx, size_t expected_size)</td></tr>
@@ -184,7 +190,7 @@ class DG::ModelParams&lt; Base, &gt;</h3>
 </dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="acddd8e39bf78d7a2fe47eadb2eee4cd4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acddd8e39bf78d7a2fe47eadb2eee4cd4">&#9670;&nbsp;</a></span>ModelParams() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#acddd8e39bf78d7a2fe47eadb2eee4cd4">&#9670;&nbsp;</a></span>ModelParams() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -218,7 +224,7 @@ template&lt;class Base  = ModelParamsReadAccess, std::enable_if_t&lt; std::is_ba
 </div>
 </div>
 <a id="a3c742bbf7c4f9a1c4ff4a8db43c7f64d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3c742bbf7c4f9a1c4ff4a8db43c7f64d">&#9670;&nbsp;</a></span>ModelParams() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c742bbf7c4f9a1c4ff4a8db43c7f64d">&#9670;&nbsp;</a></span>ModelParams() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -252,7 +258,7 @@ template&lt;class Base  = ModelParamsReadAccess, std::enable_if_t&lt; std::is_ba
 </div>
 </div>
 <a id="aa42929543b289da22ae8559a55b1e797"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa42929543b289da22ae8559a55b1e797">&#9670;&nbsp;</a></span>ModelParams() <span class="overload">[3/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aa42929543b289da22ae8559a55b1e797">&#9670;&nbsp;</a></span>ModelParams() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -279,6 +285,40 @@ template&lt;class Base  = ModelParamsReadAccess, std::enable_if_t&lt; std::is_ba
 <p>Constructor. Creates model parameter collection from given JSON array </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">json_cfg</td><td>- JSON array with model parameters. It will be copied into internal JSON array. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2b95474971c40db8379dd161e726eada"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b95474971c40db8379dd161e726eada">&#9670;&nbsp;</a></span>ModelParams() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Base  = ModelParamsReadAccess, std::enable_if_t&lt; std::is_base_of_v&lt; ModelParamsReadAccess, Base &gt;, bool &gt;  = false&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classDG_1_1ModelParams.html">DG::ModelParams</a>&lt; Base, &gt;::<a class="el" href="classDG_1_1ModelParams.html">ModelParams</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceDG.html#a6bac255dbb312a6956fbd5a2d0447d95">json</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>json_cfg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Constructor with move semantic. Creates model parameter collection from given JSON array </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">json_cfg</td><td>- JSON array with model parameters. It will be moved into internal JSON array. </td></tr>
   </table>
   </dd>
 </dl>

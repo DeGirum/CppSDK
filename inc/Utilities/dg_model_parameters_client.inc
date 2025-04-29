@@ -22,6 +22,7 @@
 	_( DeviceType,					SECT_DEVICE,			std::string,				"CPU",			false,	true,	true,	None	) \
 	_( RuntimeAgent,				SECT_DEVICE,			std::string,				"N2X",			false,	true,	true,	None	) \
 	_( EagerBatchSize,				SECT_DEVICE,			size_t,						8,				false,	true,	true,	None	) \
+	_( DeviceTimeout_ms,			SECT_DEVICE,			double,						-1,				false,	true,	false,	None	) \
 	\
 	_( ModelInputN,					SECT_MODEL_PARAMETERS,	int,						0,				false,	false,	false,	None	) \
 	_( ModelInputH,					SECT_MODEL_PARAMETERS,	int,						0,				false,	false,	false,	None	) \

@@ -110,7 +110,11 @@ void ClientAsio::openStream(
 
 	json j_request = json( { { "op", main_protocol::commands::STREAM }, { "name", model_name } } );
 	if( !additional_model_parameters.empty() )
-		j_request[ "config" ] = additional_model_parameters;
+	{
+		ModelParamsWriter mparams( additional_model_parameters );
+		mparams.DeviceTimeout_ms_set( m_inference_timeout_ms );
+		j_request[ "config" ] = mparams.jsonGet();
+	}
 
 	const auto request = DG::messagePrepare( j_request );
 
