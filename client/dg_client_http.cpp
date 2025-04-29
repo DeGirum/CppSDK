@@ -144,6 +144,8 @@ private:
 		DG_TRC_BLOCK( AIClientHttp, workerThread, DGTrace::lvlFull );
 		const int poll_interval_ms = 50;
 
+		DG_THREAD_NAME( "DGWebSocketClient" );
+
 		while( me->m_ews_client->getReadyState() != easywsclient::WebSocket::CLOSED )
 		{
 			DG_TRC_POINT( AIClientHttp, workerThread : loop, DGTrace::lvlFull );
@@ -375,7 +377,9 @@ void ClientHttp::openStream(
 		WebSocketClient::urlCompose( m_server_address.ip, m_server_address.port, "/v1/stream" ) );
 
 	// configure connection
-	json req = { { "name", model_name }, { "config", additional_model_parameters } };
+	ModelParamsWriter mparams( additional_model_parameters );
+	mparams.DeviceTimeout_ms_set( m_inference_timeout_ms );
+	json req = { { "name", model_name }, { "config", mparams.jsonGet() } };
 	const json resp = DG::JsonHelper::jsonDeserializeStr(
 		m_ws_client->textSendReceive( req.dump(), (int)m_connection_timeout_ms ) );
 	DG::JsonHelper::errorCheck(

@@ -375,6 +375,23 @@ public:
 		return count;
 	}
 
+	/// Get available space in given directory
+	/// \param[in] dir - directory path
+	/// \return available space in bytes or -1 if failed to get the information
+	static size_t space_available( const std::string &dir )
+	{
+		try
+		{
+			auto spaceInfo = std::filesystem::space( dir );
+			return spaceInfo.available;
+		}
+		catch( const std::exception &e )
+		{
+			return size_t( -1 );
+		}
+	}
+
+
 	/// Set current working directory to current executable location directory
 	/// \return original current working directory
 	static std::string cwd2exe()
@@ -485,7 +502,7 @@ public:
 		if( cpu_limit_env != nullptr && *cpu_limit_env != '\0' )
 			return std::min( host_cpu_limit, std::max( 2, std::stoi( cpu_limit_env ) ) );
 		else
-			return host_cpu_limit;
+			return std::max( 1, host_cpu_limit );
 	}
 
 	/// Get upper limit for the physical system memory in bytes

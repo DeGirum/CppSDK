@@ -305,7 +305,7 @@ public:
 		m_name = name;
 		m_shape = shape;
 		m_quant_params = quant_params;
-		m_linear_size = std::accumulate( m_shape.begin(), m_shape.end(), (size_t)1, std::multiplies< size_t >() );
+		m_linear_size = linearSizeCalc( m_shape );
 		m_el_size = sizeof( T );
 
 		m_type = &typeid( T );
@@ -496,6 +496,44 @@ case type_id:                      \
 		null();
 	}
 
+	/// Reshape tensor to given shape and element type
+	/// \param[in] new_shape - new shape vector
+	/// \param[in] new_type - new element type, if DG_UNDEFINED, use current type
+	/// Linear size after reshape must be the same as before reshape.
+	void reshapeTo( const shape_t &new_shape, DGType new_type = DG_UNDEFINED )
+	{
+		if( new_type == DG_UNDEFINED )
+			new_type = dataTypeGet();
+		const size_t new_el_size = SizeOf( new_type );
+		const size_t new_linear_size = new_el_size * linearSizeCalc( new_shape );
+
+		if( new_linear_size != linearSizeGet_bytes() )
+			DG_ERROR(
+				DG_FORMAT(
+					"Cannot reshape the tensor: incompatible linear sizes. Original linear size of shape "
+					<< shapeStringGet( new_shape ) << " of type " << Type2String( dataTypeGet() ) << " is "
+					<< linearSizeGet_bytes() << ", while the linear size after reshaping to shape "
+					<< shapeStringGet( new_shape ) << " of type " << Type2String( new_type ) << " is "
+					<< new_linear_size ),
+				ErrBadParameter );
+
+		m_shape = new_shape;
+		m_el_size = new_el_size;
+
+		switch( new_type )
+		{
+#define _( type_id, ctype, width ) \
+case type_id:                      \
+	m_type = &typeid( ctype );     \
+	break;
+			DG_TYPE_LIST
+#undef _
+		default:
+			DG_ERROR( "Unsupported data type", ErrBadParameter );
+			break;
+		}
+	}
+
 	/// Reshape tensor to given shape
 	/// When new shape is bigger than current, shape is appended with unity values
 	/// When new shape is smaller than current, shape is reduced,
@@ -576,7 +614,7 @@ case type_id:                      \
 		m_shape = new_shape;
 	}
 
-	/// Reinterpret shape tensor to 3d to be used for YOLO detection/pose/segnentation models
+	/// Reinterpret shape tensor to 3d to be used for YOLO detection/pose/segmentation models
 	/// The last dimension is interpreted as channels, and all other dimensions are flattened
 	/// 1xHxWxC -> 1x(H*W)xC
 	/// HxWx1xC -> 1x(H*W)xC
@@ -603,7 +641,7 @@ case type_id:                      \
 	void reinterpretShapeScaled( size_t last_dim, float32_t scale )
 	{
 		if( m_shape[ 2 ] == last_dim )
-			m_shape = { 1, size_t( m_shape[ 1 ] * scale ), size_t( m_shape[ 2 ] / scale ) };
+			m_shape = { 1, size_t( std::round( m_shape[ 1 ] * scale ) ), size_t( std::round( m_shape[ 2 ] / scale ) ) };
 	}
 
 	/// Quantize tensor according to current quantization settings from type T_IN to type T_OUT
@@ -691,6 +729,13 @@ case type_id:                      \
 		return m_quant_params;
 	}
 
+	/// Set quantization parameters
+	/// \param[in] qp - new quantization parameters
+	void quantParamsSet( const quant_params_t &qp )
+	{
+		m_quant_params = qp;
+	}
+
 	/// Return non-const typed pointer to underlying linear buffer.
 	/// Returns nullptr if template type does not match actual runtime tensor element type
 	template< typename T >
@@ -746,6 +791,32 @@ case type_id:                      \
 		DG_TYPE_LIST
 #undef _
 		return DG_UNDEFINED;
+	}
+
+	/// Calculate tensor linear size by shape
+	/// \param[in] shape - tensor shape vector
+	/// \return linear size in elements of current type
+	static inline size_t linearSizeCalc( const shape_t &shape )
+	{
+		return std::accumulate( shape.begin(), shape.end(), (size_t)1, std::multiplies< size_t >() );
+	}
+
+	/// Construct shape string in "dim1xdim2x..." format
+	/// \param[in] shape - tensor shape vector
+	/// \return shape string
+	static inline std::string shapeStringGet( const shape_t &shape )
+	{
+		std::string ret;
+		for( auto dim : shape )
+			ret += ( shape.empty() ? "" : "x" ) + std::to_string( dim );
+		return ret;
+	}
+
+	/// Construct shape string in "dim1xdim2x..." format
+	/// \return shape string
+	std::string shapeStringGet() const
+	{
+		return shapeStringGet( m_shape );
 	}
 
 	/// Return numpy-compatible type string from given DG type string
