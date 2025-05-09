@@ -385,7 +385,7 @@ public:
 			auto spaceInfo = std::filesystem::space( dir );
 			return spaceInfo.available;
 		}
-		catch( const std::exception &e )
+		catch( const std::exception & )
 		{
 			return size_t( -1 );
 		}

@@ -378,7 +378,7 @@ void ClientHttp::openStream(
 
 	// configure connection
 	ModelParamsWriter mparams( additional_model_parameters );
-	mparams.DeviceTimeout_ms_set( m_inference_timeout_ms );
+	mparams.DeviceTimeout_ms_set( double( m_inference_timeout_ms ) );
 	json req = { { "name", model_name }, { "config", mparams.jsonGet() } };
 	const json resp = DG::JsonHelper::jsonDeserializeStr(
 		m_ws_client->textSendReceive( req.dump(), (int)m_connection_timeout_ms ) );

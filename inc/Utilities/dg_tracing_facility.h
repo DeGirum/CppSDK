@@ -1253,7 +1253,7 @@ inline void DGTrace::TracingFacility::workerThreadFunc()
 
 				if( printf_ret > 0 )
 				{
-					printf_ret = std::min( sizeof( sbuf ) - 1, (size_t)printf_ret );
+					printf_ret = std::min( int( sizeof( sbuf ) ) - 1, printf_ret );
 					// note: '<<' stream operators are VERY slow even in release build;
 					// using them for printing to stream degrades performance ten-fold
 					m_outStream->write( sbuf, printf_ret );
