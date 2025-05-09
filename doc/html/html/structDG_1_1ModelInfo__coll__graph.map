@@ -1,0 +1,6 @@
+<map id="DG::ModelInfo" name="DG::ModelInfo">
+<area shape="rect" id="node1" title="ModelInfo is the model identification structure. It keeps AI model key attributes." alt="" coords="69,261,183,288"/>
+<area shape="rect" id="node2" href="$classDG_1_1ModelParams.html" title=" " alt="" coords="5,157,247,199"/>
+<area shape="rect" id="node3" href="$classDG_1_1ModelParamsWriteAccess.html" title="ModelParamsWriteAccess is read/write accessor to model parameters." alt="" coords="17,81,235,108"/>
+<area shape="rect" id="node4" href="$classDG_1_1ModelParamsReadAccess.html" title="ModelParamsReadAccess is read&#45;only accessor to model parameters." alt="" coords="18,5,234,32"/>
+</map>

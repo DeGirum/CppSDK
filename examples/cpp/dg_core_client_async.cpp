@@ -2,7 +2,7 @@
 /// \file dg_core_client_async.cpp
 /// \brief DG Core client command line utility with asynchronous mode
 ///
-/// Copyright 2021 DeGirum Corporation
+/// Copyright 2025 DeGirum Corporation
 ///
 /// This file contains implementation of AI client command line utility.
 /// This utility is used to communicate with DeGirum AI Server to 
@@ -18,6 +18,15 @@
 /// 3. Send shutdown packet to AI server (works only for servers on local loopback address)
 ///    Usage: dg_core_client --ip {server address} --shutdown
 ///
+/// To run inference of a model from a cloud zoo, the following command line options should be used:
+///    dg_core_client --ip {server address} --model {extended model name} --out {result file} --url {cloud zoo URL}
+///       --token {cloud zoo token} {frame file 1} .. {frame file N}
+/// Here
+///    {extended model name} is the name of the model in the cloud zoo in a form "<organization>/<zoo>/<model name>",
+///    e.g. "degirum/public/yolov8n_relu6_car--640x640_float_openvino_multidevice_1"
+///    {cloud zoo URL} is the URL of the cloud zoo server (default is "https://hub.degirum.com")
+///    {cloud zoo token} is the token to access the cloud zoo
+///
 
 #include <iostream>
 #include <fstream>
@@ -29,6 +38,8 @@
 #define CMD_IPADDR		"ip"		//!< server IP address
 #define CMD_MODEL		"model"		//!< name of ML model to run
 #define CMD_OUT			"out"		//!< name of output file
+#define CMD_CLOUD_URL	"url"		//!< cloud zoo server URL (optional)
+#define CMD_CLOUD_TOKEN	"token"		//!< cloud zoo token (optional)
 #define CMD_SHUTDOWN	"shutdown"	//!< shutdown server
 #define CMD_LIST		"list"		//!< list available models
 
@@ -46,11 +57,13 @@ int main( int argc, char **argv )
 		std::cout <<
 			"\nPerform inference tasks on remote DG Core TCP server\n\n"
 			"Parameters:\n"
-			"  -" CMD_IPADDR " <IP address:port> - IP address of the server to work with (default 127.0.0.1)\n"
-			"  -" CMD_MODEL " <model name> - name of ML model from model zoo to run\n"
-			"  -" CMD_OUT " <output file> - name of output file to save results (default - print to console)\n"
-			"  -" CMD_LIST " - print list of available models\n"
-			"  -" CMD_SHUTDOWN " - shutdown server\n"
+			"  --" CMD_IPADDR " <IP address:port> - IP address of the server to work with (default 127.0.0.1)\n"
+			"  --" CMD_MODEL " <model name> - name of ML model from model zoo to run\n"
+			"  --" CMD_OUT " <output file> - name of output file to save results (default - print to console)\n"
+			"  --" CMD_CLOUD_URL " <url> - cloud zoo server URL (default - https://hub.degirum.com)\n"
+			"  --" CMD_CLOUD_TOKEN "<token> - cloud zoo token (needed only for cloud models)\n"
+			"  --" CMD_LIST " - print list of available models\n"
+			"  --" CMD_SHUTDOWN " - shutdown server\n"
 			"  <files> - space-separated list of files to run inference on\n\n";
 		return 0;
 	}
@@ -61,6 +74,8 @@ int main( int argc, char **argv )
 		const std::string server_ip = cmd_args.getCmdOption( CMD_IPADDR, "127.0.0.1" );
 		const std::string model_name = cmd_args.getCmdOption( CMD_MODEL, "" );
 		const std::string out_file = cmd_args.getCmdOption( CMD_OUT, "" );
+		const std::string cloud_url = cmd_args.getCmdOption( CMD_CLOUD_URL, "" );
+		const std::string cloud_token = cmd_args.getCmdOption( CMD_CLOUD_TOKEN, "" );
 		const std::vector< std::string > files = cmd_args.getNonOptions();
 		const bool do_shutdown = cmd_args.cmdOptionExists( CMD_SHUTDOWN );
 		const bool do_list = cmd_args.cmdOptionExists( CMD_LIST );
@@ -97,11 +112,6 @@ int main( int argc, char **argv )
 		if( files.size() == 0 )
 			throw std::runtime_error( "No input files specified" );
 
-		// find model in the model zoo by model name substring
-		auto model_id = DG::modelFind( server_ip, { model_name } );
-		if( model_id.name.empty() )
-			throw std::runtime_error( "Model '" + model_name + "' is not found in model zoo" );
-
 		//
 		// define user callback, which will handle inference results
 		//
@@ -117,18 +127,23 @@ int main( int argc, char **argv )
 					.write( response_string.c_str(), response_string.size() );
 		};
 
+		DG::ModelParamsWriter model_params;
+		model_params.CloudToken_set( cloud_token );
+		model_params.CloudURL_set( cloud_url );
+
 		//
 		// handle 'run inference' command
 		//
+
 		std::cout <<
 			"\n\nRunning inference\n"
 			"  Server: " << server_ip << "\n"
-			"  Model: " << model_id.name << "\n";
+			"  Model: " << model_name << "\n";
 
 		// create AI model instance: use async. client
+		DG::AIModelAsync model( server_ip, model_name, callback, model_params );
 
 		// iterate over all input files
-		DG::AIModelAsync model( server_ip, model_id.name, callback );
 		for( size_t fi = 0; fi < files.size(); fi++ )
 		{
 			std::cout << "File: " << files[ fi ] << "...\n";

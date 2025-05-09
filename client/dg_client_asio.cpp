@@ -112,7 +112,7 @@ void ClientAsio::openStream(
 	if( !additional_model_parameters.empty() )
 	{
 		ModelParamsWriter mparams( additional_model_parameters );
-		mparams.DeviceTimeout_ms_set( m_inference_timeout_ms );
+		mparams.DeviceTimeout_ms_set( double( m_inference_timeout_ms ) );
 		j_request[ "config" ] = mparams.jsonGet();
 	}
 

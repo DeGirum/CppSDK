@@ -63,19 +63,10 @@ using vec_int = std::vector< int >;          //!< vector of integers
 using vec_str = std::vector< std::string >;  //!< vector of strings
 using vec_sz = std::vector< size_t >;        //!< vector of size_t
 using map_str_vec = std::map< std::string, std::vector< int32_t > >;
+using vec3d_int = std::vector< std::vector< std::vector< int > > >;  //!< 3D vector of integers
 
-// List of all configuration parameters. Depending on the build, either full list or shorter client-side list is
-// included.
-#if defined( FRAMEWORK_PATH ) && !defined( DG_CLIENT_BUILD )
-	#include "dg_model_parameters_client.inc"  // parameters visible to client (should go first)
-	#include "dg_model_parameters_all.inc"     // parameters for framework builds
-	#define DG_MODEL_PARAMS_LIST    \
-		DG_MODEL_PARAMS_LIST_CLIENT \
-		DG_MODEL_PARAMS_LIST_FRAMEWORK
-#else
-	#include "dg_model_parameters_client.inc"
-	#define DG_MODEL_PARAMS_LIST DG_MODEL_PARAMS_LIST_CLIENT
-#endif
+// List of all configuration parameters
+#include "dg_model_parameters.inc"
 
 /// \brief ModelParamsReadAccess is read-only accessor to model parameters.
 ///
