@@ -511,7 +511,7 @@ case type_id:                      \
 			DG_ERROR(
 				DG_FORMAT(
 					"Cannot reshape the tensor: incompatible linear sizes. Original linear size of shape "
-					<< shapeStringGet( new_shape ) << " of type " << Type2String( dataTypeGet() ) << " is "
+					<< shapeStringGet( m_shape ) << " of type " << Type2String( dataTypeGet() ) << " is "
 					<< linearSizeGet_bytes() << ", while the linear size after reshaping to shape "
 					<< shapeStringGet( new_shape ) << " of type " << Type2String( new_type ) << " is "
 					<< new_linear_size ),
@@ -612,6 +612,145 @@ case type_id:                      \
 			new_shape.push_back( m_shape[ i ] );
 
 		m_shape = new_shape;
+	}
+
+	/// Wrapper function for NHWCToNCHW<T>()
+	void NHWCToNCHW()
+	{
+		switch( dataTypeGet() )
+		{
+//! @cond Doxygen_Suppress
+#define _( id, type, width ) \
+case id:                     \
+	{                        \
+		NHWCToNCHW< type >(); \
+		break;               \
+	}
+			DG_TYPE_LIST
+#undef _
+			//! @endcond
+		default:
+			DG_ERROR_TRUE( 0 ) << "The type of tensor is not supported: " << DG::Type2String( dataTypeGet() );
+		}
+	}
+
+	/// Roll NHWC -> NCHW
+	template< typename T >
+	void NHWCToNCHW()
+	{
+		// allocate memory for intermediate buffer
+		const size_t buf_size = m_linear_size * m_el_size;
+		void *rolled_buf = std::malloc( buf_size );
+
+		// multiply all elements of m_shape
+		const size_t size = std::accumulate( m_shape.begin(), m_shape.end(), 1, std::multiplies< size_t >() );
+		const size_t stride = m_shape.back();  // C dimension
+		const size_t numstrides = size / stride;
+
+		if( sizeof( T ) == 1 && numstrides % 8 == 0 && stride == 3 )
+		{
+			struct u64_3
+			{
+				uint64_t a;
+				uint64_t b;
+				uint64_t c;
+			};
+
+			auto *out = static_cast< uint64_t * >( rolled_buf );
+			const auto *in = static_cast< const u64_3 * >( m_linear_buffer );
+			const size_t numstrides64 = numstrides / 8;
+
+			for( auto i = 0; i < numstrides64; i++ )
+			{
+				const auto v = in[ i ];
+
+				// clang-format off
+
+				out[ i ] =
+					( ( ( v.a >> 0x00 ) & 0xFF ) << 0x00 ) | ( ( ( v.a >> 0x18 ) & 0xFF ) << 0x08 ) |
+					( ( ( v.a >> 0x30 ) & 0xFF ) << 0x10 ) | ( ( ( v.b >> 0x08 ) & 0xFF ) << 0x18 ) |
+					( ( ( v.b >> 0x20 ) & 0xFF ) << 0x20 ) | ( ( ( v.b >> 0x38 ) & 0xFF ) << 0x28 ) |
+					( ( ( v.c >> 0x10 ) & 0xFF ) << 0x30 ) | ( ( ( v.c >> 0x28 ) & 0xFF ) << 0x38 );
+
+				out[ numstrides64 + i ] =
+					( ( ( v.a >> 0x08 ) & 0xFF ) << 0x00 ) | ( ( ( v.a >> 0x20 ) & 0xFF ) << 0x08 ) |
+					( ( ( v.a >> 0x38 ) & 0xFF ) << 0x10 ) | ( ( ( v.b >> 0x10 ) & 0xFF ) << 0x18 ) |
+					( ( ( v.b >> 0x28 ) & 0xFF ) << 0x20 ) | ( ( ( v.c >> 0x00 ) & 0xFF ) << 0x28 ) |
+					( ( ( v.c >> 0x18 ) & 0xFF ) << 0x30 ) | ( ( ( v.c >> 0x30 ) & 0xFF ) << 0x38 );
+
+				out[ 2 * numstrides64 + i ] =
+					( ( ( v.a >> 0x10 ) & 0xFF ) << 0x00 ) | ( ( ( v.a >> 0x28 ) & 0xFF ) << 0x08 ) |
+					( ( ( v.b >> 0x00 ) & 0xFF ) << 0x10 ) | ( ( ( v.b >> 0x18 ) & 0xFF ) << 0x18 ) |
+					( ( ( v.b >> 0x30 ) & 0xFF ) << 0x20 ) | ( ( ( v.c >> 0x08 ) & 0xFF ) << 0x28 ) |
+					( ( ( v.c >> 0x20 ) & 0xFF ) << 0x30 ) | ( ( ( v.c >> 0x38 ) & 0xFF ) << 0x38 );
+
+				// clang-format on
+			}
+		}
+		else
+		{
+			auto *out = static_cast< T * >( rolled_buf );
+			const auto *in = static_cast< const T * >( m_linear_buffer );
+
+			for( auto i = 0; i < numstrides; ++i )
+				for( auto c = 0; c < stride; ++c )
+					out[ c * numstrides + i ] = in[ i * stride + c ];
+		}
+
+		std::memcpy( m_linear_buffer, rolled_buf, buf_size );
+
+		// free intermediate buffer
+		std::free( rolled_buf );
+
+		std::rotate( m_shape.begin() + 1, m_shape.begin() + 3, m_shape.end() );
+	}
+
+	/// Wrapper function for NCHWToNHWC<T>()
+	void NCHWToNHWC()
+	{
+		switch( dataTypeGet() )
+		{
+//! @cond Doxygen_Suppress
+#define _( id, type, width )  \
+case id:                      \
+	{                         \
+		NCHWToNHWC< type >(); \
+		break;                \
+	}
+			DG_TYPE_LIST
+#undef _
+			//! @endcond
+		default:
+			DG_ERROR_TRUE( 0 ) << "The type of tensor is not supported: " << DG::Type2String( dataTypeGet() );
+		}
+	}
+
+	/// Roll NCHW -> NHWC
+	template< typename T >
+	void NCHWToNHWC()
+	{
+		// allocate memory for intermediate buffer
+		const size_t buf_size = m_linear_size * m_el_size;
+		void *rolled_buf = std::malloc( buf_size );
+
+		// multiply all elements of m_shape
+		const size_t size = std::accumulate( m_shape.begin(), m_shape.end(), 1, std::multiplies< size_t >() );
+		const size_t stride = m_shape[ 1 ];  // C dimension
+		const size_t numstrides = size / stride;
+
+		auto *out = static_cast< T * >( rolled_buf );
+		const auto *in = static_cast< const T * >( m_linear_buffer );
+
+		for( auto i = 0; i < numstrides; ++i )
+			for( auto c = 0; c < stride; ++c )
+				out[ i * stride + c ] = in[ c * numstrides + i ];
+
+		std::memcpy( m_linear_buffer, rolled_buf, buf_size );
+
+		// free intermediate buffer
+		std::free( rolled_buf );
+
+		std::rotate( m_shape.begin() + 1, m_shape.begin() + 2, m_shape.end() );
 	}
 
 	/// Reinterpret shape tensor to 3d to be used for YOLO detection/pose/segmentation models

@@ -103,10 +103,14 @@
 	_( OutputClassIDAdjustment,	SECT_POST_PROCESS,		int,				0,							false,	false,	true,	None				) \
 	_( OutputYoloAnchors,		SECT_POST_PROCESS,		DG::vec3d_int,		DG::vec3d_int(0),			false,	false,	true,	None				) \
 	_( OutputYoloStrides,		SECT_POST_PROCESS,		DG::vec_int,		DG::vec_int({8, 16, 32}),	false,	false,	true,	None				) \
-	_( YScale,					SECT_POST_PROCESS,		double,				1,							true,	false,	false,	None				) \
-	_( XScale,					SECT_POST_PROCESS,		double,				1,							true,	false,	false,	None				) \
-	_( HScale,					SECT_POST_PROCESS,		double,				1,							true,	false,	false,	None				) \
-	_( WScale,					SECT_POST_PROCESS,		double,				1,							true,	false,	false,	None				) \
+	_( OutputYoloRegMax,		SECT_POST_PROCESS,		int,				16,							false,	false,	false,	None				) \
+	_( OutputYoloBoxScales,		SECT_POST_PROCESS,		DG::vec_flt,		DG::vec_flt(),				false,	false,	false,	None				) \
+	_( OutputShapePerLandmark,	SECT_POST_PROCESS,		int,				3,							false,	false,	false,	None				) \
+	_( OutputTensorLayout,		SECT_POST_PROCESS,		std::string,		"NHWC",						false,	false,	true,	None				) \
+	_( YScale,					SECT_POST_PROCESS,		double,				1,							false,	false,	false,	None				) \
+	_( XScale,					SECT_POST_PROCESS,		double,				1,							false,	false,	false,	None				) \
+	_( HScale,					SECT_POST_PROCESS,		double,				1,							false,	false,	false,	None				) \
+	_( WScale,					SECT_POST_PROCESS,		double,				1,							false,	false,	false,	None				) \
 	_( NMSRadius,				SECT_POST_PROCESS,		double,				10,							false,	false,	false,	None				) \
 	_( Stride,					SECT_POST_PROCESS,		int,				16,							false,	false,	false,	None				) \
 	_( PoseThreshold,			SECT_POST_PROCESS,		double,				0.8,						false,	true,	true,	None				) \

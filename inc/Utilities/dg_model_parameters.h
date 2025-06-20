@@ -35,7 +35,7 @@ namespace DG
 
 /// The most current version of JSON model configuration, supported by this version of software.
 /// Increment it each time you change any parameter definition or add/remove any parameter
-const int MODEL_PARAMS_CURRENT_VERSION = 10;
+const int MODEL_PARAMS_CURRENT_VERSION = 11;
 
 /// The minimum compatible version of JSON model configuration, still supported by this version of software.
 /// Increase it when the software is modified such a way, that it stops supporting older JSON model configuration
