@@ -1,6 +1,0 @@
-<map id="DG::ModelParamsReadAccess" name="DG::ModelParamsReadAccess">
-<area shape="rect" id="node1" title="ModelParamsReadAccess is read&#45;only accessor to model parameters." alt="" coords="117,5,333,32"/>
-<area shape="rect" id="node2" href="$classDG_1_1ModelParams.html" title="ModelParams is model parameters collection with user&#45;defined access rights." alt="" coords="5,80,209,107"/>
-<area shape="rect" id="node3" href="$classDG_1_1ModelParamsWriteAccess.html" title="ModelParamsWriteAccess is read/write accessor to model parameters." alt="" coords="234,80,453,107"/>
-<area shape="rect" id="node4" href="$classDG_1_1ModelParams.html" title=" " alt="" coords="223,155,464,196"/>
-</map>

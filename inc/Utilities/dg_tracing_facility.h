@@ -1024,13 +1024,14 @@ inline void DGTrace::TracingFacility::ownStreamCheckOpen()
 {
 	if( m_isOwnStream && ( !m_outFileStream.is_open() || m_do_restart ) )
 	{
+		// close file stream first if it is opened
+		if( m_outFileStream.is_open() )
+			ownStreamClose();
+
 		// get full trace file path while preserving previous trace file content into .bak file
 		m_outFileName = DG::FileHelper::notUsedFileInDirBackupAndGet(
 			DGTrace::TraceGroupsRegistry::getTempPath(),
 			m_outFileName );
-
-		if( m_outFileStream.is_open() )
-			ownStreamClose();
 
 		m_outFileStream.open( m_outFileName.c_str(), std::ios_base::out | std::ios_base::trunc );
 
