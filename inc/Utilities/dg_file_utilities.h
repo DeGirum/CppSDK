@@ -149,7 +149,9 @@ public:
 	static size_t dir_size( const std::string &directory )
 	{
 		size_t size{ 0 };
-		for( const auto &entry : std::filesystem::recursive_directory_iterator( directory ) )
+		for( const auto &entry : std::filesystem::recursive_directory_iterator(
+				 directory,
+				 std::filesystem::directory_options::skip_permission_denied ) )
 		{
 			if( entry.is_regular_file() && !entry.is_symlink() )
 				size += entry.file_size();
@@ -363,7 +365,9 @@ public:
 		std::regex pattern( regex_pattern );
 
 		// Iterate recursively over the directory
-		for( const auto &entry : std::filesystem::recursive_directory_iterator( path ) )
+		for( const auto &entry : std::filesystem::recursive_directory_iterator(
+				 path,
+				 std::filesystem::directory_options::skip_permission_denied ) )
 		{
 			if( !entry.is_directory() )
 			{
@@ -390,7 +394,6 @@ public:
 			return size_t( -1 );
 		}
 	}
-
 
 	/// Set current working directory to current executable location directory
 	/// \return original current working directory
