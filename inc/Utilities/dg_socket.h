@@ -233,6 +233,98 @@ inline size_t read( socket_t &socket, BasicTensor *response_buffer, bool ignore_
 	return bytes_read;
 }
 
+template< typename T = char >
+size_t read_async(
+	io_context_t &io_context,
+	socket_t &socket,
+	std::vector< T > &response_buffer,
+	bool ignore_errors = false,
+	size_t timeout_ms = 0 )
+{
+	asio::error_code error;
+	size_t bytes_read = 0;
+	uint32_t big_endian_size = 0;
+	char *size_buffer = reinterpret_cast< char * >( &big_endian_size );
+	size_t packet_size = 0;
+
+	// Read first 4 bytes to get message length
+	asio::async_read(
+		socket,
+		asio::buffer( size_buffer, HEADER_SIZE ),
+		[ &error, &bytes_read ]( const asio::error_code &ec, std::size_t bytes_transferred ) {
+			error = ec;
+			bytes_read = bytes_transferred;
+		} );
+
+	// Run with timeout for header
+	if( io_context.stopped() )
+		io_context.restart();
+	if( timeout_ms > 0 )
+	{
+		auto completed = io_context.run_for( std::chrono::milliseconds( timeout_ms ) );
+		if( completed == 0 )
+		{
+			socket.cancel();
+			io_context.run();  // Complete the cancellation
+			if( !ignore_errors )
+				DG_ERROR(
+					"Timeout reading packet header from socket " + socket.remote_endpoint().address().to_string(),
+					ErrOperationFailed );
+			return 0;
+		}
+	}
+	else
+		io_context.run();
+
+	if( bytes_read == 0 )
+		return 0;
+	else if( bytes_read < HEADER_SIZE )
+		DG_ERROR(
+			"Fail to read incoming packet length from socket " + socket.remote_endpoint().address().to_string(),
+			ErrOperationFailed );
+	if( !throw_exception_if_error_is_serious( error, ignore_errors ) )
+		return 0;
+
+	// Use the length to allocate buffer
+	packet_size = ntohl( big_endian_size );
+	response_buffer.resize( packet_size );
+
+	// Read payload with timeout
+	error.clear();
+	asio::async_read(
+		socket,
+		asio::buffer( response_buffer ),
+		[ &error, &bytes_read ]( const asio::error_code &ec, std::size_t bytes_transferred ) {
+			error = ec;
+			bytes_read = bytes_transferred;
+		} );
+
+	// Run with timeout for payload
+	if( io_context.stopped() )
+		io_context.restart();
+	if( timeout_ms > 0 )
+	{
+		auto completed = io_context.run_for( std::chrono::milliseconds( timeout_ms ) );
+		if( completed == 0 )
+		{
+			socket.cancel();
+			io_context.run();  // Complete the cancellation
+			if( !ignore_errors )
+				DG_ERROR(
+					"Timeout reading packet payload from socket " + socket.remote_endpoint().address().to_string(),
+					ErrOperationFailed );
+			return 0;
+		}
+	}
+	else
+		io_context.run();
+
+	if( !throw_exception_if_error_is_serious( error, ignore_errors ) )
+		return 0;
+
+	return bytes_read;
+}
+
 /// Write data to socket, synchronously
 /// \param[in] socket - socket to use. Must be connected
 /// \param[in] request_buffer - data to send

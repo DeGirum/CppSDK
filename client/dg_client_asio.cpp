@@ -497,7 +497,7 @@ bool ClientAsio::transmitCommand( const std::string &source, const json &request
 	main_protocol::write( m_command_socket, request_buffer.data(), request_buffer.size() );
 
 	// Read reply message
-	main_protocol::read( m_command_socket, response_buffer );
+	main_protocol::read_async(m_io_context,  m_command_socket, response_buffer, false, m_connection_timeout_ms);
 
 	response = json::parse( response_buffer );
 	if( !response.is_object() )
