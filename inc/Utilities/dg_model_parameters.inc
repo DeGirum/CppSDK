@@ -27,6 +27,7 @@
 	_( DeviceMask,				SECT_DEVICE,			uint64_t,			-1,							false,	true,	false,	None				) \
 	_( DeviceTimeout_ms,		SECT_DEVICE,			double,				-1,							false,	true,	false,	None				) \
 	_( EagerBatchSize,			SECT_DEVICE,			size_t,				8,							false,	true,	true,	None				) \
+	_( ExtraDeviceParams,		SECT_DEVICE,			json,				json::object(),				false,	true,	false,	None				) \
 	_( ThreadPackSize,			SECT_DEVICE,			size_t,				2,							false,	true,	false,	None				) \
 	_( SimulateAbort,			SECT_DEVICE,			bool,				false,						false,	true,	false,	None				) \
 	_( SimulateFail,			SECT_DEVICE,			int,				0,							false,	true,	false,	None				) \
