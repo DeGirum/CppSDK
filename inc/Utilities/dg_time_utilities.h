@@ -118,7 +118,7 @@ public:
 		/// return elapsed time since object construction
 		/// \tparam T - desired time units
 		/// \return elapsed time in specified units
-		template< typename T >
+		template< typename T = std::ratio<1> >
 		double delta() const
 		{
 			return std::chrono::duration< double, T >( std::chrono::high_resolution_clock::now() - m_start ).count();

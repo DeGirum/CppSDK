@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['sectionget_278',['sectionGet',['../classDG_1_1ModelParamsReadAccess.html#a6be3cd28ca59710ee4643e1e2c8eb3f7',1,'DG::ModelParamsReadAccess']]],
-  ['sectionhashget_279',['sectionHashGet',['../classDG_1_1ModelParamsReadAccess.html#a0be9675c29e4eddeb680540f6d318bbb',1,'DG::ModelParamsReadAccess']]],
+  ['sectionget_279',['sectionGet',['../classDG_1_1ModelParamsReadAccess.html#a6be3cd28ca59710ee4643e1e2c8eb3f7',1,'DG::ModelParamsReadAccess']]],
   ['sectionsizeget_280',['sectionSizeGet',['../classDG_1_1ModelParamsReadAccess.html#a1a39ce6f01329b8d13d96625f02e5146',1,'DG::ModelParamsReadAccess']]],
   ['serveraddress_281',['ServerAddress',['../structDG_1_1ServerAddress.html#ae14eafc5099c46c034e53a91085fa66b',1,'DG::ServerAddress']]],
   ['serverping_282',['serverPing',['../namespaceDG.html#ad3da8b0c30361c9c3a073d10906e4871',1,'DG']]],
