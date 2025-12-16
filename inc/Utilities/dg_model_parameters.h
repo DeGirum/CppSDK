@@ -35,7 +35,7 @@ namespace DG
 
 /// The most current version of JSON model configuration, supported by this version of software.
 /// Increment it each time you change any parameter definition or add/remove any parameter
-const int MODEL_PARAMS_CURRENT_VERSION = 12;
+const int MODEL_PARAMS_CURRENT_VERSION = 13;
 
 /// The minimum compatible version of JSON model configuration, still supported by this version of software.
 /// Increase it when the software is modified such a way, that it stops supporting older JSON model configuration
@@ -162,9 +162,12 @@ public:
 	/// \param[in] section - section name to compute hash for
 	/// \param[in] idx - array index inside section object
 	/// \return std::hash for a given section
-	size_t sectionHashGet( const std::string &section, size_t idx = 0 ) const
+	size_t modelHashGet() const
 	{
-		return std::hash< std::string >()( sectionGet( section, idx ).dump() );
+		json cfg = sectionGet( SECT_MODEL_PARAMETERS.label );
+		if( Checksum_exist() )
+			cfg[ "Checksum" ] = Checksum();
+		return std::hash< std::string >()( cfg.dump() );
 	}
 
 	/// Access to underlying JSON array
@@ -330,7 +333,6 @@ protected:
 	}
 
 public:
-
 	/// Helper method: get model input size
 	size_t modelInputSizeGet() const
 	{
@@ -341,7 +343,7 @@ public:
 	/// \param[in] inp_idx - input index
 	/// \param[in] expected_size - expected size of the shape vector, 0 if not checked
 	/// \return model input shape vector
-	std::vector< size_t > modelShapeGet( size_t inp_idx, size_t expected_size )
+	std::vector< size_t > modelShapeGet( size_t inp_idx, size_t expected_size ) const
 	{
 		if( InputShape_exist( inp_idx ) && InputShape_get( inp_idx ).size() > 0 )
 		{
@@ -411,8 +413,7 @@ public:
 /// \param[in] value - parameter value to set
 /// \param[in] idx - array index inside section object
 #define _( name, section, c_type, default_val, mandatory, runtime, visible, fallback ) \
-	ModelParamsWriteAccess &name##_set( const c_type &value, size_t idx = 0 )          \
-	{                                                                                  \
+	ModelParamsWriteAccess &name##_set( const c_type &value, size_t idx = 0 ){         \
 		return paramSet< c_type >( section.label, #name, value, idx );                 \
 	}
 	DG_MODEL_PARAMS_LIST

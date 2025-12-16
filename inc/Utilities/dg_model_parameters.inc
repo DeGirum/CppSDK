@@ -85,10 +85,12 @@
 	_( CalibrationFilePath,		SECT_MODEL_PARAMETERS,	std::string,		"",							false,	false,	true,	None				) \
 	_( UseFloat16,				SECT_MODEL_PARAMETERS,	bool,				false,						false,	false,	true,	None				) \
 	_( CompilerOptions,			SECT_MODEL_PARAMETERS,	json,				json::object(),				false,	true,	false,	None				) \
+	_( LLMContextSize,			SECT_MODEL_PARAMETERS,	int,				4096,						false,	true,	false,	None				) \
 	_( LLMMaxNewTokens,			SECT_MODEL_PARAMETERS,	int,				100,						false,	true,	false,	None				) \
-	_( LLMTemperature,			SECT_MODEL_PARAMETERS,	float,				-1,							false,	true,	false,	None				) \
-	_( LLMTopK,					SECT_MODEL_PARAMETERS,	int,				-1,							false,	true,	false,	None				) \
-	_( LLMTopP,					SECT_MODEL_PARAMETERS,	float,				-1,							false,	true,	false,	None				) \
+	_( LLMTemperature,			SECT_MODEL_PARAMETERS,	float,				0.80f,						false,	true,	false,	None				) \
+	_( LLMTopK,					SECT_MODEL_PARAMETERS,	int,				40,							false,	true,	false,	None				) \
+	_( LLMTopP,					SECT_MODEL_PARAMETERS,	float,				0.95f,						false,	true,	false,	None				) \
+	_( LLMMinP,					SECT_MODEL_PARAMETERS,	float,				0.05f,						false,	true,	false,	None				) \
 	\
 	_( OutputPostprocessType,	SECT_POST_PROCESS,		std::string,		"None",						false,	true,	true,	None				) \
 	_( InferenceResultsType,	SECT_POST_PROCESS,		std::string,		"",							false,	true,	true,	None				) \
@@ -100,7 +102,7 @@
 	_( MaxClassesPerDetection,	SECT_POST_PROCESS,		int,				1,							false,	true,	true,	None				) \
 	_( UseRegularNMS,			SECT_POST_PROCESS,		bool,				true,						false,	true,	true,	None				) \
 	_( SigmoidOnCLS,			SECT_POST_PROCESS,		bool,				false,						false,	true,	true,	None				) \
-	_( PythonFile,				SECT_POST_PROCESS,		std::string,		"",							false,	false,	false,	None				) \
+	_( PythonFile,				SECT_POST_PROCESS,		std::string,		"",							false,	true,	true,	None				) \
 	_( PostProcessorInputs,		SECT_POST_PROCESS,		DG::vec_int,		DG::vec_int(),				false,	false,	false,	None				) \
 	_( OutputNumClasses,		SECT_POST_PROCESS,		int,				20,							false,	false,	true,	None				) \
 	_( OutputNumLandmarks,		SECT_POST_PROCESS,		size_t,				17,							false,	false,	true,	None				) \

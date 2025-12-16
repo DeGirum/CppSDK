@@ -320,6 +320,37 @@ public:
 		return path_with_slash( home_path );
 	}
 
+	/// Moves a directory from source_dir_path to dest_dir_path.
+	/// 1) Delete dest_dir_path if it exists
+	/// 2) Try rename(source, dest)
+	/// 3) If rename fails, copy(source -> dest) then delete source
+	static void move_dir(
+		const std::filesystem::path &source_dir_path,
+		const std::filesystem::path &dest_dir_path )
+	{
+		// 1) Delete dest_dir_path if exists
+		if( std::filesystem::exists( dest_dir_path ) )
+			std::filesystem::remove_all( dest_dir_path );
+
+		// 2) Try rename source_dir_path to dest_dir_path
+		try
+		{
+			std::filesystem::rename( source_dir_path, dest_dir_path );
+			return;
+		}
+		catch( ... )
+		{
+			// 3) If failed, copy source_dir_path to dest_dir_path then delete source_dir_path
+			std::filesystem::create_directories( dest_dir_path );
+			std::filesystem::copy(
+				source_dir_path,
+				dest_dir_path,
+				std::filesystem::copy_options::recursive | std::filesystem::copy_options::copy_symlinks |
+					std::filesystem::copy_options::overwrite_existing );
+			std::filesystem::remove_all( source_dir_path );
+		}
+	}
+
 	/// Get path to DeGirum-specific application data directory: the directory which applications can use to write data
 	/// to (with trailing slash). If no such directory existed before, it will be created. For Linux it is
 	/// $HOME/.local/share/DeGirum For Windows it is %APPDATA%\DeGirum For MacOS it is $HOME/Library/Application
