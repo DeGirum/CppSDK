@@ -15,25 +15,25 @@
 #define DG_GLOBAL_VERSION_H
 
 #ifndef DG_VERSION_MAJOR
-	#define DG_VERSION_MAJOR 0
+	#define DG_VERSION_MAJOR 1
 #endif
 #ifndef DG_VERSION_MINOR
-	#define DG_VERSION_MINOR 20
+	#define DG_VERSION_MINOR 0
 #endif
 #ifndef DG_VERSION_REVISION
 	#define DG_VERSION_REVISION 0
 #endif
 #ifndef DG_VERSION_FULL
-	#define DG_VERSION_FULL "0.20.0"
+	#define DG_VERSION_FULL "1.0.0"
 #endif
 #ifndef DG_GIT_REV
-	#define DG_GIT_REV 	"e690e30"
+	#define DG_GIT_REV 	"f35ac17"
 #endif
 #ifndef DG_GIT_TAG
 	#define DG_GIT_TAG 	""
 #endif
 #ifndef DG_GIT_BRANCH
-	#define DG_GIT_BRANCH 	"0.20.0"
+	#define DG_GIT_BRANCH 	"1.0.0"
 #endif
 
 #endif // DG_GLOBAL_VERSION_H
