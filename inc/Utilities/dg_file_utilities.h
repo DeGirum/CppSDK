@@ -324,9 +324,7 @@ public:
 	/// 1) Delete dest_dir_path if it exists
 	/// 2) Try rename(source, dest)
 	/// 3) If rename fails, copy(source -> dest) then delete source
-	static void move_dir(
-		const std::filesystem::path &source_dir_path,
-		const std::filesystem::path &dest_dir_path )
+	static void move_dir( const std::filesystem::path &source_dir_path, const std::filesystem::path &dest_dir_path )
 	{
 		// 1) Delete dest_dir_path if exists
 		if( std::filesystem::exists( dest_dir_path ) )
@@ -653,7 +651,7 @@ inline std::string DG::FileHelper::file2string( const std::string &path, bool is
 // Save string buffer to text file (implementation)
 inline void DG::FileHelper::string2file( const std::string &path, const std::string &str )
 {
-	std::ofstream fout( path.c_str() );
+	std::ofstream fout( path.c_str(), std::ios::binary );
 	if( fout.fail() )
 		DG_ERROR( "Error writing file " + path, ErrFileWriteFailed );
 	fout.write( str.c_str(), str.length() );
