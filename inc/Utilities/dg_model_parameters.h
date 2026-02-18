@@ -159,8 +159,6 @@ public:
 	}
 
 	/// Compute the hash of the parameter values in a given section
-	/// \param[in] section - section name to compute hash for
-	/// \param[in] idx - array index inside section object
 	/// \return std::hash for a given section
 	size_t modelHashGet() const
 	{
