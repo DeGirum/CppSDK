@@ -484,7 +484,7 @@ protected:
 			typename std::remove_cv_t< std::remove_reference_t< decltype( value ) > > val;
 			auto &rec = param[ key ];
 			rec.get_to( val );
-			if( !rec.is_primitive() || rec.is_number_float() || val != value )
+			if( val != value )
 			{
 				rec = value;
 				set_dirty( true );
