@@ -505,7 +505,8 @@ case type_id:                      \
 		if( new_type == DG_UNDEFINED )
 			new_type = dataTypeGet();
 		const size_t new_el_size = SizeOf( new_type );
-		const size_t new_linear_size = new_el_size * linearSizeCalc( new_shape );
+		const size_t new_linear_size_elements = linearSizeCalc( new_shape );
+		const size_t new_linear_size = new_el_size * new_linear_size_elements;
 
 		if( new_linear_size != linearSizeGet_bytes() )
 			DG_ERROR(
@@ -519,6 +520,7 @@ case type_id:                      \
 
 		m_shape = new_shape;
 		m_el_size = new_el_size;
+		m_linear_size = new_linear_size_elements;
 
 		switch( new_type )
 		{
