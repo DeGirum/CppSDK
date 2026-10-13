@@ -115,6 +115,7 @@
 	_( OutputYoloBoxScales,		SECT_POST_PROCESS,		DG::vec_flt,		DG::vec_flt(),				false,	false,	false,	None				) \
 	_( OutputShapePerLandmark,	SECT_POST_PROCESS,		int,				3,							false,	false,	false,	None				) \
 	_( OutputTensorLayout,		SECT_POST_PROCESS,		std::string,		"NHWC",						false,	false,	true,	None				) \
+	_( OutputQuantParams,		SECT_POST_PROCESS,		json,				json::object(),				false,	false,	true,	None				) \
 	_( YScale,					SECT_POST_PROCESS,		double,				1,							false,	false,	false,	None				) \
 	_( XScale,					SECT_POST_PROCESS,		double,				1,							false,	false,	false,	None				) \
 	_( HScale,					SECT_POST_PROCESS,		double,				1,							false,	false,	false,	None				) \

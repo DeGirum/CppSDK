@@ -293,7 +293,7 @@ void ClientAsio::resultObserve( callback_t callback )
 //
 void ClientAsio::dataSend( const std::vector< std::vector< char > > &data, const std::string &frame_info )
 {
-	DG_TRC_BLOCK( AIClientAsio, dataSend, DGTrace::lvlDetailed, "(%zu bytes)", data.size() );
+	DG_TRC_BLOCK( AIClientAsio, dataSend, DGTrace::lvlDetailed );
 
 	if( !m_stream_socket.is_open() )
 		DG_ERROR( "dataSend: socket was not opened", ErrIncorrectAPIUse );
@@ -345,8 +345,16 @@ void ClientAsio::dataSend( const std::vector< std::vector< char > > &data, const
 	}
 
 	// Send data frames to server
-	for( const auto &d : data )
-		main_protocol::write( m_stream_socket, d.data(), d.size() );
+	{
+		DG_TRC_START( AIClientAsio, dataSend::write, DGTrace::lvlDetailed );
+		size_t total_size = 0;
+		for( const auto &d : data )
+		{
+			total_size += d.size();
+			main_protocol::write( m_stream_socket, d.data(), d.size() );
+		}
+		DG_TRC_STOP_MSG( AIClientAsio, dataSend::write, DGTrace::lvlDetailed, "%zu bytes", total_size );
+	}
 
 	// Start result receiving thread if not started yet
 	if( !m_async_thread.joinable() )
@@ -497,7 +505,7 @@ bool ClientAsio::transmitCommand( const std::string &source, const json &request
 	main_protocol::write( m_command_socket, request_buffer.data(), request_buffer.size() );
 
 	// Read reply message
-	main_protocol::read_async(m_io_context,  m_command_socket, response_buffer, false, m_connection_timeout_ms);
+	main_protocol::read_async( m_io_context, m_command_socket, response_buffer, false, m_connection_timeout_ms );
 
 	response = json::parse( response_buffer );
 	if( !response.is_object() )

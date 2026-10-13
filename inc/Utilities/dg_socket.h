@@ -342,13 +342,10 @@ inline size_t write( socket_t &socket, const char *request_buffer, size_t packet
 	assert( int( packet_size ) < ( std::numeric_limits< int32_t >::max )() );
 	big_endian_size = htonl( static_cast< uint32_t >( packet_size ) );
 
-	// Signal message length
-	asio::write( socket, asio::buffer( size_buffer, HEADER_SIZE ), error );
-	if( !throw_exception_if_error_is_serious( error, ignore_errors ) )
-		return 0;
-
-	// Send message
-	bytes_sent += asio::write( socket, asio::buffer( request_buffer, packet_size ), error );
+	// Send message length and message itself in a single scatter-gather write
+	std::array< asio::const_buffer, 2 > buffers =
+		{ asio::buffer( size_buffer, HEADER_SIZE ), asio::buffer( request_buffer, packet_size ) };
+	bytes_sent = asio::write( socket, buffers, error );
 	if( !throw_exception_if_error_is_serious( error, ignore_errors ) )
 		return 0;
 	return bytes_sent;

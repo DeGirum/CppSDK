@@ -227,16 +227,18 @@ public:
 	/// \param[in] quant_params - tensor quantization parameters
 	/// \param[in] ext_lin_buffer - optional external linear buffer pointer;
 	///   if nullptr, buffer will be allocated internally
+	/// \param[in] set_zero - when true, allocated buffer will be zeroed
 	template< typename T >
 	BasicTensor(
 		int32_t id,
 		const std::string &name,
 		const shape_t &shape,
 		const quant_params_t &quant_params = {},
-		T *ext_lin_buffer = nullptr )
+		T *ext_lin_buffer = nullptr,
+		bool set_zero = true )
 	{
 		null();
-		alloc< T >( id, name, shape, quant_params, ext_lin_buffer );
+		alloc< T >( id, name, shape, quant_params, ext_lin_buffer, set_zero );
 	}
 
 	/// Constructor: allocate or assign tensor memory according to dimension vector (dynamic typing version)
@@ -247,16 +249,18 @@ public:
 	/// \param[in] quant_params - tensor quantization parameters
 	/// \param[in] ext_lin_buffer - optional external linear buffer pointer;
 	///   if nullptr, buffer will be allocated internally
+	/// \param[in] set_zero - when true, allocated buffer will be zeroed
 	BasicTensor(
 		int32_t id,
 		const std::string &name,
 		const shape_t &shape,
 		DGType data_type,
 		const quant_params_t &quant_params = {},
-		void *ext_lin_buffer = nullptr )
+		void *ext_lin_buffer = nullptr,
+		bool set_zero = true )
 	{
 		null();
-		alloc( id, name, shape, data_type, quant_params, ext_lin_buffer );
+		alloc( id, name, shape, data_type, quant_params, ext_lin_buffer, set_zero );
 	}
 
 	/// Constructor: allocate tensor memory and copy data from given linear container.
@@ -291,13 +295,15 @@ public:
 	/// \param[in] quant_params - tensor quantization parameters
 	/// \param[in] ext_lin_buffer - optional external linear buffer pointer;
 	///   if nullptr, buffer will be allocated internally
+	/// \param[in] set_zero - when true, allocated buffer will be zeroed
 	template< typename T >
 	void alloc(
 		int32_t id,
 		const std::string &name,
 		const shape_t &shape,
 		const quant_params_t &quant_params = {},
-		T *ext_lin_buffer = nullptr )
+		T *ext_lin_buffer = nullptr,
+		bool set_zero = true )
 	{
 		dealloc();
 
@@ -317,7 +323,7 @@ public:
 		else
 		{
 			m_linear_buffer = new T[ m_linear_size ];
-			if( std::is_arithmetic_v< T > )
+			if( set_zero && std::is_arithmetic_v< T > )
 				std::memset( m_linear_buffer, 0, m_linear_size * m_el_size );
 			m_external = false;
 		}
@@ -331,19 +337,21 @@ public:
 	/// \param[in] quant_params - tensor quantization parameters
 	/// \param[in] ext_lin_buffer - optional external linear buffer pointer;
 	///   if nullptr, buffer will be allocated internally
+	/// \param[in] set_zero - when true, allocated buffer will be zeroed
 	void alloc(
 		int32_t id,
 		const std::string &name,
 		const shape_t &shape,
 		DGType data_type,
 		const quant_params_t &quant_params = {},
-		void *ext_lin_buffer = nullptr )
+		void *ext_lin_buffer = nullptr,
+		bool set_zero = true )
 	{
 		switch( data_type )
 		{
 #define _( type_id, ctype, width )                                            \
 case type_id:                                                                 \
-	alloc< ctype >( id, name, shape, quant_params, (ctype *)ext_lin_buffer ); \
+	alloc< ctype >( id, name, shape, quant_params, (ctype *)ext_lin_buffer, set_zero ); \
 	break;
 			DG_TYPE_LIST
 #undef _
@@ -505,7 +513,8 @@ case type_id:                      \
 		if( new_type == DG_UNDEFINED )
 			new_type = dataTypeGet();
 		const size_t new_el_size = SizeOf( new_type );
-		const size_t new_linear_size = new_el_size * linearSizeCalc( new_shape );
+		const size_t new_linear_size_elements = linearSizeCalc( new_shape );
+		const size_t new_linear_size = new_el_size * new_linear_size_elements;
 
 		if( new_linear_size != linearSizeGet_bytes() )
 			DG_ERROR(
@@ -519,6 +528,7 @@ case type_id:                      \
 
 		m_shape = new_shape;
 		m_el_size = new_el_size;
+		m_linear_size = new_linear_size_elements;
 
 		switch( new_type )
 		{
